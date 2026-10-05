@@ -5,11 +5,15 @@
   <meta name="description" content="Themenbereiche, Studiennotizen und praxisnahe Guides von Datenflix007."><title>Guides · Datenflix007</title>
   <style>
     :root{color-scheme:dark;--bg:#0b1018;--line:#2a3c58;--text:#f1f6ff;--muted:#afbdd1;--accent:#a8e063;--gold:#e5bb67}*{box-sizing:border-box}body{margin:0;min-width:320px;background:radial-gradient(circle at 85% 0,#344f2c 0,transparent 31rem),radial-gradient(circle at 0 30%,#1c3851 0,transparent 28rem),var(--bg);color:var(--text);font:16px/1.55 Inter,ui-sans-serif,system-ui,sans-serif}a{color:inherit}.wrap{width:min(1160px,calc(100% - 40px));margin:auto}header{position:sticky;top:0;z-index:2;border-bottom:1px solid var(--line);background:#0b1018c9;backdrop-filter:blur(14px)}.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{text-decoration:none;font-weight:800;letter-spacing:.02em}.brand i{display:inline-block;width:11px;height:11px;margin-right:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 20px var(--accent)}.navlinks{display:flex;flex-wrap:wrap;gap:7px}.navlinks a{text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:999px;padding:7px 11px;font-size:.9rem}.navlinks a:hover,.navlinks .active{color:var(--text);border-color:var(--line);background:#19273a}main{padding:70px 0 90px}.eyebrow{color:var(--accent);text-transform:uppercase;font-size:.76rem;font-weight:800;letter-spacing:.16em}h1{max-width:840px;margin:12px 0 16px;font-size:clamp(2.5rem,7vw,5.5rem);line-height:.98;letter-spacing:-.065em}.intro{max-width:700px;color:var(--muted);font-size:1.1rem}.strip{margin:44px 0 25px;padding:18px 20px;border-left:3px solid var(--gold);border-radius:0 13px 13px 0;background:#171f2abd;color:#dae3ef}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{min-height:240px;display:flex;flex-direction:column;justify-content:space-between;padding:22px;border:1px solid var(--line);border-radius:19px;background:linear-gradient(145deg,#172235d9,#0e1521ec);text-decoration:none;transition:transform .18s,border-color .18s,box-shadow .18s}.card:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 18px 45px #0007}.tag{align-self:flex-start;padding:4px 9px;border-radius:999px;background:#365130;color:#e4ffd0;font-size:.73rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.card h2{margin:35px 0 7px;font-size:1.25rem;line-height:1.15}.card p{margin:0;color:var(--muted);font-size:.94rem}.arrow{margin-top:20px;color:var(--accent);font-weight:700}.wide{grid-column:span 2;background:linear-gradient(125deg,#25452d,#1e354e)}footer{border-top:1px solid var(--line);padding:28px 0 42px;color:var(--muted);font-size:.9rem}@media(max-width:760px){.nav{padding:12px 0;align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.wide{grid-column:auto}main{padding-top:45px}}
+    /* Gemeinsame Kopfzeile für alle Datenflix007-Bereiche. */
+    header{background:rgba(9,13,22,.84);border-bottom-color:#263858}.brand i{background:#62e0c0;box-shadow:0 0 10px #62e0c0,0 0 24px rgba(98,224,192,.55)}.navlinks a:hover,.navlinks .active{color:var(--text);border-color:#3b557d;background:#16233a}
+    /* Die Projektkarten übernehmen bewusst die etablierte Optik der Projektübersicht. */
+    .catalog{margin-top:54px}.catalog h2{font-size:clamp(1.7rem,3vw,2.3rem);margin-bottom:7px}.catalog-intro{margin:0 0 23px;color:var(--muted)}.catalog-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.catalog-grid .card.project{min-height:0;padding:18px;background:#111418;border:1px solid #334155;border-radius:16px;box-shadow:0 10px 30px rgba(2,6,23,.4);color:#e6e9ef;transition:transform .2s ease,box-shadow .2s ease}.catalog-grid .card.project:hover{transform:translateY(-2px);border-color:#46658f;box-shadow:0 14px 30px rgba(0,0,0,.28)}.catalog-grid .project h3{margin:0 0 6px;font-size:1.05rem}.catalog-grid .muted{color:#8892a6}.catalog-grid .project a{color:#4fc3f7!important;font-weight:600}.catalog-grid .tag{display:inline-block;border:1px solid #334155;border-radius:999px;padding:4px 8px;font-size:.8rem;color:#8892a6;margin:8px 8px 0 0}.catalog-status{color:var(--muted);padding:24px 0}.catalog-error{color:#ffd2d2}@media(max-width:900px){.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.catalog-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <header><div class="wrap nav"><a class="brand" href="https://datenflix007.github.io/"><i></i>Datenflix007</a><nav class="navlinks" aria-label="Bereiche"><a href="https://datenflix007.github.io/">Portal</a><a href="https://datenflix007.github.io/tools/">Tools</a><a class="active" href="./">Guides</a><a href="https://datenflix007.github.io/digital-worksheets/">Arbeitsblätter</a></nav></div></header>
-  <main class="wrap"><p class="eyebrow">Orientieren · Verstehen · Vertiefen</p><h1>Eine Sammlung von Themen, die weiterdenken lässt.</h1><p class="intro">Studiennotizen, technische Anleitungen und historische Perspektiven – sorgfältig aufbereitet, damit aus einem ersten Interesse ein eigener Lernweg werden kann.</p><div class="strip">Die Themenbereiche sind jetzt hier gebündelt: Jede Karte führt direkt zu einem bestehenden Guide, Zeitstrahl oder interaktiven Labor.</div><section class="grid" aria-label="Guides und Themenbereiche">
+  <header><div class="wrap nav"><a class="brand" href="https://datenflix007.github.io/"><i></i>Felix Staacke</a><nav class="navlinks" aria-label="Bereiche"><a href="https://datenflix007.github.io/">Portal</a><a href="https://datenflix007.github.io/tools/">Tools</a><a href="https://datenflix007.github.io/digital-worksheets/">Arbeitsblätter</a></nav></div></header>
+  <main class="wrap"><p class="eyebrow">Orientieren · Verstehen · Vertiefen</p><h1>Eine Sammlung von Themen, die weiterdenken lässt.</h1><p class="intro">Studiennotizen, technische Anleitungen und historische Perspektiven – sorgfältig aufbereitet, damit aus einem ersten Interesse ein eigener Lernweg werden kann.</p><div class="strip">Die Themenbereiche sind jetzt hier gebündelt: Jede Karte führt direkt zu einem bestehenden Guide, Zeitstrahl oder interaktiven Labor.</div><section hidden class="grid" aria-label="Guides und Themenbereiche">
     <a class="card wide" href="informatikgeschichte.html"><span class="tag">Themenbereich</span><div><h2>Informatikgeschichte</h2><p>Ein Zeitstrahl von Ada Lovelace bis heute – mit Laboren zu Lambda-Kalkül, Analytical Engine, Z3, A-0 und ENIAC.</p><span class="arrow">Zeitstrahl entdecken →</span></div></a>
     <a class="card" href="informatikstudium.html"><span class="tag">Studium</span><div><h2>Aus dem Informatikstudium</h2><p>Theorie, Projekte und Erkenntnisse aus dem Weg zum Staatsexamen.</p><span class="arrow">Themen ansehen →</span></div></a>
     <a class="card" href="geschichtsstudium.html"><span class="tag">Studium</span><div><h2>Aus dem Geschichtsstudium</h2><p>Materialien und Perspektiven zwischen Quellenarbeit, Forschung und Vermittlung.</p><span class="arrow">Themen ansehen →</span></div></a>
@@ -18,5 +22,49 @@
     <a class="card" href="installer/installer-guide.html"><span class="tag">Praxis</span><div><h2>Installer-Guide</h2><p>Vom Projekt zu einer nutzbaren Anwendung mit Setup, Icons und Verknüpfungen.</p><span class="arrow">Anleitung lesen →</span></div></a>
     <a class="card" href="exe/programm-exe-erstellen.html"><span class="tag">Praxis</span><div><h2>Programm.exe erstellen</h2><p>Startbare Anwendungen aus verschiedenen Programmiersprachen erstellen.</p><span class="arrow">Guide öffnen →</span></div></a>
     <a class="card" href="WennZeitÜberLebenEntscheidet/"><span class="tag">Publikation</span><div><h2>Wenn Zeit Leben rettet</h2><p>Wissenschaftliches Poster zur Digitalisierung in der präklinischen Notfallmedizin.</p><span class="arrow">Beitrag ansehen →</span></div></a>
-  </section></main><footer><div class="wrap">Datenflix007 · Inhalte für neugieriges Lernen</div></footer>
+  </section><section class="catalog" aria-labelledby="catalog-title"><h2 id="catalog-title">Alle Guides</h2><p class="catalog-intro" id="catalog-description">Lade die vollständige Guide-Sammlung …</p><div class="catalog-grid" id="projectCatalog" aria-live="polite"><p class="catalog-status">Karten werden geladen …</p></div></section></main><footer><div class="wrap">Datenflix007 · Inhalte für neugieriges Lernen</div></footer>
+  <script>
+    (async () => {
+      const category = "Guides";
+      const catalog = document.getElementById("projectCatalog");
+      const description = document.getElementById("catalog-description");
+      const localSource = new URL("../datenflix007.github.io/src/projekte.html", location.href).href;
+      const productionSource = "https://datenflix007.github.io/src/projekte.html";
+      const sources = location.hostname === "datenflix007.github.io" ? [productionSource] : [localSource, productionSource];
+      try {
+        let sourceText;
+        let sourceUrl;
+        for (const candidate of sources) {
+          try {
+            const response = await fetch(candidate);
+            if (!response.ok) continue;
+            sourceText = await response.text();
+            sourceUrl = candidate;
+            break;
+          } catch (_) { /* try the next source */ }
+        }
+        if (!sourceText) throw new Error("Katalogquelle nicht erreichbar");
+        const documentFromSource = new DOMParser().parseFromString(sourceText, "text/html");
+        const sourceDetails = [...documentFromSource.querySelectorAll("details")].find((element) => element.querySelector("summary")?.textContent.trim() === category);
+        const cards = sourceDetails ? [...sourceDetails.querySelectorAll(".grid > .card.project")] : [];
+        if (!cards.length) throw new Error("Keine Guide-Karten gefunden");
+        const fragment = document.createDocumentFragment();
+        cards.forEach((sourceCard) => {
+          const card = sourceCard.cloneNode(true);
+          card.querySelectorAll("img[src], a[href]").forEach((element) => {
+            const attribute = element.hasAttribute("src") ? "src" : "href";
+            const value = element.getAttribute(attribute);
+            if (value && !/^(#|mailto:|tel:|https?:)/i.test(value)) element.setAttribute(attribute, new URL(value, sourceUrl).href);
+          });
+          fragment.append(card);
+        });
+        catalog.replaceChildren(fragment);
+        description.textContent = `${cards.length} praxisnahe Guides – direkt aus der zentralen Projektübersicht.`;
+      } catch (error) {
+        catalog.innerHTML = '<p class="catalog-status catalog-error">Die Guide-Sammlung konnte gerade nicht geladen werden. Bitte Seite neu laden.</p>';
+        description.textContent = "Die vollständige Guide-Sammlung wird aus dem zentralen Portal geladen.";
+      }
+    })();
+  </script>
+  <script src="https://datenflix007.github.io/feedback-widget.js?repo=guides" defer></script>
 </body></html>
