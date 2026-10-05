@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../media/favicon.png">
+    <title>Informatikgeschichte - Felix Staacke</title>
+    <meta name="description" content="Themenbereich Informatikgeschichte mit zweispurigem Zeitstrahl zu theoretischer und praktischer Informatik." />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        :root {
+            --history-bg: #09111b;
+            --history-panel: #111c2a;
+            --history-line: #27364b;
+            --history-text: #edf6ff;
+            --history-muted: #a8b6c9;
+            --theory: #62d2ff;
+            --practice: #f4b95a;
+            --history-green: #76d391;
+        }
+
+        body {
+            background: var(--history-bg);
+        }
+
+        .history-shell {
+            width: min(1180px, calc(100vw - 32px));
+            margin: 0 auto;
+        }
+
+        .history-hero {
+            min-height: 300px;
+            padding: 54px 0 46px;
+        }
+
+        .history-hero h1 {
+            margin: 14px 0 12px;
+            font-size: 52px;
+            line-height: 1.02;
+            letter-spacing: 0;
+            color: var(--history-text);
+        }
+
+        .history-hero p {
+            margin: 0;
+            max-width: 70ch;
+            color: var(--history-muted);
+            font-size: 17px;
+            line-height: 1.75;
+        }
+
+        .history-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .history-actions a {
+            border: 1px solid var(--history-line);
+            border-radius: 8px;
+            padding: 10px 13px;
+            color: var(--history-text);
+            text-decoration: none;
+            font-weight: 800;
+            background: #0d1724;
+        }
+
+        .history-actions a.primary {
+            border-color: var(--practice);
+            color: #170f02;
+            background: var(--practice);
+        }
+
+        .history-section-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 32px 0 18px;
+        }
+
+        .history-section-head h2 {
+            margin: 0;
+            color: var(--history-text);
+            font-size: 28px;
+            letter-spacing: 0;
+        }
+
+        .history-section-head p {
+            margin: 6px 0 0;
+            color: var(--history-muted);
+            max-width: 70ch;
+        }
+
+        .history-lane-labels {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr);
+            gap: 16px;
+            align-items: stretch;
+            margin: 0 0 4px;
+        }
+
+        .history-lane-label {
+            border: 1px solid var(--history-line);
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #0d1724;
+        }
+
+        .history-lane-label strong,
+        .history-lane-label span {
+            display: block;
+        }
+
+        .history-lane-label strong {
+            color: var(--history-text);
+            font-size: 16px;
+            letter-spacing: 0;
+        }
+
+        .history-lane-label span {
+            margin-top: 3px;
+            color: var(--history-muted);
+            font-size: 13px;
+        }
+
+        .history-lane-label.theory {
+            text-align: right;
+            border-color: rgba(98,210,255,.5);
+        }
+
+        .history-lane-label.practice {
+            border-color: rgba(244,185,90,.5);
+        }
+
+        .history-timeline {
+            position: relative;
+            padding: 12px 0 42px;
+        }
+
+        .history-timeline::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, var(--theory), #d9e6f3 42%, var(--practice));
+            border-radius: 999px;
+        }
+
+        .history-row {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr);
+            gap: 16px;
+            align-items: stretch;
+            margin: 16px 0;
+        }
+
+        .history-year {
+            align-self: center;
+            justify-self: center;
+            display: grid;
+            place-items: center;
+            width: 68px;
+            height: 68px;
+            border: 3px solid #e8f1fb;
+            border-radius: 50%;
+            background: #0a1220;
+            color: var(--history-text);
+            font-weight: 900;
+            box-shadow: 0 0 0 7px rgba(9,17,27,.96);
+            z-index: 2;
+        }
+
+        .history-side {
+            display: grid;
+            gap: 10px;
+            align-content: center;
+        }
+
+        .history-side.left {
+            text-align: right;
+        }
+
+        .history-side.right {
+            text-align: left;
+        }
+
+        .history-event {
+            border: 1px solid var(--history-line);
+            border-radius: 8px;
+            padding: 14px;
+            background: var(--history-panel);
+            color: var(--history-text);
+        }
+
+        .history-event.theory {
+            border-color: rgba(98,210,255,.42);
+            background: linear-gradient(180deg, rgba(98,210,255,.09), rgba(17,28,42,.96));
+        }
+
+        .history-event.practice {
+            border-color: rgba(244,185,90,.42);
+            background: linear-gradient(180deg, rgba(244,185,90,.1), rgba(17,28,42,.96));
+        }
+
+        .history-event h3 {
+            margin: 0 0 6px;
+            color: var(--history-text);
+            font-size: 16px;
+            line-height: 1.35;
+            letter-spacing: 0;
+        }
+
+        .history-event p {
+            margin: 0;
+            color: var(--history-muted);
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        .history-event a {
+            color: var(--practice);
+            font-weight: 800;
+        }
+
+        .emulator-candidate {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            max-width: 100%;
+            margin-top: 9px;
+            border: 1px dashed rgba(244,185,90,.7);
+            border-radius: 999px;
+            padding: 4px 8px;
+            color: var(--practice);
+            background: rgba(244,185,90,.08);
+            font-size: 12px;
+            font-weight: 900;
+            line-height: 1.25;
+            text-decoration: none;
+        }
+
+        .emulator-candidate:hover {
+            border-style: solid;
+            text-decoration: none;
+        }
+
+        .history-source-band {
+            display: block;
+            width: min(980px, calc(100vw - 32px));
+            padding: 26px 0 54px;
+        }
+
+        .history-source-band .history-note {
+            border: 0;
+            border-radius: 0;
+            padding: 0 0 28px;
+            background: transparent;
+        }
+
+        .history-source-band .history-note + .history-note {
+            margin-top: 26px;
+            padding-top: 26px;
+            border-top: 1px solid var(--history-line);
+        }
+
+        .history-source-band .history-note h2,
+        .history-source-band .history-note h3 {
+            margin: 0 0 10px;
+            color: var(--history-text);
+            letter-spacing: 0;
+        }
+
+        .history-source-band .history-note p,
+        .history-source-band .history-note li {
+            color: var(--history-muted);
+            line-height: 1.65;
+        }
+
+        .history-source-band .history-note p {
+            margin: 0 0 12px;
+        }
+
+        .history-source-band .history-note ul {
+            margin: 10px 0 0;
+            padding-left: 20px;
+        }
+
+        .history-source-band .history-note a {
+            color: var(--theory);
+        }
+
+        @media (max-width: 900px) {
+            .history-hero,
+            .history-source-band {
+                grid-template-columns: 1fr;
+            }
+
+            .history-hero h1 {
+                font-size: 40px;
+            }
+
+            .history-section-head {
+                display: block;
+            }
+
+            .history-lane-labels {
+                grid-template-columns: 68px 1fr;
+            }
+
+            .history-lane-label {
+                grid-column: 2;
+            }
+
+            .history-lane-label.theory {
+                text-align: left;
+            }
+
+            .history-timeline::before {
+                left: 34px;
+            }
+
+            .history-row {
+                grid-template-columns: 68px 1fr;
+                gap: 12px;
+            }
+
+            .history-year {
+                grid-column: 1;
+                grid-row: 1 / span 2;
+                width: 58px;
+                height: 58px;
+                font-size: 14px;
+            }
+
+            .history-side.left,
+            .history-side.right {
+                grid-column: 2;
+                text-align: left;
+            }
+
+            .history-side.left {
+                grid-row: 1;
+            }
+
+            .history-side.right {
+                grid-row: 2;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .history-shell {
+                width: min(100% - 20px, 1180px);
+            }
+
+            .history-hero h1 {
+                font-size: 32px;
+            }
+
+            .history-hero p {
+                font-size: 15px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="informatikstudium.html">Informatik</a>
+                <a class="btn" href="projekte.html">Projekte</a>
+                <a class="btn" href="kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="history-shell history-hero">
+            <div>
+                <span class="chip">Themenbereich</span>
+                <span class="chip">Informatikgeschichte</span>
+                <h1>Informatikgeschichte als Doppelspur</h1>
+                <p>
+                    Links stehen formale Ideen: Berechenbarkeit, Logik, Algorithmik, Komplexitaet, Kryptographie und Softwaremodellierung.
+                    Rechts stehen gebaute Systeme: Maschinen, Bauelemente, Compiler, Programmiersprachen, Netze und Plattformen.
+                    Der Zeitstrahl macht sichtbar, dass Theorie und Praxis sich nicht abwechseln, sondern gegenseitig antreiben.
+                </p>
+            </div>
+        </section>
+
+        <section class="history-shell" id="zeitstrahl">
+            <div class="history-section-head">
+                <div>
+                    <h2>Zeitstrahl der Informatikgeschichte</h2>
+                    <p>Der Bereich startet mit kanonischen Meilensteinen. Er ist als lebende Sammlung gedacht und kann später um Personen, Quellenkarten und Übungen erweitert werden.</p>
+                </div>
+            </div>
+
+            <div class="history-lane-labels" aria-label="Traditionen im Zeitstrahl">
+                <div class="history-lane-label theory">
+                    <strong>Theoretische Tradition der Informatik</strong>
+                    <span>Formale Modelle, Logik, Berechenbarkeit, Algorithmen und Beweise.</span>
+                </div>
+                <div aria-hidden="true"></div>
+                <div class="history-lane-label practice">
+                    <strong>Praktische Tradition der Informatik</strong>
+                    <span>Maschinen, Bauteile, Programmiersprachen, Netze und Plattformen.</span>
+                </div>
+            </div>
+
+            <div class="history-timeline">
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Ada Lovelace: Algorithmus für die Analytical Engine</h3>
+                            <p>Die Notizen zu Babbages Entwurf enthalten ein Verfahren zur Berechnung von Bernoulli-Zahlen und markieren Programmieren als eigene Denkform.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1843</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Charles Babbage: Analytical Engine</h3>
+                            <p>Der nie vollst&auml;ndig gebaute Entwurf trennt Store und Mill, nutzt Lochkarten und macht allgemeine mechanische Programmsteuerung denkbar. <a href="modules/Informatikgeschichte/analytical-engine/index.html">Zum Emulator</a></p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>George Boole: Algebra der Logik</h3>
+                            <p>Booles Kalkül liefert die spätere Grundlage für Aussagenlogik, Schaltalgebra und digitale Schaltungen.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1854</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1890</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Herman Hollerith: Lochkartenmaschine</h3>
+                            <p>Elektromechanische Tabellierung beschleunigt die US-Volkszählung und wird ein Grundstein der Datenverarbeitung.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#hollerith">Emulator öffnen: Lochkarten-Tabulator</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Kurt Gödel: Grenzen formaler Systeme</h3>
+                            <p>Unvollständigkeit und Gödelisierung zeigen, dass formale Systeme selbst Gegenstand formaler Analyse werden können.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1931</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Alonzo Church: Lambda-Kalk&uuml;l</h3>
+                            <p>Church beschreibt Berechnung als Funktionsanwendung und Substitution. Das Lambda-Kalk&uuml;l wird ein formales Modell effektiver Berechenbarkeit. <a href="modules/Informatikgeschichte/lambda-calculus/index.html">Zum Labor</a></p>
+                        </article>
+                        <article class="history-event theory">
+                            <h3>Alan Turing: Turingmaschine</h3>
+                            <p>Turingmaschinen pr&auml;zisieren Berechenbarkeit mit Band, Zust&auml;nden und mechanischen Schritten. Zusammen mit Church entsteht der Kern der Church-Turing-These.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#turing">Emulator öffnen: Turingmaschinen-Band</a>
+                        </article>
+                    </div>
+                    <div class="history-year">1936</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Claude Shannon: Schaltalgebra</h3>
+                            <p>Relais- und Schaltkreise werden mit boolescher Algebra analysierbar. Damit rücken Logik und Hardware eng zusammen.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#relay">Emulator öffnen: Relais-Schaltkreis</a>
+                        </article>
+                    </div>
+                    <div class="history-year">1937</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1941</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Konrad Zuse: Z3</h3>
+                            <p>Der elektromechanische Rechner arbeitet mit bin&auml;rer Gleitkommaarithmetik und zeigt, dass programmierbare Rechenmaschinen praktisch baubar sind. <a href="modules/Informatikgeschichte/z3-emulator/index.html">Zum Emulator</a></p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>John von Neumann: gespeichertes Programm</h3>
+                            <p>Die Idee, Daten und Befehle im Speicher zu halten, prägt die bis heute dominante Rechnerarchitektur.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1945</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>ENIAC: elektronischer Universalrechner</h3>
+                            <p>Der elektronische Rechner wird für ballistische Tabellen genutzt und steht für den Übergang von Spezialmaschine zu Rechenplattform. <a href="modules/Informatikgeschichte/eniac-emulator/index.html">Zum Emulator</a></p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1947</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Transistor</h3>
+                            <p>Das Bauelement löst viele Grenzen der Röhrentechnik und macht kleinere, robustere und günstigere Computer möglich.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Claude Shannon: Informationstheorie</h3>
+                            <p>Information wird messbar. Begriffe wie Entropie, Redundanz und Kanalcodierung werden technische Werkzeuge.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1948</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Alan Turing: Turing Test</h3>
+                            <p>Die Frage nach maschineller Intelligenz wird operationalisiert: Nicht das Innenleben, sondern beobachtbares Verhalten steht im Mittelpunkt.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1950</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1952</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Grace Hopper: A-0 System Compiler</h3>
+                            <p>Mathematische Routinen werden über Aufrufnummern auf Band verwaltet. Erst der Bau eines Compiler- bzw. Routineverwaltungssystems schafft die Abstraktionsebene, aus der spätere Hochsprachen plausibel werden. <a href="modules/Informatikgeschichte/a0-compiler/index.html">Zum Emulator</a></p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1957</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>John Backus: FORTRAN</h3>
+                            <p>Eine höhere Programmiersprache wird für wissenschaftliches Rechnen industriell nutzbar und verändert Programmierarbeit dauerhaft.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#fortran">Emulator öffnen: FORTRAN-Formelübersetzer</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>LISP: symbolische Verarbeitung</h3>
+                            <p>Listen, Rekursion und symbolische Ausdrücke prägen Künstliche Intelligenz, Programmiersprachenforschung und funktionale Ideen.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#lisp">Emulator öffnen: LISP-Listen-Evaluator</a>
+                        </article>
+                    </div>
+                    <div class="history-year">1958</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Integrierter Schaltkreis</h3>
+                            <p>Mehrere Bauelemente wandern auf einen Chip. Das ist die materielle Basis späterer Mikroprozessoren.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>ALGOL 60: Blockstruktur und Sprachdesign</h3>
+                            <p>Syntax, Gültigkeitsbereiche und strukturierte Sprachbeschreibung werden zur Referenz für viele spätere Sprachen.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1960</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1964</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>IBM System/360 und BASIC</h3>
+                            <p>System/360 etabliert kompatible Rechnerfamilien; BASIC senkt die Einstiegshürde für interaktives Programmieren.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#basic">Emulator öffnen: BASIC-Interpreter</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Gordon Moore: Verdopplungsregel</h3>
+                            <p>Die Beobachtung wachsender Transistordichte wird zum Leitbild für Erwartungen an Rechenleistung, Kosten und Miniaturisierung.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1965</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1966</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>ELIZA</h3>
+                            <p>Ein frühes Dialogprogramm zeigt, wie stark einfache Mustererkennung als scheinbare Gesprächsfähigkeit wahrgenommen werden kann.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#eliza">Emulator öffnen: ELIZA-Dialogsystem</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Donald Knuth und Edsger W. Dijkstra</h3>
+                            <p>Algorithmusanalyse, strukturierte Programmierung und formale Argumente werden Kernbestandteile professioneller Informatik.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1968</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1969</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Software Engineering und ARPANET</h3>
+                            <p>Margaret Hamiltons Arbeit an Apollo-Software steht für robuste Softwarepraxis; das ARPANET startet als Vorläufer des Internets.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Stephen Cook: NP-Vollständigkeit</h3>
+                            <p>Komplexitätstheorie erhält ein zentrales Vergleichswerkzeug für schwierige Berechnungsprobleme.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1971</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Intel 4004</h3>
+                            <p>Der Mikroprozessor integriert eine CPU auf einem Chip und verschiebt Rechenleistung in immer kleinere Geräte.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#cpu4004">Emulator öffnen: 4-Bit-CPU</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Dijkstra: Softwarekrise und mathematische Modellierung</h3>
+                            <p>Programme sollen nicht nur laufen, sondern begründbar korrekt, wartbar und strukturiert sein.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1972</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>C entsteht</h3>
+                            <p>C verbindet hardwarenahe Kontrolle mit portabler Systemprogrammierung und prägt Betriebssysteme und Compilerbau.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#cstack">Emulator öffnen: Pointer- und Stack-Maschine</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Diffie-Hellman: Public-Key-Kryptographie</h3>
+                            <p>Geheime Schlüssel müssen nicht mehr vorab gemeinsam transportiert werden. Sichere Kommunikation wird neu gedacht.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1976</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Ethernet wird praktisch eingesetzt</h3>
+                            <p>Lokale Netzwerke werden standardisierbar und bilden die Grundlage vieler späterer Rechnerverbünde.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>RSA</h3>
+                            <p>Ein konkretes asymmetrisches Verfahren macht Public-Key-Kryptographie breit vermittelbar und später industriell nutzbar.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#rsa">Emulator öffnen: RSA-Schlüsseltausch</a>
+                        </article>
+                    </div>
+                    <div class="history-year">1977</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1983</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>TCP/IP und DNS</h3>
+                            <p>Das Internet bekommt seine gemeinsame technische Sprache und ein alltagstauglicheres Namenssystem.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#dns">Emulator öffnen: Paketweg und DNS-Auflösung</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1989</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>World Wide Web</h3>
+                            <p>Hypertext, URLs und Browser-Idee verbinden Netzinfrastruktur mit einer für Menschen navigierbaren Informationswelt.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1991</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Linux</h3>
+                            <p>Ein freies Betriebssystemprojekt wird zur Infrastruktur für Server, Geräte, Forschung und Softwareentwicklung.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Shor-Algorithmus</h3>
+                            <p>Quantenalgorithmen zeigen, dass neue Rechenmodelle etablierte kryptographische Annahmen verschieben können.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">1994</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">1995</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Java und Webprogrammierung</h3>
+                            <p>Plattformunabhängigkeit, virtuelle Maschinen und das Web als Laufzeitumgebung werden zentrale Entwicklungsfragen.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">2004</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>MapReduce</h3>
+                            <p>Verteilte Datenverarbeitung wird als Programmiermodell für sehr große Datenmengen praktisch handhabbar.</p>
+                            <a class="emulator-candidate" href="modules/Informatikgeschichte/emulator-lab/index.html#mapreduce">Emulator öffnen: Map-Reduce-Job</a>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">2012</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>AlexNet und Deep Learning</h3>
+                            <p>GPU-beschleunigte neuronale Netze gewinnen massiv an Sichtbarkeit und verändern Bildverarbeitung, Forschung und Industrie.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left">
+                        <article class="history-event theory">
+                            <h3>Transformer-Architektur</h3>
+                            <p>Attention-Mechanismen ersetzen viele rekurrente Strukturen und werden zur Grundlage moderner Sprach- und Multimodalmodelle.</p>
+                        </article>
+                    </div>
+                    <div class="history-year">2017</div>
+                    <div class="history-side right"></div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">2020</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>AlphaFold2</h3>
+                            <p>Maschinelles Lernen erreicht bei Proteinstrukturvorhersagen einen Durchbruch und zeigt den Nutzen informatischer Modelle in den Naturwissenschaften.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="history-row">
+                    <div class="history-side left"></div>
+                    <div class="history-year">2022</div>
+                    <div class="history-side right">
+                        <article class="history-event practice">
+                            <h3>Große Sprachmodelle im Alltag</h3>
+                            <p>Dialogsysteme auf Transformer-Basis werden massenhaft nutzbar und verschieben die öffentliche Wahrnehmung von KI.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="history-shell history-source-band" aria-label="Quellen und nächste Unterseiten">
+            <div class="history-note">
+                <h2>Unterseiten im Themenbereich</h2>
+                <p>Der Themenbereich startet mit fuenf Arbeitsmodellen: dem Lambda-Kalk&uuml;l-Labor f&uuml;r Churchs Funktionsmodell, dem Analytical-Engine-Emulator f&uuml;r Store, Mill und Lochkarten, dem Z3-Emulator f&uuml;r Programmstreifen, Relaisrechner und Gleitkommaarithmetik, dem A-0-Compiler-Emulator f&uuml;r automatische Routineverwaltung und dem ENIAC-Emulator f&uuml;r Akkumulatoren, Kabelprogrammierung und Impulssteuerung. Die gestrichelten Links im Zeitstrahl oeffnen weitere Emulatoren, zum Beispiel ELIZA, Turingmaschine, Relais-Schaltkreis, BASIC, RSA oder MapReduce.</p>
+                <div class="history-actions">
+                    <a class="primary" href="modules/Informatikgeschichte/lambda-calculus/index.html">Lambda-Kalk&uuml;l Labor &ouml;ffnen</a>
+                    <a class="primary" href="modules/Informatikgeschichte/analytical-engine/index.html">Analytical Engine Emulator &ouml;ffnen</a>
+                    <a class="primary" href="modules/Informatikgeschichte/z3-emulator/index.html">Z3 Emulator &ouml;ffnen</a>
+                    <a class="primary" href="modules/Informatikgeschichte/a0-compiler/index.html">A-0 Emulator öffnen</a>
+                    <a class="primary" href="modules/Informatikgeschichte/eniac-emulator/index.html">ENIAC Emulator öffnen</a>
+                </div>
+            </div>
+            <div class="history-note">
+                <h3>Historische Primärquellen</h3>
+                <p>
+                    F&uuml;r Churchs Lambda-Kalk&uuml;l und Entscheidbarkeitskontext ist <strong>An Unsolvable Problem of Elementary Number Theory</strong> von 1936 zentral.
+                    Eine zentrale Prim&auml;rquelle f&uuml;r Babbages Entwurf ist Menabreas <strong>Sketch of the Analytical Engine</strong> mit Ada Lovelaces ausf&uuml;hrlichen Notizen von 1843.
+                    F&uuml;r die Z3 ist Zuses <strong>Patentanmeldung Z391</strong> von 1941 ein wichtiger Archivbeleg, weil sie direkt dem Thema Rechenmaschine Z3 zugeordnet ist.
+                    Eine zentrale Primärquelle für den A-0-Kontext ist Grace Murray Hoppers Paper
+                    <strong>„The Education of a Computer“</strong>, vorgetragen auf dem ACM National Meeting in Pittsburgh am 2./3. Mai 1952.
+                    Hoppers Text ist wichtig, weil sie darin automatische Programmierung, Routinebibliotheken und die Entlastung von manueller Maschinenprogrammierung aus der Perspektive der Zeit beschreibt.
+                    Für ENIAC sind der Moore-School-Report von 1946 und das Operating Manual wichtige Ausgangspunkte, weil sie Einheiten, Bedienung, Akkumulatoren und Programmierung über Kabel und Schalter dokumentieren.
+                </p>
+                <ul>
+                    <li><a href="https://www.jstor.org/stable/2371045" target="_blank" rel="noopener">Alonzo Church: An Unsolvable Problem of Elementary Number Theory, 1936</a></li>
+                    <li><a href="https://www.ics.uci.edu/~lopes/teaching/inf212W12/readings/church.pdf" target="_blank" rel="noopener">Church 1936 als PDF</a></li>
+                    <li><a href="https://www.jstor.org/stable/1968337" target="_blank" rel="noopener">Alonzo Church: A Set of Postulates for the Foundation of Logic, 1932</a></li>
+                    <li><a href="https://www.fourmilab.ch/babbage/sketch.html" target="_blank" rel="noopener">Menabrea/Lovelace: Sketch of the Analytical Engine, 1843</a></li>
+                    <li><a href="https://www.fourmilab.ch/babbage/lpae.html" target="_blank" rel="noopener">Charles Babbage: On the Analytical Engine, 1864</a></li>
+                    <li><a href="https://zuse.zib.de/item/axy7eq6AntFRwuJv" target="_blank" rel="noopener">Konrad Zuse: Patentanmeldung Z391, 1941</a></li>
+                    <li><a href="https://dl.acm.org/doi/10.1145/609784.609818" target="_blank" rel="noopener">Grace Murray Hopper: The Education of a Computer, ACM 1952</a></li>
+                    <li><a href="https://sirismm.si.edu/EADpdfs/NMAH.AC.0324.pdf" target="_blank" rel="noopener">Smithsonian Finding Aid: Grace Murray Hopper Collection</a></li>
+                    <li><a href="https://library.si.edu/digital-library/book/reportoneniacel00moor" target="_blank" rel="noopener">A Report on the ENIAC, Moore School, 1946</a></li>
+                    <li><a href="https://bitsavers.informatik.uni-stuttgart.de/pdf/univOfPennsylvania/eniac/ENIAC_Operating_Manual_Jun46.pdf" target="_blank" rel="noopener">ENIAC Operating Manual, Juni 1946</a></li>
+                </ul>
+            </div>
+            <div class="history-note">
+                <h3>Quellenarbeit an den Emulatoren</h3>
+                <p>
+                    Die Emulatoren sind didaktische Rekonstruktionen, keine 1:1-Analytical-Engine-, Z3-, UNIVAC- oder ENIAC-Emulationen.
+                    Die Quellenarbeit besteht darin, historische Begriffe vorsichtig in heutige Begriffe zu übersetzen:
+                    Bei Church meint das: Lambda-Abstraktion, Anwendung und Beta-Reduktion werden als Lernmodell f&uuml;r effektive Berechenbarkeit genutzt, nicht als vollst&auml;ndiger Beweis des 1936er Papers.
+                    Bei Babbage meint das: Store, Mill, Operation Cards und Variable Cards werden als Speicher, Rechenwerk und Kartenprogramm modelliert, ohne mechanische Details zu behaupten, die der Browser nicht nachbildet.
+                    Bei Zuse meint das: Speicherworte, Programmstreifen, Register und Gleitkommaoperationen werden als Lernmodell genutzt, ohne Relaislogik, 22-Bit-Wortformat oder Taktzeiten exakt zu simulieren.
+                    „Compiler“ meint bei A-0 eher automatisches Zusammenstellen, Verlinken und Laden von Routinen als einen modernen Hochsprachencompiler.
+                    Trotzdem ist genau dieser Schritt entscheidend: Zuerst wurde ein Compiler als Werkzeug gebaut, und dadurch entstand eine zusätzliche Ebene zwischen Maschinenbefehl und menschlicher Problembeschreibung.
+                    Solche Abstraktionsebenen ermöglichten später erst Programmiersprachen, die nicht mehr direkt an jede konkrete Maschinenfolge gebunden waren.
+                    „Programmieren“ meint bei ENIAC zunächst physisches Konfigurieren von Kabeln, Schaltern, Funktions- und Konstantentafeln, nicht gespeicherten Programmcode.
+                </p>
+                <ul>
+                    <li>Church-Quelle lesen: Wie wird effektive Berechenbarkeit formal gefasst?</li>
+                    <li>Lambda-Kalk&uuml;l pr&uuml;fen: Welche Reduktion ist Beta-Reduktion und wo droht Variablenfang?</li>
+                    <li>Babbage-Quelle lesen: Welche Rollen haben Store, Mill, Operation Cards und Variable Cards?</li>
+                    <li>Z3-Quelle lesen: Welche Rolle haben Speicher, Rechenwerk, Programmstreifen und binaere Gleitkommazahlen?</li>
+                    <li>Primärquelle lesen: Welche Probleme beschreibt Hopper selbst?</li>
+                    <li>Sekundärquellen vergleichen: Wird A-0 als Compiler, Linker oder Loader eingeordnet?</li>
+                    <li>Abstraktion prüfen: Welche Ebene liegt zwischen Mensch, symbolischem Aufruf und Maschinenroutine?</li>
+                    <li>Z3-Emulator pr&uuml;fen: Welche Vereinfachung entsteht durch das heutige kleine Registermodell?</li>
+                    <li>ENIAC-Bericht prüfen: Welche Einheiten sind Speicher, Rechenwerk, Ein-/Ausgabe und Steuerung?</li>
+                    <li>Emulator prüfen: Welche Vereinfachungen macht die Browser-Version sichtbar?</li>
+                    <li>Beleg sichern: Aussagen zur Z3-, A-0- oder ENIAC-Funktion immer auf Paper, Report oder kuratierte Archiv-/Fachquellen zurückführen.</li>
+                </ul>
+            </div>
+            <div class="history-note">
+                <h3>Weitere Quellen für die erste Fassung</h3>
+                <ul>
+                    <li><a href="https://plato.stanford.edu/archives/win2023/entries/lambda-calculus/" target="_blank" rel="noopener">Stanford Encyclopedia of Philosophy: The Lambda Calculus</a></li>
+                    <li><a href="https://www.sciencemuseum.org.uk/objects-and-stories/charles-babbages-difference-engines-and-science-museum" target="_blank" rel="noopener">Science Museum: Babbage und Analytical Engine</a></li>
+                    <li><a href="https://www.computerhistory.org/babbage/engines/" target="_blank" rel="noopener">Computer History Museum: The Engines</a></li>
+                    <li><a href="https://zuse.zib.de/z3" target="_blank" rel="noopener">Konrad Zuse Internet Archive: Z3</a></li>
+                    <li><a href="https://www.deutsches-museum.de/en/museumsinsel/ausstellung/computers" target="_blank" rel="noopener">Deutsches Museum: Z3 in der Computerausstellung</a></li>
+                    <li><a href="https://www.computerhistory.org/timeline/1941/" target="_blank" rel="noopener">Computer History Museum: Zuse Z3, 1941</a></li>
+                    <li><a href="https://collection.sciencemuseumgroup.org.uk/objects/co62248/punched-cards-for-babbages-analytical-engine" target="_blank" rel="noopener">Science Museum Group: Punched Cards for Analytical Engine</a></li>
+                    <li><a href="https://blogs.bodleian.ox.ac.uk/adalovelace/2018/07/26/ada-lovelace-and-the-analytical-engine/" target="_blank" rel="noopener">Bodleian Library: Ada Lovelace and the Analytical Engine</a></li>
+                    <li><a href="https://ethw.org/Milestones%3AA-0_Compiler_and_Initial_Development_of_Automatic_Programming%2C_1951-1952" target="_blank" rel="noopener">IEEE ETHW: A-0 Compiler Milestone</a></li>
+                    <li><a href="https://ethw.org/Milestones%3AElectronic_Numerical_Integrator_and_Computer%2C_1946" target="_blank" rel="noopener">IEEE ETHW: ENIAC Milestone</a></li>
+                    <li><a href="https://www.computinghistory.org.uk/det/5487/Grace-Hopper-completes-the-A-0-Compiler/" target="_blank" rel="noopener">Centre for Computing History: A-0 Compiler</a></li>
+                    <li><a href="https://www.engineering.upenn.edu/about/history-heritage/eniac/" target="_blank" rel="noopener">Penn Engineering: ENIAC</a></li>
+                    <li><a href="https://www.computerhistory.org/revolution/birth-of-the-computer/4/78" target="_blank" rel="noopener">Computer History Museum: ENIAC</a></li>
+                    <li><a href="https://www.ibm.com/history/punched-card-tabulator" target="_blank" rel="noopener">IBM History: Hollerith punched card tabulator</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">© 2025 Felix Staacke</div>
+    </footer>
+    <script src="../feedback-widget.js" defer></script>
+</body>
+
+</html>

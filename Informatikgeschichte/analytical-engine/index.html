@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../../media/favicon.png">
+    <title>Babbage Analytical Engine Emulator - Informatikgeschichte</title>
+    <meta name="description" content="Didaktischer Emulator zu Babbages Analytical Engine mit Store, Mill, Lochkarten, Schleifen und Quellenarbeit." />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/history-lab-ui.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="../../../informatikgeschichte.html">Informatikgeschichte</a>
+        <nav>
+            <a href="../../../informatikgeschichte.html#zeitstrahl">Zeitstrahl</a>
+            <a href="../a0-compiler/index.html">A-0</a>
+            <a href="../eniac-emulator/index.html">ENIAC</a>
+            <a href="../../../projekte.html">Projekte</a>
+        </nav>
+    </header>
+
+    <main class="app-shell">
+        <section class="intro-panel" aria-label="Babbage Analytical Engine Emulator">
+            <div>
+                <p class="eyebrow">Charles Babbage, ab 1834 / Lovelace-Menabrea 1843</p>
+                <h1>Babbage Analytical Engine Emulator</h1>
+                <p>
+                    Dieser Emulator rekonstruiert die Analytical Engine als didaktisches Kartenmodell: Zahlen liegen im <strong>Store</strong>,
+                    Operationen werden in der <strong>Mill</strong> ausgefuehrt, Lochkarten bestimmen Operationen, Variablen und Wiederholungen.
+                    Es ist keine mechanische 1:1-Emulation, sondern ein historisch erklaerendes Arbeitsmodell.
+                </p>
+                <p>
+                    Entscheidend ist die Architekturidee: Babbage trennte Speicher und Rechenwerk und dachte Programme als Kartenfolgen.
+                    Ada Lovelaces Notizen machten sichtbar, dass solche Kartenfolgen nicht nur Zahlen ausrechnen, sondern allgemeine Verfahren beschreiben koennen.
+                </p>
+                <div class="intro-links">
+                    <a href="https://www.fourmilab.ch/babbage/sketch.html" target="_blank" rel="noopener">Menabrea/Lovelace 1843</a>
+                    <a href="https://www.computerhistory.org/babbage/engines/" target="_blank" rel="noopener">Computer History Museum</a>
+                    <a href="#quellenarbeit">Quellenarbeit lesen</a>
+                </div>
+            </div>
+            <div class="machine-visual" aria-hidden="true">
+                <div class="card-chain">
+                    <span>OP +</span>
+                    <span>VAR V0,V1</span>
+                    <span>STORE V2</span>
+                    <span>LOOP</span>
+                </div>
+                <div class="mill-gear">
+                    <b>Mill</b>
+                    <i></i><i></i><i></i>
+                </div>
+                <div class="store-stack">
+                    <span>V0</span><span>V1</span><span>V2</span><span>V3</span>
+                    <strong>Store</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace" aria-label="Analytical Engine Arbeitsbereich">
+            <section class="panel editor-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Kartenkette</p>
+                        <h2>Programm</h2>
+                    </div>
+                    <select id="sampleSelect" aria-label="Beispielprogramm">
+                        <option value="squares">Quadrattabelle</option>
+                        <option value="fibonacci">Fibonacci-Folge</option>
+                        <option value="formula">Formel mit Zwischenspeicher</option>
+                        <option value="cubic">Kubiktabelle per Differenzen</option>
+                        <option value="weighted">Gewichteter Index</option>
+                        <option value="loan">Tilgungstabelle</option>
+                    </select>
+                </div>
+                <textarea id="sourceEditor" spellcheck="false" aria-label="Analytical Engine Kartenprogramm"></textarea>
+                <div class="button-row">
+                    <button type="button" id="sampleBtn">Beispiel laden</button>
+                    <button type="button" class="primary" id="compileBtn">Karten lesen</button>
+                    <button type="button" id="stepBtn">Takt</button>
+                    <button type="button" id="runBtn">Laufen lassen</button>
+                    <button type="button" id="resetBtn">Zuruecksetzen</button>
+                </div>
+                <div class="syntax-note">
+                    <code>VAR V0 = 1</code>
+                    <code>ADD V0 V1 -> V2</code>
+                    <code>LABEL LOOP</code>
+                    <code>IF V3 &gt; 0 GOTO LOOP</code>
+                    <code>PRINT V2</code>
+                </div>
+            </section>
+
+            <section class="panel store-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Store</p>
+                        <h2>Variablenspeicher</h2>
+                    </div>
+                    <span id="cycleStatus" class="status-pill">Takt 0</span>
+                </div>
+                <div id="storeWall" class="store-wall"></div>
+            </section>
+
+            <section class="panel mill-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Mill</p>
+                        <h2>Rechenwerk</h2>
+                    </div>
+                    <span id="pcStatus" class="status-pill">Karte 0</span>
+                </div>
+                <div class="mill-state">
+                    <div>
+                        <span>Operation</span>
+                        <strong id="millOperation">bereit</strong>
+                    </div>
+                    <div>
+                        <span>Ingress A</span>
+                        <strong id="millA">-</strong>
+                    </div>
+                    <div>
+                        <span>Ingress B</span>
+                        <strong id="millB">-</strong>
+                    </div>
+                    <div>
+                        <span>Egress</span>
+                        <strong id="millOut">-</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel deck-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Lochkarten</p>
+                        <h2>Operation Cards + Variable Cards</h2>
+                    </div>
+                    <span id="compileStatus" class="status-pill">bereit</span>
+                </div>
+                <ol id="cardDeck" class="card-deck"></ol>
+            </section>
+
+            <section class="panel printer-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Ausgabe</p>
+                        <h2>Drucker und Attendant's Log</h2>
+                    </div>
+                </div>
+                <pre id="printerOutput" class="printer-output"></pre>
+                <ol id="attendantLog" class="attendant-log"></ol>
+            </section>
+        </section>
+
+        <section class="source-panel" id="quellenarbeit" aria-label="Historische Einordnung und Quellenarbeit">
+            <div>
+                <h2>Historische Einordnung</h2>
+                <p>
+                    Die Analytical Engine wurde zu Babbages Lebzeiten nicht vollstaendig gebaut. Trotzdem ist der Entwurf historisch zentral,
+                    weil er bereits Bausteine zeigt, die wir heute als Speicher, Rechenwerk, Eingabe, Ausgabe, Programmkarten, Schleifen und bedingte Steuerung beschreiben.
+                </p>
+                <p>
+                    Dieser Emulator uebersetzt Babbages mechanische Begriffe vorsichtig in heutige Lernbegriffe:
+                    Der <strong>Store</strong> steht fuer nummerierte Variablenspalten, die <strong>Mill</strong> fuer arithmetische Verarbeitung,
+                    Operation Cards fuer das Rechenkommando und Variable Cards fuer Quell- und Zielspalten.
+                </p>
+                <p>
+                    Quellenkritisch wichtig ist: Lovelaces Bernoulli-Zahlen-Tabelle wird hier nicht als exakte mechanische Karte nachgebaut.
+                    Die Seite zeigt stattdessen das Prinzip, warum ein Kartenprogramm ein allgemeines Verfahren ausdruecken kann.
+                </p>
+            </div>
+            <div class="source-grid">
+                <article class="source-card">
+                    <h3>Primaerquelle</h3>
+                    <p>
+                        L. F. Menabrea, uebersetzt und kommentiert von Ada Augusta, Countess of Lovelace:
+                        <em>Sketch of the Analytical Engine Invented by Charles Babbage</em>, 1843.
+                    </p>
+                    <a href="https://www.fourmilab.ch/babbage/sketch.html" target="_blank" rel="noopener">Historischen Text oeffnen</a>
+                </article>
+                <article class="source-card">
+                    <h3>Quellenkritische Leitfragen</h3>
+                    <ul>
+                        <li>Welche Aussagen belegen Store, Mill und Kartensteuerung?</li>
+                        <li>Was ist eine Operation Card, was eine Variable Card?</li>
+                        <li>Warum ist ein nie fertig gebauter Entwurf trotzdem informatikgeschichtlich relevant?</li>
+                        <li>Wo vereinfacht der Emulator mechanische Details zugunsten eines Lernmodells?</li>
+                    </ul>
+                </article>
+                <article class="source-card">
+                    <h3>Sekundaerquellen</h3>
+                    <p>
+                        Museums- und Fachquellen helfen dabei, Babbages Entwurf nicht anachronistisch als modernen Rechner zu lesen.
+                    </p>
+                    <p>
+                        <a href="https://www.sciencemuseum.org.uk/objects-and-stories/charles-babbages-difference-engines-and-science-museum" target="_blank" rel="noopener">Science Museum</a>
+                        / <a href="https://www.computerhistory.org/babbage/engines/" target="_blank" rel="noopener">Computer History Museum</a>
+                        / <a href="https://collection.sciencemuseumgroup.org.uk/objects/co62248/punched-cards-for-babbages-analytical-engine" target="_blank" rel="noopener">Science Museum Group Collection</a>
+                        / <a href="https://blogs.bodleian.ox.ac.uk/adalovelace/2018/07/26/ada-lovelace-and-the-analytical-engine/" target="_blank" rel="noopener">Bodleian Library</a>
+                    </p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="../shared/history-lab-ui.js" defer></script>
+    <script src="../../../../feedback-widget.js" defer></script>
+</body>
+
+</html>

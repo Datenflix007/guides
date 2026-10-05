@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>Programm.exe erstellen &ndash; Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../weitere-guides.html">&larr; Zur&uuml;ck zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 20% 80%, #22d3ee 0%, transparent 48%),
+                radial-gradient(ellipse at 78% 20%, #a78bfa 0%, transparent 44%),
+                linear-gradient(160deg, #07111f 0%, #14111f 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">EXE bauen</span>
+                <span class="chip" style="margin-left: 6px;">Python, Java, C# &amp; mehr</span>
+                <h1>Aus Code eine Programm.exe erstellen</h1>
+                <p class="sub">Ein praktischer Guide, wie du aus eigenen Programmen eine startbare Windows-EXE baust: mit Icon, Ressourcen, GUI-Modus, Konsolenmodus und sauberem Dist-Ordner.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p>Dieser Guide erkl&auml;rt nicht zuerst, wie man einen Installer baut, sondern wie man &uuml;berhaupt eine echte startbare <code>Programm.exe</code> erzeugt. Das ist der Schritt davor: Aus deinem Python-, Java-, C#-, Node.js-, Go- oder Rust-Projekt wird eine Datei oder ein App-Ordner, der auf einem Windows-PC ohne Entwicklungsumgebung gestartet werden kann.</p>
+
+            <p>Danach kannst du diese EXE optional mit dem <a href="installer-guide.html">Installer Guide</a> weiterverpacken, damit sie im Startmen&uuml; auftaucht, eine Desktop-Verkn&uuml;pfung bekommt und sauber deinstalliert werden kann.</p>
+
+            <hr>
+
+            <h2>EXE, App-Ordner und Installer</h2>
+            <p>Diese drei Begriffe werden oft vermischt. F&uuml;r einen sauberen Workflow solltest du sie trennen:</p>
+
+            <table>
+                <thead>
+                    <tr><th>Begriff</th><th>Bedeutung</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>Programm.exe</code></td><td>Startbare Windows-Datei</td><td><code>dist/MeineApp.exe</code></td></tr>
+                    <tr><td>App-Ordner</td><td>EXE plus DLLs, Bilder, Daten und Runtime-Dateien</td><td><code>dist/MeineApp/MeineApp.exe</code></td></tr>
+                    <tr><td>Installer</td><td>Setup-Datei, die die App auf dem PC installiert</td><td><code>MeineApp-Setup.exe</code></td></tr>
+                </tbody>
+            </table>
+
+            <p>Eine einzelne EXE ist bequem zum Weitergeben. Ein App-Ordner ist oft stabiler, weil gro&szlig;e Abh&auml;ngigkeiten nicht in eine einzelne Datei gepackt werden m&uuml;ssen. Ein Installer ist dann sinnvoll, wenn normale Nutzerinnen und Nutzer die App dauerhaft installieren sollen.</p>
+
+            <hr>
+
+            <h2>Empfohlener Ablauf</h2>
+            <ol>
+                <li>Projekt lokal normal starten und Fehler beheben.</li>
+                <li>Alle ben&ouml;tigten Dateien sammeln: Icons, Bilder, JSON, Datenbanken, Modelle.</li>
+                <li>Entscheiden, ob es eine CLI-App oder GUI-App ist.</li>
+                <li>Mit dem passenden Tool eine EXE oder einen App-Ordner bauen.</li>
+                <li>Die erzeugte App auf einem m&ouml;glichst sauberen Windows-PC testen.</li>
+                <li>Erst danach optional einen Installer bauen.</li>
+            </ol>
+
+            <p>Der wichtigste Test lautet: Funktioniert die App auch, wenn du sie aus dem <code>dist/</code>-Ordner startest und nicht aus deiner IDE?</p>
+
+            <hr>
+
+            <h2>Python: EXE mit PyInstaller</h2>
+            <p>F&uuml;r Python-Projekte ist <strong>PyInstaller</strong> der einfachste Einstieg. Es nimmt dein Startskript, analysiert Imports, sammelt Abh&auml;ngigkeiten ein und erzeugt daraus eine EXE.</p>
+
+            <h3>CLI-Programm</h3>
+            <pre><code>python -m venv .venv
+.venv\Scripts\activate
+pip install pyinstaller
+
+pyinstaller --onefile --name MeineApp main.py</code></pre>
+
+            <p>Das Ergebnis liegt danach normalerweise unter:</p>
+
+            <pre><code>dist\MeineApp.exe</code></pre>
+
+            <h3>Tkinter- oder GUI-Programm</h3>
+            <p>Bei Tkinter, PySide, PyQt oder CustomTkinter willst du meistens kein schwarzes Konsolenfenster. Daf&uuml;r nutzt du <code>--windowed</code>:</p>
+
+            <pre><code>pyinstaller --onefile --windowed ^
+  --name MeineTkApp ^
+  --icon assets\app.ico ^
+  main.py</code></pre>
+
+            <p>Das Icon muss unter Windows am besten eine echte <code>.ico</code>-Datei sein. PNG-Dateien funktionieren hier nicht immer direkt.</p>
+
+            <h3>Ressourcen mitgeben</h3>
+            <p>Wenn deine App Dateien braucht, musst du sie explizit mitgeben. Typische Beispiele sind Bilder, Templates, JSON-Dateien, SQLite-Datenbanken oder ML-Modelle.</p>
+
+            <pre><code>pyinstaller --onefile --windowed ^
+  --name Stundenplan ^
+  --icon assets\stundenplan.ico ^
+  --add-data "assets;assets" ^
+  --add-data "data;data" ^
+  main.py</code></pre>
+
+            <p>Im Code solltest du Ressourcen nicht nur relativ zu deinem Projektordner suchen, sondern auch im entpackten PyInstaller-Ordner. Eine robuste Hilfsfunktion sieht so aus:</p>
+
+            <pre><code>from pathlib import Path
+import sys
+
+def resource_path(relative):
+    if hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS) / relative
+    return Path(__file__).parent / relative
+
+logo = resource_path("assets/logo.png")</code></pre>
+
+            <h3>Ordner statt Onefile</h3>
+            <p><code>--onefile</code> ist bequem, startet aber manchmal langsamer, weil die App sich erst tempor&auml;r entpackt. F&uuml;r gr&ouml;&szlig;ere Programme ist ein App-Ordner oft besser:</p>
+
+            <pre><code>pyinstaller --windowed --name MeineApp --icon assets\app.ico main.py</code></pre>
+
+            <p>Dann liegt die App unter <code>dist\MeineApp\MeineApp.exe</code> zusammen mit allen ben&ouml;tigten Dateien.</p>
+
+            <hr>
+
+            <h2>Python: Alternative mit Nuitka</h2>
+            <p><strong>Nuitka</strong> kompiliert Python-Code st&auml;rker in Richtung C/C++-Build und kann f&uuml;r manche Projekte schneller oder robuster sein. Daf&uuml;r ist die Einrichtung etwas anspruchsvoller.</p>
+
+            <pre><code>pip install nuitka
+
+python -m nuitka ^
+  --standalone ^
+  --windows-console-mode=disable ^
+  --windows-icon-from-ico=assets\app.ico ^
+  --output-filename=MeineApp.exe ^
+  main.py</code></pre>
+
+            <p>Nutze Nuitka, wenn PyInstaller bei deinem Projekt Probleme macht oder wenn du bewusst einen kompilierten Build testen willst.</p>
+
+            <hr>
+
+            <h2>Java: EXE mit jpackage</h2>
+            <p>F&uuml;r moderne Java-Projekte ist <code>jpackage</code> der saubere Weg. Es kommt mit dem JDK und kann aus deiner Java-App einen nativen Windows-App-Ordner oder direkt ein Installer-Paket bauen. Hier geht es zuerst um die App bzw. EXE.</p>
+
+            <h3>Jar vorbereiten</h3>
+            <pre><code>mvn clean package
+
+# oder bei Gradle:
+gradlew build</code></pre>
+
+            <p>Wichtig ist, dass deine JAR-Datei eine Main-Class hat und lokal startet:</p>
+
+            <pre><code>java -jar target\meineapp.jar</code></pre>
+
+            <h3>App-Image mit EXE bauen</h3>
+            <pre><code>jpackage ^
+  --type app-image ^
+  --name MeineJavaApp ^
+  --input target ^
+  --main-jar meineapp.jar ^
+  --main-class de.beispiel.Main ^
+  --icon assets\app.ico ^
+  --dest dist</code></pre>
+
+            <p>Danach entsteht ein Ordner wie <code>dist\MeineJavaApp\</code>. Darin liegt eine <code>MeineJavaApp.exe</code> und meist eine passende Java Runtime. Nutzer m&uuml;ssen dann nicht separat Java installieren.</p>
+
+            <h3>Wenn du nur eine JAR hast</h3>
+            <p>Eine <code>.jar</code> ist nicht dasselbe wie eine <code>.exe</code>. Wenn du nur eine JAR verteilst, braucht der PC Java. Wenn du eine richtige Windows-App willst, nutze <code>jpackage</code> oder einen Launcher wie Launch4j.</p>
+
+            <hr>
+
+            <h2>C#: EXE mit dotnet publish</h2>
+            <p>Bei C# und .NET ist der Standardweg <code>dotnet publish</code>. Damit kannst du eine App mit oder ohne installierte .NET Runtime bauen.</p>
+
+            <h3>Normale EXE bauen</h3>
+            <pre><code>dotnet publish -c Release -r win-x64 --self-contained false</code></pre>
+
+            <p>Das ist klein, setzt aber voraus, dass die passende .NET Runtime installiert ist.</p>
+
+            <h3>Self-contained Single-File</h3>
+            <pre><code>dotnet publish -c Release -r win-x64 ^
+  --self-contained true ^
+  -p:PublishSingleFile=true ^
+  -p:IncludeNativeLibrariesForSelfExtract=true</code></pre>
+
+            <p>Das Ergebnis ist gr&ouml;&szlig;er, kann aber auf mehr Windows-Systemen direkt laufen.</p>
+
+            <hr>
+
+            <h2>Node.js: CLI als EXE bauen</h2>
+            <p>Wenn dein Projekt ein Node.js-CLI-Tool ist, kannst du es mit Tools wie <code>pkg</code> oder <code>nexe</code> als EXE verpacken. F&uuml;r grafische Desktop-Apps ist Electron meist passender.</p>
+
+            <pre><code>npm install
+npm install -D pkg
+
+npx pkg . --targets node18-win-x64 --output dist/meine-cli.exe</code></pre>
+
+            <p>F&uuml;r Electron-Apps erzeugst du normalerweise keinen einfachen Ein-Datei-Build, sondern einen App-Ordner:</p>
+
+            <pre><code>npm install -D electron-builder
+npx electron-builder --win portable</code></pre>
+
+            <hr>
+
+            <h2>Go und Rust: native EXE direkt bauen</h2>
+            <p>Go und Rust erzeugen von Haus aus native Programme. Hier brauchst du oft kein extra Verpackungstool.</p>
+
+            <h3>Go</h3>
+            <pre><code>go build -o dist\MeineGoApp.exe .</code></pre>
+
+            <h3>Rust</h3>
+            <pre><code>cargo build --release</code></pre>
+
+            <p>Die Rust-EXE liegt danach zum Beispiel unter <code>target\release\meine_app.exe</code>.</p>
+
+            <hr>
+
+            <h2>Icon, Version und Dateiinformationen</h2>
+            <p>Eine EXE wirkt deutlich fertiger, wenn sie ein Icon und sinnvolle Metadaten hat. Das betrifft vor allem Windows Explorer, Taskleiste und SmartScreen-Wahrnehmung.</p>
+
+            <ul>
+                <li><strong>Icon:</strong> Unter Windows am besten <code>.ico</code> mit mehreren Gr&ouml;&szlig;en, zum Beispiel 16, 32, 48 und 256 Pixel.</li>
+                <li><strong>Name:</strong> Der Dateiname sollte eindeutig sein, etwa <code>Stundenplan.exe</code> statt <code>main.exe</code>.</li>
+                <li><strong>Version:</strong> Nutze Versionen wie <code>1.0.0</code>, damit Downloads nachvollziehbar bleiben.</li>
+                <li><strong>Signatur:</strong> F&uuml;r &ouml;ffentliche Windows-Downloads ist Code Signing langfristig sinnvoll, aber f&uuml;r kleine Lernprojekte nicht zwingend.</li>
+            </ul>
+
+            <hr>
+
+            <h2>Interaktives Windows-Buildskript</h2>
+            <p>Dieses einfache <code>.bat</code>-Skript fragt die wichtigsten Werte ab und baut je nach Projekttyp eine EXE. Es ist bewusst als Startpunkt gedacht.</p>
+
+            <pre><code>@echo off
+setlocal
+
+echo === Programm.exe Build-Assistent ===
+set /p APP_NAME=App-Name:
+set /p STACK=Typ python-cli/python-gui/java/csharp/go/rust:
+set /p MAIN_FILE=Startdatei oder Projektpfad:
+set /p ICON=Iconpfad optional:
+
+if "%STACK%"=="python-cli" (
+  pyinstaller --onefile --name "%APP_NAME%" "%MAIN_FILE%"
+)
+
+if "%STACK%"=="python-gui" (
+  if "%ICON%"=="" (
+    pyinstaller --onefile --windowed --name "%APP_NAME%" "%MAIN_FILE%"
+  ) else (
+    pyinstaller --onefile --windowed --name "%APP_NAME%" --icon "%ICON%" "%MAIN_FILE%"
+  )
+)
+
+if "%STACK%"=="java" (
+  set /p JAR=Pfad zur JAR:
+  set /p MAIN_CLASS=Main-Class:
+  jpackage --type app-image --name "%APP_NAME%" --input "%MAIN_FILE%" --main-jar "%JAR%" --main-class "%MAIN_CLASS%" --dest dist
+)
+
+if "%STACK%"=="csharp" (
+  dotnet publish "%MAIN_FILE%" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+)
+
+if "%STACK%"=="go" (
+  go build -o "dist\%APP_NAME%.exe" "%MAIN_FILE%"
+)
+
+if "%STACK%"=="rust" (
+  cargo build --release
+)
+
+echo.
+echo Fertig. Schau in dist\, target\release\ oder den Publish-Ordner.
+pause</code></pre>
+
+            <hr>
+
+            <h2>Linux-Hinweis</h2>
+            <p>Eine Windows-EXE ist f&uuml;r Windows gedacht. Unter Linux baust du normalerweise keine <code>.exe</code>, sondern ein ausf&uuml;hrbares Binary, ein AppImage, ein <code>.deb</code>-Paket oder eine <code>.desktop</code>-Integration. F&uuml;r reine CLI-Tools reicht oft:</p>
+
+            <pre><code># Go
+go build -o dist/meine-app .
+
+# Rust
+cargo build --release
+
+# Python unter Linux mit PyInstaller
+pyinstaller --onefile --name meine-app main.py</code></pre>
+
+            <p>Wenn du unter Linux eine Windows-EXE bauen willst, brauchst du Cross-Compilation oder eine Windows-Buildumgebung. F&uuml;r Python ist das besonders unpraktisch: PyInstaller sollte am besten auf dem Zielsystem gebaut werden, also Windows-Build auf Windows, Linux-Build auf Linux.</p>
+
+            <hr>
+
+            <h2>Typische Fehler</h2>
+            <table>
+                <thead>
+                    <tr><th>Problem</th><th>Ursache</th><th>L&ouml;sung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>EXE startet nur auf deinem PC</td><td>Fehlende Runtime oder DLL</td><td>Self-contained Build oder App-Ordner verwenden</td></tr>
+                    <tr><td>Bilder fehlen</td><td>Ressourcen nicht mitgepackt</td><td><code>--add-data</code> nutzen und Pfade robust aufl&ouml;sen</td></tr>
+                    <tr><td>Schwarzes Fenster bei GUI-App</td><td>Konsolenmodus aktiv</td><td>PyInstaller mit <code>--windowed</code> bauen</td></tr>
+                    <tr><td>Java-App startet nicht</td><td>Main-Class oder JAR falsch angegeben</td><td>JAR erst mit <code>java -jar</code> testen</td></tr>
+                    <tr><td>Antivirus warnt</td><td>Unbekannte unsignierte EXE</td><td>Saubere Builds, klare Release-Seite, langfristig Code Signing</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>Prompt f&uuml;r einen Coding Agent</h2>
+            <p>Wenn du ein bestehendes Projekt automatisch in einen baubaren EXE-Workflow umbauen lassen willst, kannst du diesen Prompt verwenden:</p>
+
+            <pre><code>Analysiere dieses Projekt und richte einen reproduzierbaren Windows-EXE-Build ein.
+
+Ziele:
+- Erkenne Sprache, Framework, Einstiegspunkt und ben&ouml;tigte Ressourcen.
+- Erzeuge oder aktualisiere ein Buildskript f&uuml;r Windows.
+- Die fertige App soll unter dist/ liegen.
+- Falls es eine GUI-App ist, soll kein Konsolenfenster erscheinen.
+- Falls Icons oder Assets vorhanden sind, sollen sie eingebunden werden.
+- Dokumentiere im README kurz, wie man die EXE baut und testet.
+- Ver&auml;ndere die Programmlogik nur, wenn es f&uuml;r den Build zwingend n&ouml;tig ist.
+
+Bitte erkl&auml;re danach:
+1. Welches Packaging-Tool du gew&auml;hlt hast.
+2. Welche Dateien neu sind.
+3. Welcher Befehl die EXE baut.
+4. Wo die fertige EXE liegt.
+5. Welche Einschr&auml;nkungen noch gelten.</code></pre>
+
+            <hr>
+
+            <h2>Wann danach ein Installer kommt</h2>
+            <p>Eine <code>Programm.exe</code> reicht f&uuml;r kleine Tools, Tests, Schulprojekte oder interne Skripte oft aus. Sobald die App aber dauerhaft auf fremden PCs genutzt werden soll, brauchst du meistens den n&auml;chsten Schritt:</p>
+
+            <ul>
+                <li>Startmen&uuml;-Eintrag</li>
+                <li>Desktop-Verkn&uuml;pfung</li>
+                <li>Installationspfad</li>
+                <li>Uninstaller</li>
+                <li>Update- oder Versionskonzept</li>
+            </ul>
+
+            <p>Daf&uuml;r geht es im <a href="installer-guide.html">Installer Guide</a> weiter.</p>
+
+        </article>
+    </main>
+
+    <br /><br />
+    <footer>
+        <div class="container">&copy; 2025 Felix Staacke</div>
+    </footer>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

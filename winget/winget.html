@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>WinGet Guide – Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../weitere-guides.html">← Zurück zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 25% 75%, #22c55e 0%, transparent 52%),
+                radial-gradient(ellipse at 78% 18%, #06b6d4 0%, transparent 50%),
+                linear-gradient(160deg, #011c0a 0%, #02291a 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Windows</span>
+                <span class="chip" style="margin-left: 6px;">PowerShell</span>
+                <h1>WinGet Guide</h1>
+                <p class="sub">Der Windows Package Manager – Software schnell über die PowerShell installieren, aktualisieren und verwalten.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p>Der <strong>Windows Package Manager (WinGet)</strong> ist ein Kommandozeilen-Tool von Microsoft, mit dem du Software schnell über die PowerShell installieren, aktualisieren und verwalten kannst – ähnlich wie <code>apt</code>, <code>brew</code> oder <code>npm</code>.</p>
+
+            <hr>
+
+            <h2>Voraussetzungen</h2>
+            <p>WinGet ist auf <strong>Windows 10 (ab Version 1809)</strong> und <strong>Windows 11</strong> meist bereits vorinstalliert.</p>
+
+            <h3>Prüfen, ob WinGet installiert ist</h3>
+            <pre><code>winget --version</code></pre>
+            <p>Wenn eine Versionsnummer angezeigt wird, ist alles bereit. Falls nicht, installiere den <strong>App Installer</strong> aus dem Microsoft Store.</p>
+
+            <hr>
+
+            <h2>Programme suchen</h2>
+            <pre><code>winget search vscode</code></pre>
+            <ul>
+                <li>Suche nach Namen: <code>winget search chrome</code></li>
+                <li>Suche nach Publisher: <code>winget search --source winget Microsoft</code></li>
+            </ul>
+
+            <hr>
+
+            <h2>Programme installieren</h2>
+            <pre><code>winget install Microsoft.VisualStudioCode
+winget install --id Microsoft.VisualStudioCode -e</code></pre>
+
+            <p>Nützliche Optionen:</p>
+            <table>
+                <thead>
+                    <tr><th>Option</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>-e</code></td><td>Exakte Übereinstimmung der ID</td></tr>
+                    <tr><td><code>--silent</code></td><td>Installation ohne Benutzeroberfläche</td></tr>
+                    <tr><td><code>--accept-package-agreements</code></td><td>Lizenz automatisch akzeptieren</td></tr>
+                    <tr><td><code>--accept-source-agreements</code></td><td>Quellenbedingungen akzeptieren</td></tr>
+                </tbody>
+            </table>
+
+            <p>Stille Installation:</p>
+            <pre><code>winget install --id Google.Chrome -e --silent --accept-package-agreements --accept-source-agreements</code></pre>
+
+            <hr>
+
+            <h2>Installierte Programme anzeigen</h2>
+            <pre><code>winget list
+winget list vscode</code></pre>
+
+            <hr>
+
+            <h2>Programme aktualisieren</h2>
+            <pre><code>winget upgrade
+winget upgrade Microsoft.VisualStudioCode
+winget upgrade --all --silent --accept-package-agreements --accept-source-agreements</code></pre>
+
+            <hr>
+
+            <h2>Programme deinstallieren</h2>
+            <pre><code>winget uninstall Microsoft.VisualStudioCode
+winget uninstall --id Microsoft.VisualStudioCode -e</code></pre>
+
+            <hr>
+
+            <h2>Paketdetails anzeigen</h2>
+            <pre><code>winget show Microsoft.VisualStudioCode</code></pre>
+
+            <hr>
+
+            <h2>Mehrere Programme auf einmal installieren (packages.json)</h2>
+            <p>Eine JSON-Datei anlegen:</p>
+            <pre><code>{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2024-01-01T00:00:00.000Z",
+  "Sources": [
+    {
+      "Packages": [
+        { "PackageIdentifier": "Google.Chrome" },
+        { "PackageIdentifier": "Microsoft.VisualStudioCode" },
+        { "PackageIdentifier": "7zip.7zip" }
+      ],
+      "SourceDetails": {
+        "Argument": "https://cdn.winget.microsoft.com/cache",
+        "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+        "Name": "winget",
+        "Type": "Microsoft.PreIndexed.Package"
+      }
+    }
+  ]
+}</code></pre>
+            <p>Und dann importieren:</p>
+            <pre><code>winget import -i packages.json</code></pre>
+
+            <hr>
+
+            <h2>Quellen verwalten</h2>
+            <pre><code>winget source list
+winget source update</code></pre>
+
+            <hr>
+
+            <h2>Einstellungen anpassen</h2>
+            <pre><code>winget settings</code></pre>
+
+            <hr>
+
+            <h2>Power-User Befehle</h2>
+            <pre><code># Alle Apps im Hintergrund updaten
+winget upgrade --all --silent --accept-package-agreements --accept-source-agreements
+
+# Bestimmte Version installieren
+winget install --id Python.Python.3.11 --version 3.11.6
+
+# Portable Version (user scope)
+winget install --id Neovim.Neovim --scope user</code></pre>
+
+            <hr>
+
+            <h2>Hilfe</h2>
+            <pre><code>winget --help
+winget install --help
+winget upgrade --help</code></pre>
+
+            <hr>
+
+            <h2>Dienste &amp; Entwicklungsumgebungen installieren</h2>
+
+            <h3>MongoDB Community Server</h3>
+            <pre><code>winget install --id MongoDB.Server -e --accept-package-agreements --accept-source-agreements
+Get-Service MongoDB
+mongosh</code></pre>
+
+            <h3>MariaDB Server</h3>
+            <pre><code>winget install --id MariaDB.Server -e --accept-package-agreements --accept-source-agreements
+Get-Service MariaDB
+mysql -u root -p</code></pre>
+
+            <h3>PostgreSQL</h3>
+            <pre><code>winget install --id PostgreSQL.PostgreSQL -e --accept-package-agreements --accept-source-agreements
+Get-Service postgresql*
+psql -U postgres</code></pre>
+
+            <h3>Python (mehrere Versionen)</h3>
+            <pre><code>winget search Python.Python
+winget install --id Python.Python.3.12 -e
+winget install --id Python.Python.3.11 -e
+py -0        # installierte Versionen prüfen
+py -3.11     # bestimmte Version starten</code></pre>
+
+            <h3>Node.js (LTS)</h3>
+            <pre><code>winget install --id OpenJS.NodeJS.LTS -e
+node -v
+npm -v</code></pre>
+
+            <h3>OpenJDK – Eclipse Temurin 17</h3>
+            <pre><code>winget install --id EclipseAdoptium.Temurin.17.JDK -e
+java -version
+javac -version</code></pre>
+
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">© 2025 Felix Staacke</div>
+    </footer>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../../media/favicon.png">
+    <title>Lambda-Kalkuel Labor - Informatikgeschichte</title>
+    <meta name="description" content="Interaktive Unterseite zu Alonzo Church, Lambda-Kalkuel, Beta-Reduktion, Normalform und Quellenarbeit." />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/history-lab-ui.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="../../../informatikgeschichte.html">Informatikgeschichte</a>
+        <nav>
+            <a href="../../../informatikgeschichte.html#zeitstrahl">Zeitstrahl</a>
+            <a href="../analytical-engine/index.html">Analytical Engine</a>
+            <a href="../a0-compiler/index.html">A-0</a>
+            <a href="../eniac-emulator/index.html">ENIAC</a>
+            <a href="../../../projekte.html">Projekte</a>
+        </nav>
+    </header>
+
+    <main class="app-shell">
+        <section class="intro-panel" aria-label="Lambda-Kalkuel Labor">
+            <div>
+                <p class="eyebrow">Alonzo Church, Lambda-Kalkuel und Berechenbarkeit</p>
+                <h1>Lambda-Kalkuel Labor</h1>
+                <p>
+                    Churchs Lambda-Kalkuel beschreibt Berechnung nur mit Funktionen, Anwendung und Ersetzung.
+                    In diesem Labor kannst du Terme eingeben, den naechsten Beta-Schritt sehen und Ausdruecke bis zur Normalform reduzieren.
+                </p>
+                <p>
+                    Historisch wichtig ist der Zusammenhang mit dem Entscheidungsproblem:
+                    Church schlug 1936 eine formale Definition effektiver Berechenbarkeit vor und zeigte damit Grenzen mechanischer Entscheidungsverfahren.
+                    Turing kam im selben Jahr mit einem anderen Modell zur gleichen Grenze.
+                </p>
+                <div class="intro-links">
+                    <a href="https://www.jstor.org/stable/2371045" target="_blank" rel="noopener">Church 1936, JSTOR</a>
+                    <a href="https://www.ics.uci.edu/~lopes/teaching/inf212W12/readings/church.pdf" target="_blank" rel="noopener">PDF lesen</a>
+                    <a href="#lernvideo">Lernvideos ansehen</a>
+                    <a href="#quellenarbeit">Quellenarbeit lesen</a>
+                </div>
+            </div>
+            <div class="lambda-visual" aria-hidden="true">
+                <div class="lambda-card">lambda x. x</div>
+                <div class="lambda-arrow">apply</div>
+                <div class="lambda-card">(lambda x. x) y</div>
+                <div class="lambda-arrow">beta</div>
+                <div class="lambda-card result">y</div>
+            </div>
+        </section>
+
+        <section class="concept-strip" aria-label="Grundideen">
+            <article>
+                <span>lambda</span>
+                <strong>Abstraktion</strong>
+                <small><code>lambda x. M</code> bindet den Namen <code>x</code>.</small>
+            </article>
+            <article>
+                <span>@</span>
+                <strong>Anwendung</strong>
+                <small><code>F A</code> bedeutet: Funktion <code>F</code> bekommt Argument <code>A</code>.</small>
+            </article>
+            <article>
+                <span>beta</span>
+                <strong>Reduktion</strong>
+                <small><code>(lambda x. M) A</code> wird zu <code>M[x := A]</code>.</small>
+            </article>
+            <article>
+                <span>=</span>
+                <strong>Normalform</strong>
+                <small>Es bleibt kein Beta-Redex mehr uebrig.</small>
+            </article>
+        </section>
+
+        <section class="workspace" aria-label="Lambda-Kalkuel Arbeitsbereich">
+            <section class="panel editor-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Term</p>
+                        <h2>Ausdruck eingeben</h2>
+                    </div>
+                    <select id="exampleSelect" aria-label="Beispiel auswaehlen">
+                        <option value="identity">Identitaet</option>
+                        <option value="constant">Konstante Funktion</option>
+                        <option value="compose">Komposition</option>
+                        <option value="churchTrue">Church TRUE</option>
+                        <option value="churchTwo">Church-Zahl 2</option>
+                        <option value="capture">Variablenfang vermeiden</option>
+                        <option value="churchAdd">Church-Addition</option>
+                    </select>
+                </div>
+                <textarea id="termInput" spellcheck="false" aria-label="Lambda-Term"></textarea>
+                <div class="button-row">
+                    <button type="button" id="loadExampleBtn">Beispiel laden</button>
+                    <button type="button" class="primary" id="parseBtn">Pruefen</button>
+                    <button type="button" id="stepBtn">Beta-Schritt</button>
+                    <button type="button" id="normalizeBtn">Bis Normalform</button>
+                    <button type="button" id="resetBtn">Zuruecksetzen</button>
+                </div>
+                <div class="syntax-note">
+                    <code>lambda x. x</code>
+                    <code>\x. x</code>
+                    <code>(lambda x. x) y</code>
+                    <code>lambda f. lambda x. f (f x)</code>
+                </div>
+            </section>
+
+            <section class="panel result-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Reduktion</p>
+                        <h2>Aktueller Zustand</h2>
+                    </div>
+                    <span id="statusPill" class="status-pill">bereit</span>
+                </div>
+                <div class="term-card">
+                    <span>Aktueller Term</span>
+                    <strong id="currentTerm">-</strong>
+                </div>
+                <div class="term-card">
+                    <span>Naechster Redex</span>
+                    <strong id="nextRedex">-</strong>
+                </div>
+                <div class="explain-box" id="explainBox">
+                    Lade ein Beispiel oder gib einen Lambda-Term ein.
+                </div>
+            </section>
+
+            <section class="panel history-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Verlauf</p>
+                        <h2>Schritte</h2>
+                    </div>
+                    <span id="stepCounter" class="status-pill">0 Schritte</span>
+                </div>
+                <ol id="reductionHistory" class="reduction-history"></ol>
+            </section>
+
+            <section class="panel practice-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Ueben</p>
+                        <h2>Normalform finden</h2>
+                    </div>
+                    <select id="exerciseSelect" aria-label="Uebungsaufgabe auswaehlen">
+                        <option value="ex1">Aufgabe 1</option>
+                        <option value="ex2">Aufgabe 2</option>
+                        <option value="ex3">Aufgabe 3</option>
+                        <option value="ex4">Aufgabe 4</option>
+                        <option value="ex5">Aufgabe 5</option>
+                        <option value="ex6">Aufgabe 6</option>
+                        <option value="ex7">Aufgabe 7</option>
+                        <option value="ex8">Aufgabe 8</option>
+                    </select>
+                </div>
+                <div class="exercise-card">
+                    <span>Reduziere diesen Term:</span>
+                    <code id="exerciseTerm"></code>
+                </div>
+                <label class="answer-label" for="answerInput">Deine Normalform</label>
+                <input id="answerInput" type="text" autocomplete="off" spellcheck="false" />
+                <div class="button-row">
+                    <button type="button" class="primary" id="checkAnswerBtn">Antwort pruefen</button>
+                    <button type="button" id="loadExerciseBtn">Im Labor laden</button>
+                    <button type="button" id="showSolutionBtn">Loesung zeigen</button>
+                </div>
+                <div id="practiceFeedback" class="practice-feedback">Tipp: Leerzeichen sind egal, unterschiedliche gebundene Variablennamen werden akzeptiert.</div>
+            </section>
+        </section>
+
+        <section class="source-panel" id="quellenarbeit" aria-label="Historische Einordnung und Quellenarbeit">
+            <div>
+                <h2>Historische Einordnung</h2>
+                <p>
+                    Der Lambda-Kalkuel entstand nicht als Programmiersprache, sondern als formales System fuer Funktionen und Logik.
+                    Seine spaetere Bedeutung fuer Informatik liegt darin, dass Funktionsanwendung, Variablenbindung und Substitution als Rechenmodell ausreichen.
+                </p>
+                <p>
+                    In Churchs Paper von 1936 wird effektive Berechenbarkeit formal gefasst und ein unloesbares Problem angegeben.
+                    Der Lambda-Kalkuel steht damit auf der Theorie-Spur des Zeitstrahls neben Turings Maschinenmodell.
+                </p>
+            </div>
+            <div class="source-grid">
+                <article class="source-card">
+                    <h3>Historisches Paper</h3>
+                    <p>
+                        Alonzo Church: <em>An Unsolvable Problem of Elementary Number Theory</em>,
+                        American Journal of Mathematics, Vol. 58, No. 2, 1936, S. 345-363.
+                    </p>
+                    <a href="https://www.jstor.org/stable/2371045" target="_blank" rel="noopener">JSTOR/DOI oeffnen</a>
+                    <a href="https://www.ics.uci.edu/~lopes/teaching/inf212W12/readings/church.pdf" target="_blank" rel="noopener">PDF oeffnen</a>
+                </article>
+                <article class="source-card">
+                    <h3>Lambda-Kalkuel-Kontext</h3>
+                    <p>
+                        Churchs frueherer Aufsatz <em>A Set of Postulates for the Foundation of Logic</em> von 1932 ist eine wichtige Quelle zum Entstehungskontext des Kalkuels.
+                    </p>
+                    <a href="https://www.jstor.org/stable/1968337" target="_blank" rel="noopener">Church 1932 oeffnen</a>
+                </article>
+                <article class="source-card">
+                    <h3>Leitfragen</h3>
+                    <ul>
+                        <li>Was wird bei <code>lambda x. M</code> gebunden?</li>
+                        <li>Welche Stelle ist der naechste Beta-Redex?</li>
+                        <li>Warum ist Substitution ohne Variablenfang wichtig?</li>
+                        <li>Wie passt Churchs Modell zur Church-Turing-These?</li>
+                    </ul>
+                </article>
+                <article class="source-card video-card" id="lernvideo">
+                    <h3>Lernvideos</h3>
+                    <p>
+                        Zwei erklaerende Videos zum Lambda-Kalkuel. Das erste startet direkt bei Minute 10, wie im angegebenen Link.
+                    </p>
+                    <div class="video-grid">
+                        <div class="video-embed">
+                            <iframe
+                                src="https://www.youtube-nocookie.com/embed/eis11j_iGMs?start=600"
+                                title="Lambda Calculus Lernvideo ab Minute 10"
+                                loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="video-embed">
+                            <iframe
+                                src="https://www.youtube-nocookie.com/embed/v5FBAbnLjUQ"
+                                title="Lambda Calculus Lernvideo"
+                                loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="../shared/history-lab-ui.js" defer></script>
+    <script src="../../../../feedback-widget.js" defer></script>
+</body>
+
+</html>

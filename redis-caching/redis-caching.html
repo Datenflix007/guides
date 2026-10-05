@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>Redis Caching Guide - Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        .guide-article pre {
+            position: relative;
+            border: 1px solid rgba(125, 211, 252, .16);
+            box-shadow: 0 10px 24px rgba(2, 6, 23, .22);
+        }
+
+        .copy-code-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: 1px solid rgba(148, 163, 184, .42);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .88);
+            color: #e5e7eb;
+            padding: 6px 9px;
+            font: 600 .78rem Inter, system-ui, sans-serif;
+            cursor: pointer;
+        }
+
+        .copy-code-button:hover {
+            background: rgba(30, 41, 59, .95);
+        }
+
+        .code-language-label {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            border: 1px solid rgba(125, 211, 252, .28);
+            border-radius: 999px;
+            color: #7dd3fc;
+            background: rgba(8, 13, 20, .86);
+            padding: 5px 9px;
+            font: 700 .72rem Inter, system-ui, sans-serif;
+            letter-spacing: 0;
+        }
+
+        .guide-article pre code {
+            display: block;
+            padding-top: 24px;
+        }
+
+        .redis-guide-grid,
+        .redis-decision-grid,
+        .redis-snippet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .redis-card,
+        .redis-note,
+        .redis-snippet-card {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .62);
+            padding: 16px;
+            box-shadow: none;
+        }
+
+        .redis-card strong,
+        .redis-snippet-card strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .redis-card p,
+        .redis-note p,
+        .redis-snippet-card p {
+            margin: 0;
+            font-size: .95rem;
+        }
+
+        .redis-card::before,
+        .redis-snippet-card::before {
+            content: "";
+            display: block;
+            width: 28px;
+            height: 2px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+            background: #7dd3fc;
+        }
+
+        .redis-note {
+            border-left: 4px solid #22c55e;
+            margin: 20px 0;
+        }
+
+        .redis-note--warn {
+            border-left-color: #f97316;
+        }
+
+        .redis-toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 24px 0 10px;
+        }
+
+        .redis-toc a {
+            border: 1px solid rgba(148, 163, 184, .28);
+            border-radius: 999px;
+            padding: 8px 11px;
+            text-decoration: none;
+            color: #dbeafe;
+            background: rgba(15, 23, 42, .62);
+            font-size: .92rem;
+        }
+
+        .redis-toc a:hover {
+            border-color: rgba(125, 211, 252, .62);
+            color: #7dd3fc;
+        }
+
+        .redis-flow {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 18px 0 22px;
+        }
+
+        .redis-flow div {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 78px;
+            background: rgba(15, 23, 42, .68);
+            font-size: .92rem;
+        }
+
+        .redis-flow span {
+            display: block;
+            color: #7dd3fc;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 760px) {
+            .redis-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../weitere-guides.html">&larr; Zurück zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 22% 74%, #ef4444 0%, transparent 50%),
+                radial-gradient(ellipse at 78% 18%, #22c55e 0%, transparent 48%),
+                linear-gradient(160deg, #1c0707 0%, #0f1f16 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Redis</span>
+                <span class="chip" style="margin-left: 6px;">Caching</span>
+                <h1>Redis Caching Guide</h1>
+                <p class="sub">Warum Cache-Speicher Anwendungen schneller macht, wann er Probleme verursacht und wie du Redis mit praktischen Beispielen lokal ausprobierst.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p><strong>Redis</strong> ist ein sehr schneller In-Memory-Datenspeicher. Er wird häufig als Cache eingesetzt: Daten, die sonst immer wieder aus Datenbanken, Dateisystemen, APIs oder aufwendigen Berechnungen entstehen würden, werden kurzzeitig im Arbeitsspeicher abgelegt und bei der nächsten Anfrage direkt von dort gelesen.</p>
+
+            <p>Ein Cache ersetzt keine saubere Datenhaltung. Er ist eine zusätzliche Schicht zwischen Anwendung und eigentlicher Datenquelle. Richtig eingesetzt reduziert er Antwortzeiten, Datenbanklast und Kosten. Falsch eingesetzt liefert er veraltete Daten, verbraucht unnötig Speicher und macht Fehler schwerer nachvollziehbar.</p>
+
+            <div class="redis-guide-grid">
+                <div class="redis-card">
+                    <strong>Schneller lesen</strong>
+                    <p>Häufig abgefragte Ergebnisse kommen aus dem RAM statt aus Datenbank, Datei oder externer API.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Last reduzieren</strong>
+                    <p>Wiederholte Queries, teure Berechnungen und API-Aufrufe werden nicht unnötig mehrfach ausgeführt.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Bewusst begrenzen</strong>
+                    <p>TTL, Invalidierung und Speichergrenzen entscheiden, ob ein Cache hilfreich oder gefährlich wird.</p>
+                </div>
+            </div>
+
+            <nav class="redis-toc" aria-label="Redis Guide Inhaltsnavigation">
+                <a href="#warum-cache">Warum Cache?</a>
+                <a href="#wann-cachen">Wann sinnvoll?</a>
+                <a href="#lokal-starten">Lokal starten</a>
+                <a href="#cache-aside">Cache-Aside</a>
+                <a href="#snippets">Code-Snippets</a>
+                <a href="#produktion">Produktion</a>
+            </nav>
+
+            <hr>
+
+            <h2 id="warum-cache">Warum nicht immer direkt aus dem Massenspeicher lesen?</h2>
+            <p>Massenspeicher wie SSDs, Festplatten, Datenbanken oder entfernte APIs sind deutlich langsamer als Arbeitsspeicher. Der Unterschied liegt nicht nur in der reinen Lesezeit, sondern auch in allem, was rundherum passiert: Netzwerkverkehr, SQL-Parsing, Indexsuche, Dateisystemzugriffe, Authentifizierung, Serialisierung und Sperren.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Quelle</th><th>Typische Eigenschaft</th><th>Problem bei häufiger Nutzung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Datenbank</td><td>Dauerhafte, konsistente Daten</td><td>Viele identische Queries belasten CPU, Indizes und Verbindungen.</td></tr>
+                    <tr><td>Dateisystem</td><td>Persistente Dateien</td><td>Viele kleine Lesezugriffe erzeugen Overhead und blockieren I/O.</td></tr>
+                    <tr><td>Externe API</td><td>Daten von Fremdsystemen</td><td>Latenz, Rate Limits, Ausfälle und Kosten pro Anfrage.</td></tr>
+                    <tr><td>Berechnung</td><td>Aktuell erzeugtes Ergebnis</td><td>CPU-Zeit wird für gleiche Ergebnisse mehrfach verschwendet.</td></tr>
+                    <tr><td>Redis Cache</td><td>Schneller Zugriff im RAM</td><td>Daten können veralten und Speicher ist begrenzt.</td></tr>
+                </tbody>
+            </table>
+
+            <p>Wenn eine Produktseite, ein Dashboard oder eine Rangliste tausendmal pro Minute abgerufen wird, ist es oft unnötig, jedes Mal dieselben Tabellen zu joinen oder dieselbe JSON-Antwort aus einer API zu holen. Der Cache speichert das Ergebnis für eine kurze Zeit, zum Beispiel 30 Sekunden, 5 Minuten oder eine Stunde.</p>
+
+            <hr>
+
+            <h2>Was Redis besonders gut kann</h2>
+            <ul>
+                <li><strong>Sehr schnelle Lese- und Schreibzugriffe:</strong> Redis hält Daten primär im Arbeitsspeicher.</li>
+                <li><strong>TTL pro Schlüssel:</strong> Einträge können automatisch nach einer festgelegten Zeit ablaufen.</li>
+                <li><strong>Einfache Datenstrukturen:</strong> Strings, Hashes, Listen, Sets, Sorted Sets und Streams.</li>
+                <li><strong>Atomare Operationen:</strong> Viele Befehle sind einzeln konsistent, zum Beispiel <code>INCR</code> für Zähler.</li>
+                <li><strong>Sprachunterstützung:</strong> Es gibt Clients für Node.js, Python, Java, C#, PHP, Go und viele weitere Sprachen.</li>
+                <li><strong>Praktische Zusatzrollen:</strong> Rate Limiting, Session Store, Warteschlangen, Locks und Pub/Sub.</li>
+            </ul>
+
+            <p>Für Caching ist besonders wichtig: Redis kann einem Schlüssel direkt eine Ablaufzeit geben. Dadurch verschwinden Cache-Einträge automatisch, ohne dass die Anwendung später mühsam alte Einträge suchen und löschen muss.</p>
+
+            <hr>
+
+            <h2 id="wann-cachen">Wann Caching sinnvoll ist</h2>
+            <div class="redis-decision-grid">
+                <div class="redis-card">
+                    <strong>Teure Anfrage</strong>
+                    <p>Die Datenquelle ist langsam, teuer oder CPU-intensiv, aber das Ergebnis ändert sich nicht ständig.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Viele gleiche Zugriffe</strong>
+                    <p>Viele Benutzer fragen dieselben Produktdaten, Dashboards, Feeds oder Statistiken ab.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Externe API</strong>
+                    <p>Die Antwort hat spürbare Latenz, Rate Limits, Ausfallrisiko oder Kosten pro Anfrage.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Aktualität hat Spielraum</strong>
+                    <p>Eine Verzögerung von Sekunden oder Minuten ist fachlich akzeptabel.</p>
+                </div>
+            </div>
+
+            <h3>Typische Beispiele</h3>
+            <table>
+                <thead>
+                    <tr><th>Use Case</th><th>Cache-Dauer</th><th>Warum?</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Startseiten-Feed</td><td>30 bis 120 Sekunden</td><td>Viele Leser, kleine Verzögerung akzeptabel.</td></tr>
+                    <tr><td>Produktdetails</td><td>5 bis 30 Minuten</td><td>Produktdaten ändern sich seltener als sie gelesen werden.</td></tr>
+                    <tr><td>API-Antwort einer Wetter-API</td><td>10 bis 30 Minuten</td><td>Externe Anfrage kostet Zeit und ist nicht sekündlich nötig.</td></tr>
+                    <tr><td>Benutzerrechte</td><td>1 bis 5 Minuten</td><td>Schnellere Checks, aber Änderungen sollen bald greifen.</td></tr>
+                    <tr><td>Rate Limit Counter</td><td>Fenstergröße, z. B. 60 Sekunden</td><td>Redis kann Zähler sehr effizient erhöhen und verfallen lassen.</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>Wann du keinen Cache verwenden solltest</h2>
+            <p>Caching ist nicht automatisch besser. Es lohnt sich vor allem dann, wenn wiederholte Zugriffe teuer sind und leichte Verzögerungen bei der Aktualität akzeptiert werden können.</p>
+
+            <div class="redis-decision-grid">
+                <div class="redis-card">
+                    <strong>Transaktionen</strong>
+                    <p>Kontostände, Zahlungen oder Lagerbestände dürfen nicht versehentlich veraltet verarbeitet werden.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Selten gelesen</strong>
+                    <p>Wenn ein Wert fast nie erneut abgefragt wird, verschwendet ein Cache nur Speicher.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Zu große Objekte</strong>
+                    <p>Riesige JSON-Dokumente können Redis-Speicher schnell füllen und Netzwerkverkehr erhöhen.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Unklare Invalidierung</strong>
+                    <p>Wenn niemand weiß, wann ein Eintrag veraltet ist, wird der Cache zur Fehlerquelle.</p>
+                </div>
+            </div>
+
+            <div class="redis-note redis-note--warn">
+                <p><strong>Faustregel:</strong> Erst messen, dann cachen. Eine seltene 3-ms-Query braucht meist keinen Redis-Cache. Eine 800-ms-Anfrage, die tausendfach wiederholt wird, ist ein guter Kandidat.</p>
+            </div>
+
+            <hr>
+
+            <h2>Zentrale Begriffe</h2>
+            <table>
+                <thead>
+                    <tr><th>Begriff</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Cache Hit</td><td>Der gesuchte Wert liegt im Cache und kann direkt zurückgegeben werden.</td></tr>
+                    <tr><td>Cache Miss</td><td>Der Wert fehlt im Cache; die Anwendung muss ihn aus der Originalquelle holen.</td></tr>
+                    <tr><td>TTL</td><td>Time to Live: Zeit, nach der ein Cache-Eintrag automatisch gelöscht wird.</td></tr>
+                    <tr><td>Invalidierung</td><td>Gezieltes Löschen oder Aktualisieren veralteter Cache-Einträge.</td></tr>
+                    <tr><td>Eviction</td><td>Redis entfernt Einträge, weil der konfigurierte Speicher knapp wird.</td></tr>
+                    <tr><td>Cache Stampede</td><td>Viele Prozesse merken gleichzeitig einen Cache Miss und berechnen denselben Wert parallel neu.</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2 id="lokal-starten">Redis lokal starten</h2>
+            <p>Am einfachsten ist Redis lokal per Docker. Lege eine Datei <code>docker-compose.yml</code> an:</p>
+
+            <pre><code>services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache-demo
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:</code></pre>
+
+            <p>Starten und testen:</p>
+            <pre><code>docker compose up -d
+docker exec -it redis-cache-demo redis-cli ping</code></pre>
+
+            <p>Wenn Redis korrekt läuft, antwortet der Server mit <code>PONG</code>.</p>
+
+            <h3>Erste Redis-Befehle</h3>
+            <pre><code>docker exec -it redis-cache-demo redis-cli
+
+SET greeting "Hallo Redis"
+GET greeting
+
+SET page:home "&lt;html&gt;...&lt;/html&gt;" EX 60
+TTL page:home
+DEL page:home
+
+INCR views:article:42
+EXPIRE views:article:42 3600
+GET views:article:42</code></pre>
+
+            <p><code>EX 60</code> bedeutet: Dieser Schlüssel läuft nach 60 Sekunden ab. <code>TTL</code> zeigt die verbleibende Lebenszeit in Sekunden an.</p>
+
+            <hr>
+
+            <h2 id="cache-aside">Cache-Aside Pattern</h2>
+            <p>Das häufigste Muster heißt <strong>Cache Aside</strong>. Die Anwendung fragt zuerst Redis. Wenn der Wert fehlt, liest sie aus der Datenbank oder API, speichert das Ergebnis in Redis und liefert es zurück.</p>
+
+            <div class="redis-flow">
+                <div><span>1</span>Anfrage kommt rein</div>
+                <div><span>2</span>Redis nach <code>cache:key</code> fragen</div>
+                <div><span>3</span>Bei Hit direkt antworten</div>
+                <div><span>4</span>Bei Miss Originalquelle laden</div>
+                <div><span>5</span>Mit TTL speichern und antworten</div>
+            </div>
+
+            <p>Dieses Pattern ist einfach, robust und passt gut zu HTTP-APIs, Produktseiten, Profilen, Statistiken und berechneten Antworten.</p>
+
+            <hr>
+
+            <h2>Node.js Beispiel zum Ausprobieren</h2>
+            <p>Dieses Beispiel simuliert eine langsame Datenquelle. Beim ersten Aufruf wartet die API künstlich 1,2 Sekunden. Danach kommt die Antwort aus Redis.</p>
+
+            <h3>Projekt anlegen</h3>
+            <pre><code>mkdir redis-node-demo
+cd redis-node-demo
+npm init -y
+npm install express redis</code></pre>
+
+            <h3>package.json ergänzen</h3>
+            <pre><code>{
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "redis": "^4.6.13"
+  }
+}</code></pre>
+
+            <h3>server.js</h3>
+            <pre><code>import express from "express";
+import { createClient } from "redis";
+
+const app = express();
+const redis = createClient({ url: "redis://localhost:6379" });
+
+redis.on("error", (error) =&gt; {
+  console.error("Redis error:", error);
+});
+
+await redis.connect();
+
+function wait(ms) {
+  return new Promise((resolve) =&gt; setTimeout(resolve, ms));
+}
+
+async function loadProductFromDatabase(id) {
+  await wait(1200);
+  return {
+    id,
+    name: `Produkt ${id}`,
+    price: 19.99,
+    loadedAt: new Date().toISOString()
+  };
+}
+
+app.get("/products/:id", async (req, res) =&gt; {
+  const id = req.params.id;
+  const cacheKey = `product:${id}`;
+
+  const cached = await redis.get(cacheKey);
+  if (cached) {
+    return res.json({
+      source: "redis-cache",
+      data: JSON.parse(cached)
+    });
+  }
+
+  const product = await loadProductFromDatabase(id);
+  await redis.set(cacheKey, JSON.stringify(product), {
+    EX: 30
+  });
+
+  res.json({
+    source: "slow-database",
+    data: product
+  });
+});
+
+app.delete("/products/:id/cache", async (req, res) =&gt; {
+  const deleted = await redis.del(`product:${req.params.id}`);
+  res.json({ deleted });
+});
+
+app.listen(3000, () =&gt; {
+  console.log("Server läuft auf http://localhost:3000");
+});</code></pre>
+
+            <h3>Starten und testen</h3>
+            <pre><code>npm start
+
+# erster Aufruf: langsam, Quelle slow-database
+curl http://localhost:3000/products/42
+
+# zweiter Aufruf: schnell, Quelle redis-cache
+curl http://localhost:3000/products/42
+
+# Cache gezielt löschen
+curl -X DELETE http://localhost:3000/products/42/cache</code></pre>
+
+            <p>Achte in der JSON-Antwort auf <code>source</code> und <code>loadedAt</code>. Beim Cache Hit bleibt <code>loadedAt</code> gleich, weil dieselbe gespeicherte Antwort wiederverwendet wird.</p>
+
+            <hr>
+
+            <h2>Python Beispiel mit Flask</h2>
+            <p>Das gleiche Prinzip funktioniert in Python. Dieses Beispiel nutzt Flask und den offiziellen Redis-Client.</p>
+
+            <h3>Installation</h3>
+            <pre><code>mkdir redis-python-demo
+cd redis-python-demo
+python -m venv .venv
+
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+# macOS/Linux
+source .venv/bin/activate
+
+pip install flask redis</code></pre>
+
+            <h3>app.py</h3>
+            <pre><code>import json
+import time
+from datetime import datetime, timezone
+
+import redis
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+cache = redis.Redis(host="localhost", port=6379, decode_responses=True)
+
+
+def load_user_from_database(user_id: str) -&gt; dict:
+    time.sleep(1.2)
+    return {
+        "id": user_id,
+        "name": f"User {user_id}",
+        "role": "student",
+        "loaded_at": datetime.now(timezone.utc).isoformat()
+    }
+
+
+@app.get("/users/&lt;user_id&gt;")
+def get_user(user_id):
+    cache_key = f"user:{user_id}"
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return jsonify({
+            "source": "redis-cache",
+            "data": json.loads(cached)
+        })
+
+    user = load_user_from_database(user_id)
+    cache.setex(cache_key, 30, json.dumps(user))
+
+    return jsonify({
+        "source": "slow-database",
+        "data": user
+    })
+
+
+@app.delete("/users/&lt;user_id&gt;/cache")
+def delete_user_cache(user_id):
+    deleted = cache.delete(f"user:{user_id}")
+    return jsonify({"deleted": deleted})</code></pre>
+
+            <h3>Starten und testen</h3>
+            <pre><code>flask --app app run --debug
+
+curl http://127.0.0.1:5000/users/7
+curl http://127.0.0.1:5000/users/7
+curl -X DELETE http://127.0.0.1:5000/users/7/cache</code></pre>
+
+            <hr>
+
+            <h2>Cache-Keys sinnvoll benennen</h2>
+            <p>Redis ist ein Key-Value-Store. Gute Schlüsselnamen sind entscheidend, damit Cache-Einträge nachvollziehbar bleiben.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Schlüssel</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>product:42</code></td><td>Produkt mit ID 42</td></tr>
+                    <tr><td><code>user:7:permissions</code></td><td>Berechtigungen von Benutzer 7</td></tr>
+                    <tr><td><code>dashboard:teacher:2026-07</code></td><td>Monatsdashboard für Lehrkräfte</td></tr>
+                    <tr><td><code>api:weather:jena</code></td><td>Gecachte Antwort einer Wetter-API für Jena</td></tr>
+                    <tr><td><code>ratelimit:login:192.0.2.10</code></td><td>Login-Versuche einer IP-Adresse</td></tr>
+                </tbody>
+            </table>
+
+            <p>Vermeide unklare Schlüssel wie <code>data1</code>, <code>tmp</code> oder <code>cache</code>. Ein Schlüssel sollte erkennen lassen, welche Art von Daten er enthält und wodurch er eindeutig wird.</p>
+
+            <hr>
+
+            <h2>Invalidierung: Das schwierige Thema</h2>
+            <p>Der schwerste Teil beim Caching ist nicht das Speichern, sondern das richtige Entfernen veralteter Daten. Ein Cache ist nur hilfreich, solange die Anwendung weiß, wann ein Wert neu geladen werden muss.</p>
+
+            <h3>Strategie 1: TTL verwenden</h3>
+            <pre><code>await redis.set("product:42", JSON.stringify(product), { EX: 300 });</code></pre>
+            <p>Nach 5 Minuten läuft der Eintrag aus. Das ist einfach und gut für Daten, bei denen leichte Verzögerungen akzeptabel sind.</p>
+
+            <h3>Strategie 2: Nach Schreibvorgängen löschen</h3>
+            <pre><code>async function updateProduct(id, changes) {
+  await database.products.update(id, changes);
+  await redis.del(`product:${id}`);
+}</code></pre>
+            <p>Wenn ein Produkt geändert wird, löscht die Anwendung den passenden Cache-Eintrag. Die nächste Leseanfrage lädt den aktuellen Wert neu.</p>
+
+            <h3>Strategie 3: Versionierte Keys</h3>
+            <pre><code>const version = await redis.get("products:version");
+const cacheKey = `products:v${version}:list:page:${page}`;</code></pre>
+            <p>Bei großen Listen kann es einfacher sein, eine Version hochzuzählen, statt viele einzelne Keys zu löschen. Alte Keys laufen später durch TTL aus.</p>
+
+            <hr>
+
+            <h2>Cache Stampede verhindern</h2>
+            <p>Ein Cache Stampede entsteht, wenn ein beliebter Cache-Eintrag abläuft und sehr viele Anfragen gleichzeitig denselben teuren Wert neu berechnen. Die Datenbank wird dann trotz Cache plötzlich stark belastet.</p>
+
+            <h3>Einfache Gegenmaßnahmen</h3>
+            <ul>
+                <li>TTL leicht zufällig machen, damit nicht alle Keys gleichzeitig ablaufen.</li>
+                <li>Teure Werte bereits im Hintergrund erneuern, bevor sie ablaufen.</li>
+                <li>Für sehr teure Berechnungen einen kurzen Redis-Lock verwenden.</li>
+            </ul>
+
+            <h3>TTL mit Zufallsanteil</h3>
+            <pre><code>const ttl = 300 + Math.floor(Math.random() * 60);
+await redis.set(cacheKey, JSON.stringify(value), { EX: ttl });</code></pre>
+
+            <h3>Einfacher Lock mit Redis</h3>
+            <pre><code>const lockKey = `lock:${cacheKey}`;
+const lockAcquired = await redis.set(lockKey, "1", {
+  NX: true,
+  EX: 10
+});
+
+if (lockAcquired) {
+  try {
+    const fresh = await loadExpensiveValue();
+    await redis.set(cacheKey, JSON.stringify(fresh), { EX: 300 });
+    return fresh;
+  } finally {
+    await redis.del(lockKey);
+  }
+}
+
+await new Promise((resolve) =&gt; setTimeout(resolve, 150));
+const cachedAfterWait = await redis.get(cacheKey);</code></pre>
+
+            <p><code>NX</code> bedeutet: Setze den Lock nur, wenn der Schlüssel noch nicht existiert. Die kurze TTL sorgt dafür, dass ein Lock auch bei einem Absturz nicht dauerhaft hängen bleibt.</p>
+
+            <hr>
+
+            <h2>Rate Limiting mit Redis</h2>
+            <p>Redis eignet sich sehr gut für Zähler, weil <code>INCR</code> atomar ist. Das folgende Beispiel begrenzt eine IP-Adresse auf 10 Anfragen pro Minute.</p>
+
+            <pre><code>async function checkRateLimit(ip) {
+  const key = `ratelimit:${ip}`;
+  const count = await redis.incr(key);
+
+  if (count === 1) {
+    await redis.expire(key, 60);
+  }
+
+  return {
+    allowed: count &lt;= 10,
+    remaining: Math.max(0, 10 - count)
+  };
+}</code></pre>
+
+            <p>Das ist kein vollständiges Security-System, aber ein gutes Grundmuster für Login-Versuche, Kontaktformulare oder öffentliche API-Endpunkte.</p>
+
+            <hr>
+
+            <h2>Sessions in Redis</h2>
+            <p>Bei Webanwendungen mit mehreren Serverinstanzen sollten Sessions nicht nur im lokalen Arbeitsspeicher eines einzelnen Servers liegen. Sonst verliert ein Benutzer seine Session, wenn die nächste Anfrage bei einer anderen Instanz landet.</p>
+
+            <pre><code>session:user:7 -&gt; {
+  "userId": 7,
+  "csrfToken": "...",
+  "createdAt": "2026-07-04T12:00:00Z"
+}</code></pre>
+
+            <p>Redis kann hier als zentraler Session Store dienen. Wichtig sind kurze, klare Ablaufzeiten und ein bewusster Umgang mit sensiblen Daten. Sessions sollten nicht unbegrenzt leben.</p>
+
+            <hr>
+
+            <h2>Speichergrenzen und Eviction</h2>
+            <p>Redis läuft im Arbeitsspeicher. Deshalb muss ein Produktivsystem eine Speichergrenze und eine passende Räumstrategie haben. Ohne Grenze kann Redis im schlimmsten Fall zu viel RAM verbrauchen.</p>
+
+            <pre><code># Beispiel in redis.conf
+maxmemory 512mb
+maxmemory-policy allkeys-lru</code></pre>
+
+            <table>
+                <thead>
+                    <tr><th>Policy</th><th>Verhalten</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>noeviction</code></td><td>Redis lehnt neue Schreibvorgänge ab, wenn der Speicher voll ist.</td></tr>
+                    <tr><td><code>allkeys-lru</code></td><td>Redis entfernt ungefähr die am längsten nicht genutzten Keys.</td></tr>
+                    <tr><td><code>volatile-lru</code></td><td>Redis entfernt nur Keys mit TTL nach LRU-Logik.</td></tr>
+                    <tr><td><code>allkeys-random</code></td><td>Redis entfernt zufällige Keys.</td></tr>
+                    <tr><td><code>volatile-ttl</code></td><td>Redis entfernt bevorzugt Keys, die bald ablaufen.</td></tr>
+                </tbody>
+            </table>
+
+            <p>Für reine Caches ist <code>allkeys-lru</code> häufig sinnvoll. Für Systeme, in denen Redis auch wichtige Nicht-Cache-Daten enthält, muss man deutlich vorsichtiger planen.</p>
+
+            <hr>
+
+            <h2 id="snippets">Kopierbare Snippets nach Use Case</h2>
+            <p>Die folgenden Beispiele sind bewusst klein gehalten. Sie zeigen typische Redis-Muster, die du direkt in eigene Projekte übertragen kannst. Für produktive Systeme solltest du zusätzlich Fehlerbehandlung, Logging, Timeouts und Konfiguration über Umgebungsvariablen ergänzen.</p>
+
+            <div class="redis-snippet-grid">
+                <div class="redis-snippet-card">
+                    <strong>Backend APIs</strong>
+                    <p>Node.js, Python, C# und Go zeigen das klassische Cache-Aside-Muster für HTTP-Endpunkte.</p>
+                </div>
+                <div class="redis-snippet-card">
+                    <strong>Frameworks</strong>
+                    <p>Spring Boot zeigt, wie Redis über Annotationen als Cache-Schicht eingebunden wird.</p>
+                </div>
+                <div class="redis-snippet-card">
+                    <strong>Sicherheit & Sessions</strong>
+                    <p>Rate Limits und Sessions nutzen Redis als schnellen, zentralen Zustandsspeicher.</p>
+                </div>
+                <div class="redis-snippet-card">
+                    <strong>Live-Events</strong>
+                    <p>Pub/Sub verteilt Nachrichten zwischen Prozessen, ohne dass du sofort ein eigenes Messaging-System brauchst.</p>
+                </div>
+            </div>
+
+            <h3>Use Case: API-Antwort cachen mit Node.js</h3>
+            <p>Geeignet für fremde APIs, die langsam sind, Rate Limits haben oder Kosten pro Anfrage verursachen.</p>
+
+            <pre><code>import { createClient } from "redis";
+
+const redis = createClient({ url: "redis://localhost:6379" });
+await redis.connect();
+
+async function getWeather(city) {
+  const key = `api:weather:${city.toLowerCase()}`;
+  const cached = await redis.get(key);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  const response = await fetch(`https://api.example.com/weather?city=${city}`);
+  const weather = await response.json();
+
+  await redis.set(key, JSON.stringify(weather), { EX: 600 });
+  return weather;
+}</code></pre>
+
+            <h3>Use Case: Datenbank-Query cachen mit Python</h3>
+            <p>Geeignet für Profilseiten, Produktdetails, Dashboards oder alle Daten, die häufiger gelesen als geschrieben werden.</p>
+
+            <pre><code>import json
+import redis
+
+cache = redis.Redis(host="localhost", port=6379, decode_responses=True)
+
+
+def get_product(product_id, db):
+    key = f"product:{product_id}"
+    cached = cache.get(key)
+
+    if cached:
+        return json.loads(cached)
+
+    product = db.fetch_one(
+        "SELECT id, name, price FROM products WHERE id = ?",
+        [product_id]
+    )
+
+    cache.setex(key, 300, json.dumps(product))
+    return product
+
+
+def update_product(product_id, changes, db):
+    db.update("products", product_id, changes)
+    cache.delete(f"product:{product_id}")</code></pre>
+
+            <h3>Use Case: Spring Boot Service mit Redis Cache</h3>
+            <p>In Java-Projekten wird Redis häufig über Spring Cache eingebunden. Der Service-Code bleibt dadurch sehr kurz.</p>
+
+            <pre><code>// build.gradle
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-cache"
+    implementation "org.springframework.boot:spring-boot-starter-data-redis"
+}</code></pre>
+
+            <pre><code>// application.properties
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+spring.cache.type=redis
+spring.cache.redis.time-to-live=300000</code></pre>
+
+            <pre><code>import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ProductService {
+    private final ProductRepository repository;
+
+    public ProductService(ProductRepository repository) {
+        this.repository = repository;
+    }
+
+    @Cacheable(value = "products", key = "#id")
+    public Product findById(long id) {
+        return repository.findById(id)
+                .orElseThrow(() -&gt; new IllegalArgumentException("Product not found"));
+    }
+
+    @CacheEvict(value = "products", key = "#id")
+    public Product update(long id, ProductUpdate update) {
+        Product product = repository.findById(id).orElseThrow();
+        product.setName(update.name());
+        product.setPrice(update.price());
+        return repository.save(product);
+    }
+}</code></pre>
+
+            <h3>Use Case: .NET Minimal API mit StackExchange.Redis</h3>
+            <p>Dieses Beispiel cached eine simulierte Produktabfrage in C#.</p>
+
+            <pre><code>dotnet new web -n RedisDotnetDemo
+cd RedisDotnetDemo
+dotnet add package StackExchange.Redis</code></pre>
+
+            <pre><code>using System.Text.Json;
+using StackExchange.Redis;
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+var redis = await ConnectionMultiplexer.ConnectAsync("localhost:6379");
+var db = redis.GetDatabase();
+
+app.MapGet("/products/{id:int}", async (int id) =&gt;
+{
+    var key = $"product:{id}";
+    var cached = await db.StringGetAsync(key);
+
+    if (cached.HasValue)
+    {
+        return Results.Json(new {
+            source = "redis-cache",
+            data = JsonSerializer.Deserialize&lt;Product&gt;(cached!)
+        });
+    }
+
+    await Task.Delay(1200);
+    var product = new Product(id, $"Produkt {id}", 19.99m, DateTimeOffset.UtcNow);
+
+    await db.StringSetAsync(
+        key,
+        JsonSerializer.Serialize(product),
+        TimeSpan.FromSeconds(30)
+    );
+
+    return Results.Json(new { source = "slow-database", data = product });
+});
+
+app.Run();
+
+record Product(int Id, string Name, decimal Price, DateTimeOffset LoadedAt);</code></pre>
+
+            <h3>Use Case: PHP Cache-Aside mit Predis</h3>
+            <p>Geeignet für klassische PHP-Anwendungen, CMS-Erweiterungen oder kleine API-Backends.</p>
+
+            <pre><code>composer require predis/predis</code></pre>
+
+            <pre><code>&lt;?php
+
+require __DIR__ . "/vendor/autoload.php";
+
+$redis = new Predis\Client("tcp://127.0.0.1:6379");
+
+function getArticle(int $id, PDO $pdo, Predis\Client $redis): array
+{
+    $key = "article:" . $id;
+    $cached = $redis-&gt;get($key);
+
+    if ($cached !== null) {
+        return json_decode($cached, true);
+    }
+
+    $stmt = $pdo-&gt;prepare("SELECT id, title, body FROM articles WHERE id = ?");
+    $stmt-&gt;execute([$id]);
+    $article = $stmt-&gt;fetch(PDO::FETCH_ASSOC);
+
+    $redis-&gt;setex($key, 300, json_encode($article));
+    return $article;
+}</code></pre>
+
+            <h3>Use Case: Go HTTP Handler mit Redis</h3>
+            <p>Dieses Beispiel verwendet <code>go-redis</code> und cached eine JSON-Antwort.</p>
+
+            <pre><code>go mod init redis-go-demo
+go get github.com/redis/go-redis/v9</code></pre>
+
+            <pre><code>package main
+
+import (
+    "context"
+    "encoding/json"
+    "net/http"
+    "time"
+
+    "github.com/redis/go-redis/v9"
+)
+
+var ctx = context.Background()
+
+var rdb = redis.NewClient(&amp;redis.Options{
+    Addr: "localhost:6379",
+})
+
+type Product struct {
+    ID       string    `json:"id"`
+    Name     string    `json:"name"`
+    LoadedAt time.Time `json:"loadedAt"`
+}
+
+func productHandler(w http.ResponseWriter, r *http.Request) {
+    id := r.PathValue("id")
+    key := "product:" + id
+
+    cached, err := rdb.Get(ctx, key).Result()
+    if err == nil {
+        w.Header().Set("Content-Type", "application/json")
+        w.Write([]byte(`{"source":"redis-cache","data":` + cached + `}`))
+        return
+    }
+
+    time.Sleep(1200 * time.Millisecond)
+    product := Product{ID: id, Name: "Produkt " + id, LoadedAt: time.Now().UTC()}
+    bytes, _ := json.Marshal(product)
+
+    rdb.Set(ctx, key, bytes, 30*time.Second)
+
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(`{"source":"slow-database","data":` + string(bytes) + `}`))
+}
+
+func main() {
+    http.HandleFunc("GET /products/{id}", productHandler)
+    http.ListenAndServe(":8080", nil)
+}</code></pre>
+
+            <h3>Use Case: Login-Versuche begrenzen in Python</h3>
+            <p>Ein einfaches Rate-Limit schützt Login-Formulare vor zu vielen Versuchen in kurzer Zeit.</p>
+
+            <pre><code>def allow_login_attempt(ip: str) -&gt; bool:
+    key = f"login-attempts:{ip}"
+    attempts = cache.incr(key)
+
+    if attempts == 1:
+        cache.expire(key, 300)
+
+    return attempts &lt;= 5
+
+
+if not allow_login_attempt("192.0.2.10"):
+    raise Exception("Zu viele Login-Versuche. Bitte später erneut versuchen.")</code></pre>
+
+            <h3>Use Case: Session speichern in Node.js</h3>
+            <p>Sessions sollten immer eine Ablaufzeit haben. Dadurch verschwinden alte Sitzungen automatisch.</p>
+
+            <pre><code>import crypto from "node:crypto";
+
+async function createSession(userId) {
+  const sessionId = crypto.randomUUID();
+  const key = `session:${sessionId}`;
+
+  await redis.set(key, JSON.stringify({
+    userId,
+    createdAt: new Date().toISOString()
+  }), {
+    EX: 60 * 60 * 8
+  });
+
+  return sessionId;
+}
+
+async function getSession(sessionId) {
+  const session = await redis.get(`session:${sessionId}`);
+  return session ? JSON.parse(session) : null;
+}
+
+async function deleteSession(sessionId) {
+  await redis.del(`session:${sessionId}`);
+}</code></pre>
+
+            <h3>Use Case: Pub/Sub für Live-Updates</h3>
+            <p>Redis kann Nachrichten an mehrere Prozesse verteilen. Das ist nützlich für einfache Live-Updates, Chat-Prototypen oder interne Events.</p>
+
+            <pre><code>// publisher.js
+import { createClient } from "redis";
+
+const publisher = createClient();
+await publisher.connect();
+
+await publisher.publish("notifications", JSON.stringify({
+  type: "USER_CREATED",
+  userId: 42
+}));
+
+await publisher.quit();</code></pre>
+
+            <pre><code>// subscriber.js
+import { createClient } from "redis";
+
+const subscriber = createClient();
+await subscriber.connect();
+
+await subscriber.subscribe("notifications", (message) =&gt; {
+  const event = JSON.parse(message);
+  console.log("Event erhalten:", event);
+});</code></pre>
+
+            <h3>Use Case: Teure Berechnung cachen</h3>
+            <p>Auch ohne Datenbank lohnt sich ein Cache, wenn eine Berechnung langsam ist und mit gleichen Parametern mehrfach gebraucht wird.</p>
+
+            <pre><code>async function cachedComputation(input) {
+  const key = `compute:sha256:${input}`;
+  const cached = await redis.get(key);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  const result = await veryExpensiveComputation(input);
+  await redis.set(key, JSON.stringify(result), { EX: 3600 });
+  return result;
+}</code></pre>
+
+            <hr>
+
+            <h2 id="produktion">Produktionshinweise</h2>
+            <div class="redis-decision-grid">
+                <div class="redis-card">
+                    <strong>Absichern</strong>
+                    <p>Redis nicht ungeschützt ins öffentliche Internet stellen. Netzwerkregeln, Passwort und bei Bedarf TLS verwenden.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Keys ordnen</strong>
+                    <p>Klare Prefixes nutzen, zum Beispiel <code>cache:</code>, <code>session:</code> und <code>ratelimit:</code>.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>TTL setzen</strong>
+                    <p>Nicht jeden Cache-Eintrag unbegrenzt speichern. Ablaufzeiten gehören zum Cache-Design.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Überwachen</strong>
+                    <p>Hit Rate, Speicherverbrauch, Anzahl der Keys, Evictions und Latenz beobachten.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Ausfall einplanen</strong>
+                    <p>Die Anwendung sollte bei Redis-Ausfall langsamer, aber möglichst weiterhin korrekt arbeiten.</p>
+                </div>
+                <div class="redis-card">
+                    <strong>Sensible Daten prüfen</strong>
+                    <p>Personenbezogene Daten, Tokens und Sessions brauchen kurze TTLs und ein klares Schutzkonzept.</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>Mini-Experiment: Cache-Wirkung messen</h2>
+            <p>Mit PowerShell kannst du grob sehen, ob der zweite Aufruf schneller wird. Starte vorher das Node-Beispiel.</p>
+
+            <pre><code>Measure-Command { Invoke-RestMethod http://localhost:3000/products/42 }
+Measure-Command { Invoke-RestMethod http://localhost:3000/products/42 }</code></pre>
+
+            <p>Unter macOS oder Linux funktioniert ein einfacher Vergleich mit <code>time</code>:</p>
+
+            <pre><code>time curl -s http://localhost:3000/products/42
+time curl -s http://localhost:3000/products/42</code></pre>
+
+            <p>Der erste Aufruf sollte wegen der simulierten Datenbank langsamer sein. Der zweite Aufruf kommt aus Redis und sollte deutlich schneller antworten.</p>
+
+            <hr>
+
+            <h2>Checkliste für eigene Projekte</h2>
+            <ul>
+                <li>Welche Anfrage ist wirklich langsam oder teuer?</li>
+                <li>Wie oft wird dieselbe Antwort erneut benötigt?</li>
+                <li>Wie alt darf die Antwort maximal sein?</li>
+                <li>Welcher Cache-Key beschreibt die Daten eindeutig?</li>
+                <li>Wann wird der Key gelöscht oder erneuert?</li>
+                <li>Was passiert, wenn Redis nicht erreichbar ist?</li>
+                <li>Wie viel RAM darf der Cache maximal nutzen?</li>
+                <li>Welche Daten dürfen aus Datenschutzgründen nicht oder nur sehr kurz gecacht werden?</li>
+            </ul>
+
+            <hr>
+
+            <h2>Kurzfazit</h2>
+            <p>Redis-Caching ist besonders stark, wenn viele gleiche oder ähnliche Anfragen auf teure Datenquellen treffen. Es verhindert unnötige Datenbank- und API-Zugriffe, macht Anwendungen reaktionsschneller und hilft bei Lastspitzen. Gleichzeitig ist ein Cache immer eine zusätzliche Fehlerquelle: Er muss ablaufen, gelöscht, überwacht und fachlich verstanden werden.</p>
+
+            <p>Die beste Praxis ist deshalb nicht „alles cachen“, sondern gezielt cachen: Messbare Engpässe identifizieren, sinnvolle TTLs wählen, klare Keys verwenden und bei Änderungen gezielt invalidieren.</p>
+
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">© 2026 Felix Staacke</div>
+    </footer>
+    <script>
+        function detectCodeLabel(code) {
+            const trimmed = code.trim();
+            if (trimmed.startsWith("services:")) return "Docker Compose";
+            if (trimmed.startsWith("docker ")) return "Shell";
+            if (trimmed.includes("redis-cli") || trimmed.includes("SET greeting")) return "Redis CLI";
+            if (trimmed.startsWith("import express") || trimmed.startsWith("import { createClient") || trimmed.startsWith("import crypto") || trimmed.startsWith("async function") || trimmed.startsWith("const ")) return "Node.js";
+            if (trimmed.startsWith("import json") || trimmed.startsWith("def ") || trimmed.includes("Flask")) return "Python";
+            if (trimmed.startsWith("mkdir ") || trimmed.startsWith("npm ") || trimmed.startsWith("flask ") || trimmed.startsWith("composer ") || trimmed.startsWith("go ") || trimmed.startsWith("dotnet ")) return "Terminal";
+            if (trimmed.startsWith("{")) return "JSON";
+            if (trimmed.startsWith("// build.gradle")) return "Gradle";
+            if (trimmed.startsWith("// application.properties")) return "Properties";
+            if (trimmed.includes("public class") || trimmed.includes("@Service")) return "Java";
+            if (trimmed.startsWith("using System")) return "C#";
+            if (trimmed.startsWith("&lt;?php")) return "PHP";
+            if (trimmed.startsWith("package main")) return "Go";
+            if (trimmed.startsWith("# Beispiel")) return "redis.conf";
+            return "Code";
+        }
+
+        document.querySelectorAll(".guide-article pre").forEach((block) => {
+            const code = block.querySelector("code")?.innerText ?? "";
+            const label = document.createElement("span");
+            label.className = "code-language-label";
+            label.textContent = detectCodeLabel(code);
+            block.appendChild(label);
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "copy-code-button";
+            button.textContent = "Kopieren";
+            button.addEventListener("click", async () => {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    button.textContent = "Kopiert";
+                    setTimeout(() => {
+                        button.textContent = "Kopieren";
+                    }, 1400);
+                } catch {
+                    button.textContent = "Fehler";
+                    setTimeout(() => {
+                        button.textContent = "Kopieren";
+                    }, 1400);
+                }
+            });
+            block.appendChild(button);
+        });
+    </script>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

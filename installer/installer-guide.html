@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>Installer Guide &ndash; Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../weitere-guides.html">&larr; Zur&uuml;ck zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 22% 78%, #38bdf8 0%, transparent 48%),
+                radial-gradient(ellipse at 78% 22%, #f59e0b 0%, transparent 46%),
+                linear-gradient(160deg, #09111f 0%, #19131f 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Installer</span>
+                <span class="chip" style="margin-left: 6px;">Windows &amp; Linux</span>
+                <h1>Apps als Installer verpacken</h1>
+                <p class="sub">CLI-Installer, Tkinter-Oberfl&auml;che, Startmen&uuml;-Eintrag, Desktop-Verkn&uuml;pfung, Icon und Paketierung f&uuml;r Java- und Python-Projekte.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p>Ein Programm ist f&uuml;r dich als Entwickler oft schon fertig, wenn es lokal mit <code>python main.py</code>, <code>java -jar app.jar</code> oder einer gebauten <code>.exe</code> startet. F&uuml;r normale Nutzerinnen und Nutzer ist es aber erst dann eine richtige App, wenn sie installiert werden kann, im Startmen&uuml; oder App-Men&uuml; auftaucht, ein Icon hat und ohne Terminalwissen startet.</p>
+
+            <p>Dieser Guide zeigt pragmatisch, wie du aus eigenen Java- oder Python-Projekten installierbare Anwendungen machst. Der Fokus liegt auf Windows und Linux, weil dort sehr unterschiedliche Erwartungen gelten: Windows-Nutzer erwarten meistens eine <code>Setup.exe</code> oder <code>.msi</code>; Linux-Nutzer erwarten eher ein <code>.deb</code>, <code>.rpm</code>, AppImage, Flatpak oder mindestens eine saubere <code>.desktop</code>-Datei.</p>
+
+            <hr>
+
+            <h2>Was ein Installer eigentlich macht</h2>
+            <p>Ein Installer ist im Kern kein magisches Format. Er erledigt meistens diese Aufgaben:</p>
+            <ul>
+                <li>Dateien an einen sinnvollen Ort kopieren.</li>
+                <li>Eine Startdatei oder einen Launcher anlegen.</li>
+                <li>Ein Icon registrieren.</li>
+                <li>Eine Desktop-Verkn&uuml;pfung erstellen.</li>
+                <li>Einen Startmen&uuml;- oder App-Men&uuml;-Eintrag erstellen.</li>
+                <li>Optional einen Uninstaller erzeugen.</li>
+                <li>Optional Abh&auml;ngigkeiten mitliefern, etwa Java Runtime, Python Runtime oder DLLs.</li>
+            </ul>
+
+            <p>Der wichtigste Unterschied ist deshalb nicht &quot;Installer oder kein Installer&quot;, sondern: Wie viel davon willst du selbst skripten und wie viel soll ein Packaging-Tool f&uuml;r dich erledigen?</p>
+
+            <table>
+                <thead>
+                    <tr><th>Ziel</th><th>Einfacher Weg</th><th>Professioneller Weg</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Python-Skript als Windows-App</td><td>PyInstaller</td><td>PyInstaller + Inno Setup</td></tr>
+                    <tr><td>Python-GUI mit Tkinter</td><td>PyInstaller <code>--windowed</code></td><td>Briefcase oder PyInstaller + Installer</td></tr>
+                    <tr><td>Java-App als Desktop-App</td><td><code>java -jar</code> + Shortcut</td><td><code>jpackage</code></td></tr>
+                    <tr><td>Linux-App sichtbar machen</td><td><code>.desktop</code>-Datei</td><td><code>.deb</code>, <code>.rpm</code>, AppImage oder Flatpak</td></tr>
+                    <tr><td>Eigener Mini-Installer</td><td>Python-CLI</td><td>Python + Tkinter-UI</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>Empfohlener Ablauf</h2>
+            <ol>
+                <li>Baue zuerst eine lauff&auml;hige App in einem Ordner, zum Beispiel <code>dist/MeineApp/</code>.</li>
+                <li>Lege ein Icon ab, unter Windows als <code>.ico</code>, unter Linux meist als <code>.png</code>.</li>
+                <li>Teste den Start lokal ohne Entwicklungsumgebung.</li>
+                <li>Erstelle daraus einen Installer oder ein Paket.</li>
+                <li>Ver&ouml;ffentliche den Installer auf einer Webseite, GitHub Releases, einer Schul-/Uni-Seite oder einem internen Downloadbereich.</li>
+            </ol>
+
+            <p>Gerade f&uuml;r kleine Projekte ist es sinnvoll, nicht bei jedem Nutzer eine komplizierte Build-Anleitung vorauszusetzen. Besser ist: Du baust lokal oder in CI einen fertigen Installer, stellst ihn auf eine Webseite und die Nutzer laden nur noch <code>MeineApp-Setup.exe</code>, <code>MeineApp.deb</code> oder <code>MeineApp.AppImage</code> herunter.</p>
+
+            <h3>Installer von einer Webseite ziehen</h3>
+            <p>Wenn du einen Installer verteilst, ist eine klare Downloadseite oft besser als ein Repository. Auf GitHub kann das ein Release sein; auf einer eigenen Webseite kann es ein einfacher Downloadbutton sein. Wichtig ist:</p>
+            <ul>
+                <li>Die Datei sollte einen eindeutigen Namen haben: <code>MeineApp-1.0.0-windows-x64-setup.exe</code>.</li>
+                <li>Die Webseite sollte Version, Betriebssystem und Datum nennen.</li>
+                <li>Bei gr&ouml;&szlig;eren Projekten ist ein SHA256-Hash sinnvoll.</li>
+                <li>Windows kann bei unbekannten <code>.exe</code>-Dateien warnen. Das ist normal, solange die Datei nicht signiert ist.</li>
+                <li>Lade fremde Installer nur von offiziellen Projektseiten oder Releases herunter, nicht von zuf&auml;lligen Mirror-Seiten.</li>
+            </ul>
+
+            <pre><code># SHA256 unter Windows pr&uuml;fen
+certutil -hashfile MeineApp-Setup.exe SHA256
+
+# SHA256 unter Linux pr&uuml;fen
+sha256sum MeineApp.AppImage</code></pre>
+
+            <hr>
+
+            <h2>Windows: Python-App als EXE bauen</h2>
+            <p>F&uuml;r Python ist <strong>PyInstaller</strong> der schnellste Einstieg. Es analysiert dein Skript, sammelt Python, Module und Ressourcen ein und erzeugt daraus einen Ordner oder eine einzelne <code>.exe</code>.</p>
+
+            <pre><code>python -m venv .venv
+.venv\Scripts\activate
+pip install pyinstaller
+
+# CLI-App
+pyinstaller --onefile --name MeineApp main.py
+
+# GUI-App ohne schwarzes Konsolenfenster
+pyinstaller --onefile --windowed --name MeineApp --icon assets\app.ico main.py</code></pre>
+
+            <p>Bei einer Tkinter-App ist <code>--windowed</code> wichtig, weil sonst neben dem GUI-Fenster ein Konsolenfenster ge&ouml;ffnet wird.</p>
+
+            <h3>Dateien mitliefern</h3>
+            <p>Wenn deine App Bilder, JSON-Dateien, Datenbanken oder Modelle braucht, musst du sie mitgeben. Unter Windows trennt PyInstaller Quelle und Ziel bei <code>--add-data</code> mit Semikolon:</p>
+
+            <pre><code>pyinstaller --onefile --windowed ^
+  --name Stundenplan ^
+  --icon assets\stundenplan.ico ^
+  --add-data "assets;assets" ^
+  --add-data "data;data" ^
+  main.py</code></pre>
+
+            <p>Unter Linux wird bei <code>--add-data</code> ein Doppelpunkt verwendet:</p>
+
+            <pre><code>pyinstaller --onefile --windowed \
+  --name stundenplan \
+  --icon assets/stundenplan.png \
+  --add-data "assets:assets" \
+  --add-data "data:data" \
+  main.py</code></pre>
+
+            <p>Nach dem Build liegt die App unter <code>dist/</code>. F&uuml;r interne Tools reicht das manchmal schon. Wenn die App aber richtig installiert werden soll, kommt ein Installer-Tool dazu.</p>
+
+            <hr>
+
+            <h2>Windows: Setup.exe mit Inno Setup</h2>
+            <p><strong>Inno Setup</strong> ist f&uuml;r Windows ein sehr praktischer Weg, aus einem fertigen App-Ordner einen Installer zu bauen. Man installiert Inno Setup von der offiziellen Webseite, schreibt eine <code>.iss</code>-Datei und kompiliert daraus eine <code>Setup.exe</code>.</p>
+
+            <p>Angenommen, deine PyInstaller-App liegt hier:</p>
+
+            <pre><code>dist/
+  MeineApp/
+    MeineApp.exe
+    assets/
+    data/
+assets/
+  app.ico</code></pre>
+
+            <p>Dann kann ein einfacher Inno-Setup-Script so aussehen:</p>
+
+            <pre><code>; installer.iss
+[Setup]
+AppId={{8A2B14A2-9A4B-4F5A-8B9A-0E1F2A3B4C5D}
+AppName=MeineApp
+AppVersion=1.0.0
+DefaultDirName={autopf}\MeineApp
+DefaultGroupName=MeineApp
+OutputDir=installer
+OutputBaseFilename=MeineApp-Setup
+SetupIconFile=assets\app.ico
+Compression=lzma
+SolidCompression=yes
+
+[Files]
+Source: "dist\MeineApp\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+
+[Icons]
+Name: "{autoprograms}\MeineApp"; Filename: "{app}\MeineApp.exe"; WorkingDir: "{app}"; IconFilename: "{app}\MeineApp.exe"
+Name: "{autodesktop}\MeineApp"; Filename: "{app}\MeineApp.exe"; WorkingDir: "{app}"; IconFilename: "{app}\MeineApp.exe"; Tasks: desktopicon
+
+[Tasks]
+Name: "desktopicon"; Description: "Desktop-Verkn&uuml;pfung erstellen"; GroupDescription: "Optionale Verkn&uuml;pfungen:"
+
+[Run]
+Filename: "{app}\MeineApp.exe"; Description: "MeineApp starten"; Flags: nowait postinstall skipifsilent</code></pre>
+
+            <p>Damit passiert genau das, was man von einer normalen Windows-App erwartet: Installation unter <code>Programme</code>, Startmen&uuml;-Eintrag, optional Desktop-Verkn&uuml;pfung, Icon und Startoption am Ende.</p>
+
+            <h3>Inno Setup per CLI bauen</h3>
+            <p>Du kannst den Installer auch ohne GUI bauen. Das ist praktisch f&uuml;r Skripte oder GitHub Actions:</p>
+
+            <pre><code>"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss</code></pre>
+
+            <p>Danach liegt die fertige <code>MeineApp-Setup.exe</code> im konfigurierten <code>OutputDir</code>.</p>
+
+            <hr>
+
+            <h2>Eigener Mini-Installer als Python-CLI</h2>
+            <p>F&uuml;r Schulprojekte, interne Tools oder Bastelprojekte kann ein eigener kleiner Installer reichen. Der kopiert die App in einen Benutzerordner und legt eine Startverkn&uuml;pfung an. Das ist nicht so professionell wie Inno Setup, aber sehr gut zum Verstehen.</p>
+
+            <h3>Windows-Variante</h3>
+            <pre><code># install_windows.py
+from pathlib import Path
+import os
+import shutil
+import subprocess
+
+APP_NAME = "MeineApp"
+SOURCE_DIR = Path("dist/MeineApp").resolve()
+INSTALL_DIR = Path(os.environ["LOCALAPPDATA"]) / APP_NAME
+EXE_PATH = INSTALL_DIR / "MeineApp.exe"
+ICON_PATH = EXE_PATH
+
+def copy_app():
+    if INSTALL_DIR.exists():
+        shutil.rmtree(INSTALL_DIR)
+    shutil.copytree(SOURCE_DIR, INSTALL_DIR)
+
+def create_shortcut(name, target_dir):
+    shortcut = target_dir / f"{name}.lnk"
+    ps = f'''
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut("{shortcut}")
+    $shortcut.TargetPath = "{EXE_PATH}"
+    $shortcut.WorkingDirectory = "{INSTALL_DIR}"
+    $shortcut.IconLocation = "{ICON_PATH}"
+    $shortcut.Save()
+    '''
+    subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps], check=True)
+
+def main():
+    copy_app()
+    desktop = Path(os.environ["USERPROFILE"]) / "Desktop"
+    start_menu = Path(os.environ["APPDATA"]) / "Microsoft/Windows/Start Menu/Programs"
+    create_shortcut(APP_NAME, desktop)
+    create_shortcut(APP_NAME, start_menu)
+    print(f"{APP_NAME} wurde installiert nach: {INSTALL_DIR}")
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+            <p>Dieser Installer braucht keine Adminrechte, weil er nach <code>%LOCALAPPDATA%</code> installiert. Wenn du nach <code>C:\Program Files</code> installieren willst, brauchst du Adminrechte und solltest eher Inno Setup verwenden.</p>
+
+            <h3>Linux-Variante</h3>
+            <pre><code># install_linux.py
+from pathlib import Path
+import os
+import shutil
+import stat
+
+APP_NAME = "MeineApp"
+SOURCE_DIR = Path("dist/MeineApp").resolve()
+INSTALL_DIR = Path.home() / ".local/share" / APP_NAME
+BIN_DIR = Path.home() / ".local/bin"
+DESKTOP_DIR = Path.home() / ".local/share/applications"
+ICON_PATH = INSTALL_DIR / "assets/app.png"
+EXEC_PATH = INSTALL_DIR / "MeineApp"
+
+def copy_app():
+    if INSTALL_DIR.exists():
+        shutil.rmtree(INSTALL_DIR)
+    shutil.copytree(SOURCE_DIR, INSTALL_DIR)
+    EXEC_PATH.chmod(EXEC_PATH.stat().st_mode | stat.S_IEXEC)
+
+def create_launcher():
+    BIN_DIR.mkdir(parents=True, exist_ok=True)
+    launcher = BIN_DIR / "meineapp"
+    launcher.write_text(f'#!/usr/bin/env bash\n"{EXEC_PATH}" "$@"\n', encoding="utf-8")
+    launcher.chmod(0o755)
+
+def create_desktop_file():
+    DESKTOP_DIR.mkdir(parents=True, exist_ok=True)
+    desktop_file = DESKTOP_DIR / "meineapp.desktop"
+    desktop_file.write_text(f"""[Desktop Entry]
+Type=Application
+Name=MeineApp
+Comment=Meine installierte App
+Exec={EXEC_PATH}
+Icon={ICON_PATH}
+Terminal=false
+Categories=Utility;
+""", encoding="utf-8")
+
+def main():
+    copy_app()
+    create_launcher()
+    create_desktop_file()
+    print("Installiert. Falls n&ouml;tig: abmelden/anmelden oder App-Men&uuml; neu laden.")
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+            <p>Linux-Desktop-Umgebungen lesen <code>.desktop</code>-Dateien aus <code>~/.local/share/applications</code>. Dadurch erscheint die App im Anwendungsmen&uuml;. Der Launcher unter <code>~/.local/bin</code> sorgt daf&uuml;r, dass man sie auch im Terminal starten kann.</p>
+
+            <hr>
+
+            <h2>Eigener Installer mit Tkinter-UI</h2>
+            <p>Wenn der Installer nicht nur im Terminal laufen soll, kannst du eine kleine Tkinter-Oberfl&auml;che bauen. Das Prinzip bleibt gleich: Zielpfad ausw&auml;hlen, Dateien kopieren, Shortcut erstellen.</p>
+
+            <pre><code># installer_gui.py
+from pathlib import Path
+import os
+import shutil
+import subprocess
+import tkinter as tk
+from tkinter import filedialog, messagebox
+
+APP_NAME = "MeineApp"
+SOURCE_DIR = Path("dist/MeineApp").resolve()
+
+def create_windows_shortcut(exe_path, install_dir, create_desktop):
+    targets = []
+    start_menu = Path(os.environ["APPDATA"]) / "Microsoft/Windows/Start Menu/Programs"
+    targets.append(start_menu)
+    if create_desktop:
+        targets.append(Path(os.environ["USERPROFILE"]) / "Desktop")
+
+    for target_dir in targets:
+        shortcut = target_dir / f"{APP_NAME}.lnk"
+        ps = f'''
+        $shell = New-Object -ComObject WScript.Shell
+        $shortcut = $shell.CreateShortcut("{shortcut}")
+        $shortcut.TargetPath = "{exe_path}"
+        $shortcut.WorkingDirectory = "{install_dir}"
+        $shortcut.IconLocation = "{exe_path}"
+        $shortcut.Save()
+        '''
+        subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps], check=True)
+
+def install():
+    target = Path(path_var.get()).expanduser()
+    install_dir = target / APP_NAME
+    try:
+        if install_dir.exists():
+            shutil.rmtree(install_dir)
+        shutil.copytree(SOURCE_DIR, install_dir)
+        exe_path = install_dir / "MeineApp.exe"
+        create_windows_shortcut(exe_path, install_dir, desktop_var.get())
+        messagebox.showinfo("Fertig", f"{APP_NAME} wurde installiert.")
+    except Exception as exc:
+        messagebox.showerror("Fehler", str(exc))
+
+def choose_path():
+    selected = filedialog.askdirectory(initialdir=path_var.get())
+    if selected:
+        path_var.set(selected)
+
+root = tk.Tk()
+root.title(f"{APP_NAME} Installer")
+root.resizable(False, False)
+
+default_dir = Path(os.environ["LOCALAPPDATA"])
+path_var = tk.StringVar(value=str(default_dir))
+desktop_var = tk.BooleanVar(value=True)
+
+tk.Label(root, text=f"{APP_NAME} installieren").grid(row=0, column=0, columnspan=3, padx=16, pady=(16, 8), sticky="w")
+tk.Entry(root, textvariable=path_var, width=48).grid(row=1, column=0, padx=(16, 6), pady=8)
+tk.Button(root, text="Durchsuchen", command=choose_path).grid(row=1, column=1, padx=(0, 16), pady=8)
+tk.Checkbutton(root, text="Desktop-Verkn&uuml;pfung erstellen", variable=desktop_var).grid(row=2, column=0, columnspan=2, padx=16, pady=8, sticky="w")
+tk.Button(root, text="Installieren", command=install).grid(row=3, column=0, columnspan=2, padx=16, pady=(8, 16), sticky="ew")
+
+root.mainloop()</code></pre>
+
+            <p>Das ist kein Ersatz f&uuml;r einen professionellen Windows-Installer, aber f&uuml;r kleine private Tools sehr brauchbar. Der gro&szlig;e Vorteil: Du verstehst genau, was bei einer Installation passiert.</p>
+
+            <hr>
+
+            <h2>Java-Anwendungen als Installer</h2>
+            <p>F&uuml;r Java ist <strong>jpackage</strong> der sauberste Standardweg. Es ist Teil moderner JDKs und kann Java-Anwendungen in native Installer verpacken. Wichtig: Du baust Windows-Installer auf Windows und Linux-Pakete auf Linux. Cross-Builds sind nicht der Normalfall.</p>
+
+            <h3>Vorbereitung</h3>
+            <pre><code>projekt/
+  target/
+    meineapp.jar
+  libs/
+    dependency-a.jar
+    dependency-b.jar
+  assets/
+    app.ico
+    app.png</code></pre>
+
+            <h3>Windows-Installer f&uuml;r Java</h3>
+            <pre><code>jpackage ^
+  --type exe ^
+  --name MeineJavaApp ^
+  --input target ^
+  --main-jar meineapp.jar ^
+  --main-class de.beispiel.Main ^
+  --icon assets\app.ico ^
+  --win-menu ^
+  --win-shortcut ^
+  --app-version 1.0.0 ^
+  --dest installer</code></pre>
+
+            <p><code>--win-menu</code> erzeugt einen Startmen&uuml;-Eintrag, <code>--win-shortcut</code> eine Desktop-Verkn&uuml;pfung. Das Icon muss unter Windows typischerweise eine <code>.ico</code>-Datei sein.</p>
+
+            <h3>Linux-Paket f&uuml;r Java</h3>
+            <pre><code>jpackage \
+  --type deb \
+  --name meine-java-app \
+  --input target \
+  --main-jar meineapp.jar \
+  --main-class de.beispiel.Main \
+  --icon assets/app.png \
+  --linux-shortcut \
+  --app-version 1.0.0 \
+  --dest installer</code></pre>
+
+            <p>F&uuml;r Fedora/OpenSUSE w&auml;rdest du statt <code>--type deb</code> eher <code>--type rpm</code> verwenden. F&uuml;r lokale Tests reicht auch <code>--type app-image</code>; dann bekommst du erst einmal einen App-Ordner ohne Paketinstallation.</p>
+
+            <hr>
+
+            <h2>Python-Anwendungen als richtige App</h2>
+            <p>F&uuml;r Python gibt es zwei typische Wege:</p>
+            <ul>
+                <li><strong>PyInstaller:</strong> Sehr praktisch f&uuml;r einzelne Tools, Tkinter-Apps, CLI-Skripte und Schul-/Uni-Projekte.</li>
+                <li><strong>Briefcase:</strong> Baut eher native App-Projektstrukturen und Installer. Das ist interessant, wenn du eine Python-App langfristig plattform&uuml;bergreifend pflegen willst.</li>
+            </ul>
+
+            <p>Ein wichtiger Hinweis: Nicht jedes Packaging-Tool passt zu Tkinter gleich gut. Briefcase verwendet unter Windows die Python-Embeddable-Distribution; dort ist Tkinter nicht immer problemlos verf&uuml;gbar. F&uuml;r einfache Tkinter-Apps ist PyInstaller deshalb oft der direktere Weg.</p>
+
+            <h3>CLI-Tool</h3>
+            <pre><code># main.py
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("name")
+args = parser.parse_args()
+print(f"Hallo {args.name}")</code></pre>
+
+            <pre><code>pyinstaller --onefile --name hallo main.py</code></pre>
+
+            <h3>Tkinter-App</h3>
+            <pre><code># main.py
+import tkinter as tk
+
+root = tk.Tk()
+root.title("Meine Tkinter App")
+tk.Label(root, text="Hallo Desktop!").pack(padx=30, pady=20)
+root.mainloop()</code></pre>
+
+            <pre><code>pyinstaller --onefile --windowed --name MeineTkApp --icon assets\app.ico main.py</code></pre>
+
+            <p>Danach kannst du die erzeugte <code>.exe</code> mit Inno Setup weiterverpacken.</p>
+
+            <hr>
+
+            <h2>Java und Python zusammen ausliefern</h2>
+            <p>Manchmal besteht ein Projekt aus mehreren Teilen: zum Beispiel eine Java-GUI und ein Python-Skript f&uuml;r Datenanalyse, OCR, KI, Export oder Automatisierung. Dann hast du drei M&ouml;glichkeiten:</p>
+
+            <table>
+                <thead>
+                    <tr><th>Ansatz</th><th>Wann sinnvoll?</th><th>Nachteil</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Python separat mit PyInstaller bauen</td><td>Python-Teil ist ein Hilfsprogramm</td><td>Mehrere Artefakte im Installer</td></tr>
+                    <tr><td>Java startet Python-EXE</td><td>Java ist Haupt-App, Python nur Worker</td><td>Pfad- und Fehlerbehandlung n&ouml;tig</td></tr>
+                    <tr><td>Alles in eine Sprache portieren</td><td>Langfristig wartbare App</td><td>Mehr Entwicklungsaufwand</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Beispielstruktur</h3>
+            <pre><code>dist/
+  MeineSuite/
+    MeineJavaApp.exe
+    worker/
+      analyse.exe
+    assets/
+      app.ico</code></pre>
+
+            <p>Die Java-App kann den Python-Worker dann relativ zum eigenen Installationsordner starten:</p>
+
+            <pre><code>// Java
+Path appDir = Paths.get(System.getProperty("user.dir"));
+Path worker = appDir.resolve("worker").resolve("analyse.exe");
+
+ProcessBuilder pb = new ProcessBuilder(worker.toString(), "input.csv");
+pb.directory(appDir.toFile());
+Process process = pb.start();
+int exitCode = process.waitFor();</code></pre>
+
+            <p>Der Installer muss nur den gesamten Ordner kopieren und den Shortcut auf die Java-Hauptanwendung zeigen lassen.</p>
+
+            <hr>
+
+            <h2>Linux: App sichtbar machen</h2>
+            <p>Unter Linux ist die App-Integration meist eine <code>.desktop</code>-Datei. Beispiel:</p>
+
+            <pre><code>[Desktop Entry]
+Type=Application
+Name=MeineApp
+Comment=Mein kleines Tool
+Exec=/home/felix/.local/share/MeineApp/MeineApp
+Icon=/home/felix/.local/share/MeineApp/assets/app.png
+Terminal=false
+Categories=Utility;Education;</code></pre>
+
+            <p>Speicherort f&uuml;r den aktuellen Benutzer:</p>
+
+            <pre><code>~/.local/share/applications/meineapp.desktop</code></pre>
+
+            <p>Wichtig ist, dass <code>Exec</code> und <code>Icon</code> auf echte Dateien zeigen. Manche Desktop-Umgebungen brauchen danach ein Ab- und Anmelden oder einen Men&uuml;-Reload.</p>
+
+            <h3>AppImage, Flatpak, deb, rpm</h3>
+            <ul>
+                <li><strong>AppImage:</strong> Eine Datei, die viele Distributionen direkt ausf&uuml;hren k&ouml;nnen. Gut f&uuml;r einfache Downloads.</li>
+                <li><strong>Flatpak:</strong> Gut f&uuml;r Distribution &uuml;ber Flathub oder kontrollierte Sandbox-Umgebung.</li>
+                <li><strong>deb:</strong> F&uuml;r Debian, Ubuntu, Linux Mint und verwandte Systeme.</li>
+                <li><strong>rpm:</strong> F&uuml;r Fedora, RHEL, openSUSE und verwandte Systeme.</li>
+            </ul>
+
+            <p>F&uuml;r Java kann <code>jpackage</code> direkt <code>deb</code> oder <code>rpm</code> erzeugen. F&uuml;r Python ist PyInstaller plus AppImage oder ein eigenes <code>.deb</code>-Paket ein typischer Weg.</p>
+
+            <hr>
+
+            <h2>Praktische Usecases</h2>
+
+            <h3>Usecase 1: Schul-Tool mit Tkinter</h3>
+            <p>Du hast ein kleines Tkinter-Programm, das Sitzpl&auml;ne, Vokabeln oder Aufgaben verwaltet. Baue eine <code>.exe</code> mit PyInstaller und verpacke sie mit Inno Setup. Ergebnis: Lehrkr&auml;fte bekommen eine Setup-Datei, installieren das Tool und finden es im Startmen&uuml;.</p>
+
+            <h3>Usecase 2: JavaFX-Lernapp</h3>
+            <p>Du hast eine JavaFX-App geschrieben. Verwende <code>jpackage</code>, damit Java nicht separat installiert werden muss. Ergebnis: Windows-Installer oder Linux-Paket mit Icon und Men&uuml;eintrag.</p>
+
+            <h3>Usecase 3: Python-Datenanalyse als Hilfsprogramm</h3>
+            <p>Du hast eine Java-Oberfl&auml;che, aber die Datenanalyse ist in Python geschrieben. Baue das Python-Skript mit PyInstaller zu <code>analyse.exe</code> und liefere es im Unterordner <code>worker/</code> mit. Die Java-App startet es bei Bedarf.</p>
+
+            <h3>Usecase 4: Interne CLI f&uuml;r wiederkehrende Aufgaben</h3>
+            <p>Du hast ein Python-CLI-Tool, das Dateien sortiert, PDFs verarbeitet oder Daten exportiert. Baue es mit PyInstaller als <code>--onefile</code>. Unter Windows kann Inno Setup den Installationspfad in eine feste App-Struktur bringen; unter Linux reicht oft ein Launcher in <code>~/.local/bin</code>.</p>
+
+            <hr>
+
+            <h2>Prompt-Vorlagen f&uuml;r Coding Agents</h2>
+            <p>Wenn du mit einem Coding Agent arbeitest, solltest du nicht nur schreiben: &quot;Mach daraus einen Installer&quot;. Besser ist ein konkreter Auftrag: Der Agent soll erst das Projekt analysieren, dann eine installierbare Zielstruktur vorschlagen, danach Build- und Installer-Skripte erzeugen und am Ende pr&uuml;fen, ob die Pfade, Icons und Startdateien wirklich stimmen.</p>
+
+            <h3>Prompt: Bestehendes Projekt in Installer-Struktur umbauen</h3>
+            <pre><code>Du arbeitest in meinem bestehenden Projekt. Bitte analysiere zuerst die aktuelle Struktur und baue sie dann so um, dass daraus eine installierbare Desktop-App gebaut werden kann.
+
+Zielplattformen:
+- Windows: EXE/App-Ordner plus optional Inno-Setup-Installer
+- Linux: ausführbarer App-Ordner plus .desktop-Datei, optional deb/rpm/AppImage
+
+Bitte erledige konkret:
+1. Erkenne die Startdatei der App.
+2. Erkenne, ob es eine Python-, Java-, JavaFX-, Tkinter-, CLI- oder gemischte App ist.
+3. Schlage eine klare Zielstruktur vor, zum Beispiel:
+   app/
+   assets/
+   scripts/
+   installer/
+   dist/
+   docs/
+4. Verschiebe nur Dateien, wenn es sinnvoll und sicher ist. Erkläre jede Strukturänderung kurz.
+5. Lege Build-Skripte an:
+   - scripts/build-windows.bat
+   - scripts/build-linux.sh
+6. Lege Installer-Skripte an:
+   - installer/install_windows.py oder installer.iss
+   - installer/install_linux.py oder eine .desktop-Datei
+7. Sorge dafür, dass Icon, Arbeitsverzeichnis, Startpfad und Ressourcen korrekt verwendet werden.
+8. Füge eine kurze README-Sektion hinzu: Build, Installation, Deinstallation, typische Fehler.
+9. Führe keine riskanten Löschaktionen aus. Wenn Dateien verschoben werden müssen, erkläre vorher den Plan.
+10. Prüfe am Ende mit passenden Befehlen, ob die Build-Skripte syntaktisch plausibel sind und alle referenzierten Dateien existieren.</code></pre>
+
+            <h3>Prompt: Neues Projekt direkt mit installierbarer Struktur planen</h3>
+            <pre><code>Ich möchte ein neues Desktop-Projekt starten. Bitte erstelle mir eine saubere Projektstruktur, die von Anfang an für Packaging und Installer geeignet ist.
+
+Rahmen:
+- App-Name: &lt;APP_NAME&gt;
+- Sprache/Stack: &lt;Python mit Tkinter / Python CLI / Java / JavaFX / gemischt&gt;
+- Zielplattformen: Windows und Linux
+- Icon-Dateien: assets/app.ico für Windows, assets/app.png für Linux
+- Ressourcen: assets/ und data/
+
+Bitte generiere:
+1. Eine empfohlene Ordnerstruktur.
+2. Eine minimale lauffähige Beispiel-App.
+3. Ein Windows-Build-Skript als kopierbaren .bat-Code.
+4. Ein Linux-Build-Skript als kopierbaren .sh-Code.
+5. Einen einfachen Windows-Installer oder eine Inno-Setup-Vorlage.
+6. Eine Linux-.desktop-Datei oder ein install_linux.py-Skript.
+7. Eine README mit den Befehlen:
+   - App lokal starten
+   - Windows-Build erzeugen
+   - Linux-Build erzeugen
+   - Installer erzeugen
+   - App installieren
+8. Achte darauf, dass alle Pfade relativ zum Projekt funktionieren.</code></pre>
+
+            <h3>Interaktives Struktur-Skript f&uuml;r Windows</h3>
+            <p>Dieses <code>.bat</code>-Skript fragt die wichtigsten Entscheidungen ab und erzeugt daraus eine projektnahe Grundstruktur. Es erzeugt noch keine fertige App, aber eine sehr gute Vorlage f&uuml;r den n&auml;chsten Agent-Schritt.</p>
+
+            <pre><code>@echo off
+setlocal EnableDelayedExpansion
+
+echo === Desktop-App Projektstruktur Generator ===
+set /p APP_NAME=App-Name [MeineApp]: 
+if "%APP_NAME%"=="" set APP_NAME=MeineApp
+
+set /p STACK=Stack python-cli, python-tkinter, java, javafx, mixed [python-tkinter]: 
+if "%STACK%"=="" set STACK=python-tkinter
+
+set /p MAIN_FILE=Startdatei [app\main.py oder app\Main.java]: 
+if "%MAIN_FILE%"=="" set MAIN_FILE=app\main.py
+
+set /p JAVA_MAIN=Java Main-Class, falls Java genutzt wird [de.beispiel.Main]: 
+if "%JAVA_MAIN%"=="" set JAVA_MAIN=de.beispiel.Main
+
+set /p WIN_ICON=Windows Iconpfad [.ico] [assets\app.ico]: 
+if "%WIN_ICON%"=="" set WIN_ICON=assets\app.ico
+
+set /p LINUX_ICON=Linux Iconpfad [.png] [assets/app.png]: 
+if "%LINUX_ICON%"=="" set LINUX_ICON=assets/app.png
+
+set /p WANT_INSTALLER=Installer-Vorlagen erzeugen? j/n [j]: 
+if "%WANT_INSTALLER%"=="" set WANT_INSTALLER=j
+
+mkdir "%APP_NAME%"
+cd "%APP_NAME%"
+
+mkdir app assets data scripts installer dist docs
+type nul &gt; assets\app.ico
+type nul &gt; assets\app.png
+type nul &gt; data\.gitkeep
+
+(
+echo # %APP_NAME%
+echo.
+echo Stack: %STACK%
+echo Startdatei: %MAIN_FILE%
+echo Java Main-Class: %JAVA_MAIN%
+echo Windows-Icon: %WIN_ICON%
+echo Linux-Icon: %LINUX_ICON%
+echo.
+echo ## Befehle
+echo - Windows Build: scripts\build-windows.bat
+echo - Linux Build: scripts/build-linux.sh
+echo - Windows Installer: installer\installer.iss oder installer\install_windows.py
+echo - Linux Integration: installer/install_linux.py oder installer/%APP_NAME%.desktop
+) &gt; README.md
+
+(
+echo @echo off
+echo setlocal
+echo set APP_NAME=%APP_NAME%
+echo set STACK=%STACK%
+echo echo Baue %%APP_NAME%% fuer Windows...
+echo if "%%STACK%%"=="python-cli" pyinstaller --onefile --name %%APP_NAME%% --icon "%WIN_ICON%" "%MAIN_FILE%"
+echo if "%%STACK%%"=="python-tkinter" pyinstaller --onefile --windowed --name %%APP_NAME%% --icon "%WIN_ICON%" "%MAIN_FILE%"
+echo if "%%STACK%%"=="java" jpackage ^^
+echo   --type exe ^^
+echo   --name %%APP_NAME%% ^^
+echo   --input dist ^^
+echo   --main-jar %%APP_NAME%%.jar ^^
+echo   --main-class %JAVA_MAIN% ^^
+echo   --icon "%WIN_ICON%" ^^
+echo   --win-menu --win-shortcut
+echo if "%%STACK%%"=="javafx" echo Ergaenze JavaFX-Module und nutze danach jpackage.
+echo if "%%STACK%%"=="mixed" echo Baue zuerst Python-Worker mit PyInstaller, dann Java-Hauptapp mit jpackage.
+) &gt; scripts\build-windows.bat
+
+(
+echo #!/usr/bin/env bash
+echo set -e
+echo APP_NAME="%APP_NAME%"
+echo STACK="%STACK%"
+echo echo "Baue $APP_NAME fuer Linux..."
+echo if [ "$STACK" = "python-cli" ]; then pyinstaller --onefile --name "$APP_NAME" --icon "%LINUX_ICON%" "%MAIN_FILE%"; fi
+echo if [ "$STACK" = "python-tkinter" ]; then pyinstaller --onefile --windowed --name "$APP_NAME" --icon "%LINUX_ICON%" "%MAIN_FILE%"; fi
+echo if [ "$STACK" = "java" ]; then jpackage --type deb --name "$APP_NAME" --input dist --main-jar "$APP_NAME.jar" --main-class "%JAVA_MAIN%" --icon "%LINUX_ICON%" --linux-shortcut; fi
+echo if [ "$STACK" = "javafx" ]; then echo "Ergaenze JavaFX-Module und nutze danach jpackage."; fi
+echo if [ "$STACK" = "mixed" ]; then echo "Baue zuerst Python-Worker, dann Java-Hauptapp."; fi
+) &gt; scripts\build-linux.sh
+
+if /i "%WANT_INSTALLER%"=="j" (
+  (
+  echo [Setup]
+  echo AppName=%APP_NAME%
+  echo AppVersion=1.0.0
+  echo DefaultDirName={autopf}\%APP_NAME%
+  echo DefaultGroupName=%APP_NAME%
+  echo OutputDir=dist
+  echo OutputBaseFilename=%APP_NAME%-Setup
+  echo SetupIconFile=%WIN_ICON%
+  echo.
+  echo [Files]
+  echo Source: "dist\%APP_NAME%\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+  echo.
+  echo [Icons]
+  echo Name: "{autoprograms}\%APP_NAME%"; Filename: "{app}\%APP_NAME%.exe"; WorkingDir: "{app}"
+  echo Name: "{autodesktop}\%APP_NAME%"; Filename: "{app}\%APP_NAME%.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+  echo.
+  echo [Tasks]
+  echo Name: "desktopicon"; Description: "Desktop-Verknuepfung erstellen"; GroupDescription: "Optionale Verknuepfungen:"
+  ) &gt; installer\installer.iss
+)
+
+if /i "%STACK%"=="python-tkinter" (
+  (
+  echo import tkinter as tk
+  echo root = tk.Tk()
+  echo root.title("%APP_NAME%")
+  echo tk.Label(root, text="Hallo von %APP_NAME%").pack(padx=30, pady=20)
+  echo root.mainloop()
+  ) &gt; app\main.py
+) else (
+  (
+  echo print("Hallo von %APP_NAME%")
+  ) &gt; app\main.py
+)
+
+echo.
+echo Fertig. Projektstruktur fuer %APP_NAME% wurde erstellt.
+echo Naechster Schritt: scripts\build-windows.bat pruefen und an dein echtes Projekt anpassen.
+pause</code></pre>
+
+            <h3>Interaktives Struktur-Skript f&uuml;r Linux</h3>
+            <pre><code>#!/usr/bin/env bash
+set -e
+
+read -rp "App-Name [MeineApp]: " APP_NAME
+APP_NAME="${APP_NAME:-MeineApp}"
+
+read -rp "Stack python-cli, python-tkinter, java, javafx, mixed [python-tkinter]: " STACK
+STACK="${STACK:-python-tkinter}"
+
+read -rp "Startdatei [app/main.py oder app/Main.java]: " MAIN_FILE
+MAIN_FILE="${MAIN_FILE:-app/main.py}"
+
+read -rp "Java Main-Class, falls Java genutzt wird [de.beispiel.Main]: " JAVA_MAIN
+JAVA_MAIN="${JAVA_MAIN:-de.beispiel.Main}"
+
+read -rp "Windows Iconpfad [.ico] [assets/app.ico]: " WIN_ICON
+WIN_ICON="${WIN_ICON:-assets/app.ico}"
+
+read -rp "Linux Iconpfad [.png] [assets/app.png]: " LINUX_ICON
+LINUX_ICON="${LINUX_ICON:-assets/app.png}"
+
+read -rp "Installer-/Desktop-Vorlagen erzeugen? j/n [j]: " WANT_INSTALLER
+WANT_INSTALLER="${WANT_INSTALLER:-j}"
+
+mkdir -p "$APP_NAME"
+cd "$APP_NAME"
+
+mkdir -p app assets data scripts installer dist docs
+touch assets/app.ico assets/app.png data/.gitkeep
+
+cat &gt; README.md &lt;&lt;EOF
+# $APP_NAME
+
+Stack: $STACK
+Startdatei: $MAIN_FILE
+Java Main-Class: $JAVA_MAIN
+Windows-Icon: $WIN_ICON
+Linux-Icon: $LINUX_ICON
+
+## Befehle
+- Windows Build: scripts/build-windows.bat
+- Linux Build: scripts/build-linux.sh
+- Windows Installer: installer/installer.iss oder installer/install_windows.py
+- Linux Integration: installer/install_linux.py oder installer/$APP_NAME.desktop
+EOF
+
+cat &gt; scripts/build-windows.bat &lt;&lt;EOF
+@echo off
+setlocal
+set APP_NAME=$APP_NAME
+set STACK=$STACK
+echo Baue %APP_NAME% fuer Windows...
+if "%STACK%"=="python-cli" pyinstaller --onefile --name %APP_NAME% --icon "$WIN_ICON" "$MAIN_FILE"
+if "%STACK%"=="python-tkinter" pyinstaller --onefile --windowed --name %APP_NAME% --icon "$WIN_ICON" "$MAIN_FILE"
+if "%STACK%"=="java" jpackage ^
+  --type exe ^
+  --name %APP_NAME% ^
+  --input dist ^
+  --main-jar %APP_NAME%.jar ^
+  --main-class $JAVA_MAIN ^
+  --icon "$WIN_ICON" ^
+  --win-menu --win-shortcut
+if "%STACK%"=="javafx" echo Ergaenze JavaFX-Module und nutze danach jpackage.
+if "%STACK%"=="mixed" echo Baue zuerst Python-Worker mit PyInstaller, dann Java-Hauptapp mit jpackage.
+EOF
+
+cat &gt; scripts/build-linux.sh &lt;&lt;EOF
+#!/usr/bin/env bash
+set -e
+APP_NAME="$APP_NAME"
+STACK="$STACK"
+echo "Baue \$APP_NAME fuer Linux..."
+if [ "\$STACK" = "python-cli" ]; then pyinstaller --onefile --name "\$APP_NAME" --icon "$LINUX_ICON" "$MAIN_FILE"; fi
+if [ "\$STACK" = "python-tkinter" ]; then pyinstaller --onefile --windowed --name "\$APP_NAME" --icon "$LINUX_ICON" "$MAIN_FILE"; fi
+if [ "\$STACK" = "java" ]; then jpackage --type deb --name "\$APP_NAME" --input dist --main-jar "\$APP_NAME.jar" --main-class "$JAVA_MAIN" --icon "$LINUX_ICON" --linux-shortcut; fi
+if [ "\$STACK" = "javafx" ]; then echo "Ergaenze JavaFX-Module und nutze danach jpackage."; fi
+if [ "\$STACK" = "mixed" ]; then echo "Baue zuerst Python-Worker, dann Java-Hauptapp."; fi
+EOF
+chmod +x scripts/build-linux.sh
+
+if [ "$WANT_INSTALLER" = "j" ] || [ "$WANT_INSTALLER" = "J" ]; then
+  cat &gt; "installer/$APP_NAME.desktop" &lt;&lt;EOF
+[Desktop Entry]
+Type=Application
+Name=$APP_NAME
+Comment=$APP_NAME starten
+Exec=\$HOME/.local/share/$APP_NAME/$APP_NAME
+Icon=\$HOME/.local/share/$APP_NAME/$LINUX_ICON
+Terminal=false
+Categories=Utility;
+EOF
+fi
+
+if [ "$STACK" = "python-tkinter" ]; then
+  cat &gt; app/main.py &lt;&lt;EOF
+import tkinter as tk
+root = tk.Tk()
+root.title("$APP_NAME")
+tk.Label(root, text="Hallo von $APP_NAME").pack(padx=30, pady=20)
+root.mainloop()
+EOF
+else
+  cat &gt; app/main.py &lt;&lt;EOF
+print("Hallo von $APP_NAME")
+EOF
+fi
+
+echo
+echo "Fertig. Projektstruktur fuer $APP_NAME wurde erstellt."
+echo "Naechster Schritt: scripts/build-linux.sh pruefen und an dein echtes Projekt anpassen."</code></pre>
+
+            <h3>Prompt: Agent soll die Skripte konkret ausf&uuml;llen</h3>
+            <pre><code>Hier ist meine vorbereitete Projektstruktur. Bitte fülle die Build- und Installer-Skripte konkret für dieses Projekt aus.
+
+Bitte analysiere:
+- Welche Datei startet die App?
+- Welche Sprache und Build-Tools werden verwendet?
+- Welche Ressourcen aus assets/ und data/ müssen mitgeliefert werden?
+- Welches Icon soll Windows verwenden und welches Linux?
+- Soll die App ein Konsolenprogramm oder eine GUI-App sein?
+
+Bitte liefere danach:
+1. Einen funktionierenden Inhalt für scripts/build-windows.bat.
+2. Einen funktionierenden Inhalt für scripts/build-linux.sh.
+3. Falls Python: passende PyInstaller-Befehle inklusive --add-data.
+4. Falls Java: passende jpackage-Befehle inklusive --main-jar, --main-class, Icon und Shortcut/Menu.
+5. Falls gemischt Java/Python: baue den Python-Teil separat und lasse die Java-App ihn relativ starten.
+6. Eine kurze Erklärung, welche Dateien nach dist/ oder installer/ entstehen.
+7. Einen finalen Testplan mit konkreten Befehlen.</code></pre>
+
+            <p>Der Vorteil solcher Prompts ist, dass der Agent nicht nur Code erzeugt, sondern zuerst die vorhandene Struktur versteht. Gerade bei Installer-Projekten ist das wichtig, weil ein falscher relativer Pfad, ein fehlendes Icon oder ein falsches Arbeitsverzeichnis sonst erst beim Nutzer auff&auml;llt.</p>
+
+            <hr>
+
+            <h2>Typische Fehler</h2>
+            <table>
+                <thead>
+                    <tr><th>Problem</th><th>Ursache</th><th>L&ouml;sung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>App startet nur auf deinem Rechner</td><td>Abh&auml;ngigkeiten fehlen</td><td>Mit PyInstaller/jpackage Runtime und Dateien mitliefern</td></tr>
+                    <tr><td>Icon fehlt</td><td>Falsches Format oder falscher Pfad</td><td>Windows: <code>.ico</code>, Linux: <code>.png</code>, Pfade absolut oder relativ korrekt setzen</td></tr>
+                    <tr><td>Shortcut startet, aber App findet Daten nicht</td><td>Working Directory falsch</td><td>In Shortcut/Installer <code>WorkingDir</code> auf Installationsordner setzen</td></tr>
+                    <tr><td>Tkinter-App zeigt Konsolenfenster</td><td>PyInstaller ohne <code>--windowed</code></td><td><code>pyinstaller --windowed ...</code></td></tr>
+                    <tr><td>Linux-App erscheint nicht im Men&uuml;</td><td><code>.desktop</code>-Datei fehlerhaft</td><td><code>Exec</code>, <code>Icon</code> und Speicherort pr&uuml;fen</td></tr>
+                    <tr><td>Windows warnt beim Download</td><td>Unsignierte unbekannte EXE</td><td>Bei kleinen Projekten normal; bei Verteilung an viele Nutzer Code-Signing pr&uuml;fen</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>Quellen und Werkzeuge</h2>
+            <ul>
+                <li><a href="https://pyinstaller.org/en/stable/usage.html" target="_blank" rel="noopener">PyInstaller Usage</a></li>
+                <li><a href="https://pyinstaller.org/en/stable/operating-mode.html" target="_blank" rel="noopener">PyInstaller Operating Mode</a></li>
+                <li><a href="https://jrsoftware.org/ishelp/topic_iconssection.htm" target="_blank" rel="noopener">Inno Setup: Icons section</a></li>
+                <li><a href="https://openjdk.org/jeps/392" target="_blank" rel="noopener">OpenJDK JEP 392: Packaging Tool</a></li>
+                <li><a href="https://man.archlinux.org/man/extra/jdk21-openjdk/jpackage-openjdk21.1.en" target="_blank" rel="noopener">jpackage Manual Page</a></li>
+                <li><a href="https://briefcase.beeware.org/" target="_blank" rel="noopener">BeeWare Briefcase</a></li>
+                <li><a href="https://briefcase.beeware.org/en/stable/reference/platforms/windows/" target="_blank" rel="noopener">Briefcase Windows Notes</a></li>
+            </ul>
+
+        </article>
+    </main>
+
+    <br /><br />
+    <footer>
+        <div class="container">Â© 2025 Felix Staacke</div>
+    </footer>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../media/favicon.png">
+    <title>Wenn Zeit über Leben entscheidet | Posterprojekt</title>
+  <meta name="description" content="Begleitseite zum wissenschaftlichen Poster über digitale Vernetzung in der präklinischen Notfallmedizin." />
+  <style>
+    :root {
+      --bg:#080c12; --panel:#0d131d; --panel2:#101827; --text:#edf4ff; --muted:#a8b6c9;
+      --line:#26354b; --cyan:#78d7ff; --violet:#9d8cff; --green:#21d08a; --yellow:#f6df3b; --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,#080c12 0%,#091019 58%,#070b10 100%);color:var(--text);line-height:1.72}
+    a{color:inherit;text-decoration:none}
+    a:hover{color:var(--cyan)}
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(8,12,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+    .brand{display:flex;align-items:center;gap:13px;font-weight:850;min-width:0}
+    .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--violet));flex:0 0 auto}
+    .brand span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .home{border:1px solid #405673;border-radius:999px;padding:8px 14px;font-weight:750;background:#0b111b;white-space:nowrap}
+    .layout{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:205px minmax(0,1fr);gap:42px;padding:42px 24px 80px}
+    aside{position:sticky;top:78px;align-self:start;padding:6px 18px 12px 0;border-right:1px solid var(--line)}
+    aside .label{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#83a7d4;margin-bottom:10px;font-weight:800}
+    aside a{display:block;color:#b7c7dc;padding:6px 0;font-size:.94rem;border-bottom:1px solid rgba(38,53,75,.36)}
+    aside a:hover{color:#fff}
+    main{min-width:0}
+    .kicker{color:#9fb9e9;letter-spacing:.16em;text-transform:uppercase;font-size:.78rem;font-weight:800}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:46px;align-items:start;margin-bottom:46px}
+    .hero-copy{min-width:0;max-width:710px}
+    h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(3.1rem,6.6vw,5.8rem);line-height:.98;margin:16px 0 22px;letter-spacing:-.052em;max-width:680px}
+    .lead{font-size:1.18rem;color:#e6f2ff;max-width:700px}
+    .note{color:var(--muted);max-width:720px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #435a78;padding:9px 13px;border-radius:9px;font-weight:800;background:#101827}
+    .btn.primary{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#06101b;border:0}
+    .btn.green{border-color:rgba(33,208,138,.55);background:#071d17;color:#dfffee}
+    .posterbox{border:1px solid #385071;background:#0d1420;padding:0;border-radius:4px;overflow:hidden}
+    .posterbox a{display:block}
+    .posterbox img{width:100%;display:block;background:#fff}
+    .posterbox a:hover img{filter:brightness(1.08)}
+    .posterbox .caption{font-size:.86rem;color:#a9b8cd;margin:0;padding:12px 15px 15px}
+    section{padding:36px 0;border-top:1px solid var(--line)}
+    h2{font-size:2rem;line-height:1.18;margin:0 0 14px;letter-spacing:-.02em}
+    h3{font-size:1.16rem;margin:28px 0 8px;color:#eaf4ff}
+    p{margin:0 0 16px}
+    ul{margin:0 0 18px 1.2rem;padding:0}
+    li{margin:6px 0}
+    .accent{color:var(--yellow)}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .simplebox{border-left:3px solid var(--cyan);padding:4px 0 4px 17px;margin:18px 0;color:#dcecff;background:linear-gradient(90deg,rgba(120,215,255,.06),transparent)}
+    .greenbox{border-left-color:var(--green);background:linear-gradient(90deg,rgba(33,208,138,.07),transparent)}
+    .warnbox{border-left-color:var(--yellow);background:linear-gradient(90deg,rgba(246,223,59,.06),transparent)}
+    .small{font-size:.94rem;color:var(--muted)}
+    .method-flow{display:grid;gap:14px;margin:24px 0}
+    .flow-row{display:grid;grid-template-columns:180px 28px minmax(0,1fr);gap:14px;align-items:center}
+    .flow-step{border:1px solid #334762;background:#0b121d;padding:13px 14px;border-radius:4px}
+    .flow-step strong{display:block;color:#fff;margin-bottom:4px}
+    .flow-step small{color:var(--muted);font-size:.87rem}
+    .arrow{color:var(--cyan);font-weight:900;text-align:center}
+    .mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
+    .mini{border-top:2px solid #334762;background:rgba(16,24,39,.56);padding:14px 15px}
+    .mini strong{display:block;color:#fff;margin-bottom:5px}
+    .architecture{margin:28px 0;border:1px solid #385071;background:#f8fbff;border-radius:4px;overflow:hidden}
+    .architecture img{display:block;width:100%;height:auto}
+    .architecture figcaption{margin:0;padding:12px 15px 15px;background:#0d1420;color:#a9b8cd;font-size:.9rem}
+    .refs ol{padding-left:1.35rem}
+    .refs li{margin:12px 0;color:#c9d6e8}
+    sup a{color:var(--cyan);font-weight:800}
+    .download-line{margin-top:10px}
+    footer{border-top:1px solid var(--line);color:#98a8bd;padding:26px 24px;max-width:var(--max);margin:0 auto}
+    @media(max-width:980px){.layout{grid-template-columns:1fr;gap:20px}aside{position:relative;top:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:14px}aside a{display:inline-block;margin-right:14px;border-bottom:0}.hero{grid-template-columns:1fr}.hero-copy{max-width:100%}h1{max-width:100%;font-size:clamp(2.9rem,12vw,5.1rem)}.posterbox{max-width:460px}.split,.mini-grid{grid-template-columns:1fr}.flow-row{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}
+  
+    .chain{margin:22px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .chain span{border-left:3px solid #6ecbff;background:rgba(110,203,255,.07);padding:10px 14px;border-radius:4px;font-size:.95rem}
+    .chain span:not(:last-child)::after{content:"→";color:#9fb5d9;margin-left:12px}
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="mark"></span><span>Wenn Zeit über Leben entscheidet · Digitalisierung im Rettungsdienst</span></div>
+      <a class="home" href="https://datenflix007.github.io/">Zur Startseite</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside aria-label="Kapitel">
+      <div class="label">Kapitel</div>
+      <a href="#start">Start</a>
+      <a href="#frage">Fragestellung</a>
+      <a href="#ausgangslage">Ausgangslage</a>
+      <a href="#methode">Methode</a>
+      <a href="#emergent">eMergent</a>
+      <a href="#ergebnisse">Ergebnisse</a>
+      <a href="#saalekreis">Saalekreis</a>
+      <a href="#theorie">Theorie</a>
+      <a href="#it">IT-Sicherheit</a>
+      <a href="#fazit">Fazit</a>
+      <a href="#weitere-informationen">Weitere Infos</a>
+      <a href="#quellen">Fußnoten</a>
+    </aside>
+
+    <main id="start">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="kicker">Wissenschaftliches Poster</div>
+          <h1>Wenn Zeit über Leben entscheidet</h1>
+          <p class="lead">Wie digitale Vernetzung Zeitverluste im Rettungsdienst reduzieren kann. Diese Begleitseite lässt das Poster ausführlicher auf und ordnet die präklinische Rettungskette als technisches, organisatorisches und rechtliches Gesamtsystem ein.</p>
+          <p class="note">Der zentrale Befund ist bewusst vorsichtig formuliert: Digitalisierung rettet nicht automatisch Leben. Sie wird erst wirksam, wenn Standortdaten, Leitstelle, Rettungsmittel, Ersthelferalarmierung, Telenotarzt, Klinikvoranmeldung und Dokumentation möglichst ohne Medienbrüche zusammenspielen.<sup><a href="#fn1">1</a></sup></p>
+          <div class="actions">
+            <a class="btn primary" href="https://datenflix007.github.io/">Startseite</a>
+            <a class="btn" href="#emergent">eMergent</a>
+            <a class="btn green" href="#saalekreis">Positivbeispiel Saalekreis</a>
+            <a class="btn" href="poster-viewer.html">Poster ansehen</a>
+            <a class="btn" href="Umsetzung_vol2.pdf" download>Poster-PDF herunterladen</a>
+          </div>
+        </div>
+        <div class="posterbox">
+          <a href="poster-viewer.html" aria-label="Poster-PDF im Viewer öffnen"><img src="preview.png" alt="Vorschau des wissenschaftlichen Posters Wenn Zeit über Leben entscheidet" /></a>
+          <p class="caption">Vorschau des Posters. Zum Öffnen anklicken.</p>
+          <p class="caption">Hinweis: Die Abbildungen auf dem Poster wurden mit KI generiert und sind gemeinfrei.</p>
+        </div>
+      </div>
+
+      <section id="frage">
+        <div class="kicker">Leitfrage</div>
+        <h2>Wo gehen in der präklinischen Rettungskette kritische Minuten verloren?</h2>
+        <p>Das Poster setzt bei einer einfachen Beobachtung an: Im Rettungsdienst ist Zeit keine abstrakte Kennzahl, sondern Teil der medizinischen Prognose. Bei Herz-Kreislauf-Stillstand, Polytrauma, Schlaganfall oder akutem Koronarsyndrom entscheidet nicht nur die medizinische Maßnahme selbst, sondern auch, wann sie beginnt, welche Informationen bereits vorliegen und ob die Zielklinik vorbereitet ist.</p>
+        <p>Die Untersuchung fragt deshalb nicht nur nach einzelnen Geräten, sondern nach der Kette zwischen Notruf, Leitstellendisposition, automatischer Standortermittlung, Alarmierung geeigneter Ressourcen, Ersthelfer-App, AED-Nutzung, RTW- und NEF-Einsatz, Telenotarzt, Klinikvoranmeldung, Übergabe und digitaler Dokumentation.</p>
+        <div class="simplebox">Die Leitfrage lautet: Welche digitale Vernetzung kann reale Zeitverluste reduzieren, ohne neue Abhängigkeiten, Sicherheitsrisiken oder organisatorische Blindstellen zu erzeugen?</div>
+      </section>
+
+      <section id="ausgangslage">
+        <div class="kicker">Ausgangslage</div>
+        <h2>Der Rettungsdienst ist zeitkritisch, heterogen und technisch ungleich entwickelt</h2>
+        <p>Der Rettungsdienst ist ein zentraler Teil des deutschen Gesundheitssystems. Die ältere Posterfassung arbeitete mit 16,3 Millionen Rettungsdiensteinsätzen jährlich in Deutschland und verwies auf die wachsende Bedeutung präklinischer Prozesszeiten.<sup><a href="#fn2">2</a></sup> Besonders deutlich wird der Zeitdruck bei der außerklinischen Reanimation: Das Deutsche Reanimationsregister weist für 2024 mindestens 54.000 Reanimationen pro Jahr aus. Die Datengrundlage umfasst 27.009 Fälle aus 198 Rettungsdiensten und eine abgedeckte Bevölkerung von rund 42 Millionen Menschen.<sup><a href="#fn3">3</a></sup></p>
+        <p>Medizinisch geht es um eine früh einsetzende Rettungskette. Herzdruckmassage, Defibrillation, professionelle Versorgung und die richtige Zielklinik müssen möglichst früh zusammenkommen. Zugleich darf der Rettungsdienst nicht nur auf maximale Aktivität getrimmt werden. Die Stellungnahme zu Reanimationsabbruch und Reanimationsverzicht betont, dass Reanimationsentscheidungen an Therapieziel, Prognose, Patientenwillen und medizinischer Sinnhaftigkeit gebunden bleiben müssen.<sup><a href="#fn4">4</a></sup></p>
+        <p>Organisatorisch ist die Lage schwieriger. Der Rettungsdienst ist in Deutschland Ländersache, kommunal und trägerabhängig organisiert. Dadurch entstehen unterschiedliche Beschaffungspfade, unterschiedliche Leitstellensysteme, verschiedene Dokumentationslösungen und nicht überall kompatible technische Infrastrukturen.<sup><a href="#fn5">5</a></sup></p>
+      </section>
+
+      <section id="methode">
+        <div class="kicker">Methode</div>
+        <h2>Die Untersuchung verbindet Literatur, Praxisperspektive und Systemmodell</h2>
+        <p>Die Methode wurde im Poster bewusst knapp gehalten. Für die GitHub-Seite lässt sie sich als Flussdiagramm darstellen. Das passt besser, weil die Untersuchung selbst eine Prozessfrage stellt: Wo entstehen Medienbrüche und wo kann Vernetzung helfen?</p>
+
+        <div class="method-flow" aria-label="Methodisches Flussdiagramm">
+          <div class="flow-row">
+            <div class="flow-step"><strong>1. Literatur- und Dokumentenanalyse</strong><small>BSI/eMergent, Reanimationsregister, Telenotarzt-Leitlinie, Ersthelferalarmierung, IT-Sicherheit, Reanimationsethik.</small></div>
+            <div class="arrow">→</div>
+            <div class="flow-step"><strong>Was ist bereits belegt?</strong><small>Heterogenität, Medienbrüche, Interoperabilitätsprobleme, Nutzenpotenziale, Sicherheitsanforderungen.</small></div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-step"><strong>2. Praxisperspektive</strong><small>Einordnung aus Rettungsdienstpraxis und Saalekreis-Beispiel: Leitstelle, RTW, Notarzt, Telenotarzt, IVENA, NORA, Ersthelfer.</small></div>
+            <div class="arrow">→</div>
+            <div class="flow-step"><strong>Was passiert wirklich im Einsatz?</strong><small>Informationen müssen nicht nur vorhanden sein. Sie müssen im richtigen Moment beim richtigen Akteur ankommen.</small></div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-step"><strong>3. Prozessmodell</strong><small>Modellierung der Rettungskette als Abfolge von Alarmierung, Disposition, Behandlung, Transport, Voranmeldung und Übergabe.</small></div>
+            <div class="arrow">→</div>
+            <div class="flow-step"><strong>Wo entstehen Hebel?</strong><small>Standortdaten, automatische Voranmeldung, Live-Telemetrie, digitale Dokumentation, redundante Rückfallebenen.</small></div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-step"><strong>4. Soziotechnische Bewertung</strong><small>Technik wird nicht isoliert betrachtet, sondern im Zusammenspiel aus Recht, Organisation, Qualifikation und Sicherheit.</small></div>
+            <div class="arrow">→</div>
+            <div class="flow-step"><strong>Was folgt daraus?</strong><small>Digitalisierung ist nur dann sinnvoll, wenn sie Interoperabilität, Verfügbarkeit und Handhabbarkeit im Einsatz verbessert.</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="emergent">
+        <div class="kicker">BSI-Projekt 453</div>
+        <h2>eMergent ist der wichtigste Referenzrahmen für die technische Lage</h2>
+        <p>Für die Untersuchung ist eMergent zentral, weil das Projekt nicht nur einzelne Produkte beschreibt, sondern die Digitalisierung des bodengebundenen Rettungsdienstes systematisch als Infrastrukturproblem betrachtet. Die Orientierungsstudie sollte zunächst erfassen, welche vernetzten Produkte im Rettungsdienst eingesetzt werden, welche Schnittstellen im Alltag vorkommen und welche Digitalisierungsvorhaben relevant sind. Luft- und Wasserrettung sowie Gegenstellen wie Krankenhausinformationssysteme wurden bewusst ausgegrenzt.<sup><a href="#fn6">6</a></sup></p>
+        <p>Die Teilstudie I vertieft diesen Überblick. Sie beschreibt den zivilen Rettungsdienst als heterogenes Feld mit unterschiedlichen Betreibermodellen, kommunaler Organisation und verschiedenen Leistungserbringern. Weit verbreitet sind Navigationssysteme mit Zusatzfunktionen, Tablet-PCs zur Notfalldokumentation, Patientenmonitore mit Defibrillationsfunktion und EKG-Übertragung. Gleichzeitig wird deutlich, dass Telenotarzt-Systeme zwar als Integrationsmotor gelten, aber noch nicht überall im Regelbetrieb angekommen sind.<sup><a href="#fn7">7</a></sup></p>
+        <p>Besonders wichtig ist der Befund zur Interoperabilität. eMergent zeigt, dass ein einheitliches Bild des Digitalisierungsstands fehlt. Einige Landkreise arbeiten bereits mit automatisierter Übermittlung von Monitor-Daten an digitale Dokumentationssysteme und mit automatisierter Krankenhausvoranmeldung, während andere Strukturen weiterhin papiernah oder stärker manuell arbeiten. Genannt werden unter anderem corpuls3, rescuetrack und NIDApad als prominente beziehungsweise verbreitete Systeme.<sup><a href="#fn8">8</a></sup></p>
+        <div class="simplebox warnbox">Die Pointe von eMergent ist nicht: Der Rettungsdienst ist undigital. Die Pointe ist: Er ist ungleich digitalisiert. Genau daraus entstehen Medienbrüche, Schnittstellenprobleme und Abhängigkeiten von Herstellern, Beschaffungslogiken und lokalen Lösungen.</div>
+        <p>Die Teilstudie II ergänzt diese Perspektive durch Sicherheitsuntersuchungen. Sie betrachtet ausgewählte Medizin- und Digitalprodukte im Umfeld des bodengebundenen Rettungsdienstes und beschreibt Bedrohungsmodell, Testumfang, Produktanalysen und Schwachstellenkategorien. In der Bilanz werden nicht primär unsichere Funk- oder Kommunikationsprotokolle als Hauptproblem herausgestellt, sondern häufig Systemdesign- und Implementierungsfehler. Dazu zählen etwa Standardpasswörter, unzureichend geschützte Schnittstellen, unsichere Kiosk-Implementierungen, Wartungszugänge, Berechtigungsprobleme und Webservice-Schwächen.<sup><a href="#fn9">9</a></sup></p>
+        <p>Für das Poster folgt daraus: Digitalisierung kann im Rettungsdienst sehr konkrete Vorteile bringen. Sie muss aber als kritische Infrastruktur gedacht werden. Ein System, das im Normalbetrieb gut aussieht, reicht nicht aus. Es braucht Redundanz, klare Verantwortlichkeiten, Schulung, IT-Sicherheitsmanagement und analoge Rückfallebenen für Störungen, Netzausfälle oder Serverprobleme.</p>
+      </section>
+
+      <section id="ergebnisse">
+        <div class="kicker">Ergebnisse</div>
+        <h2>Der größte Nutzen liegt nicht im Einzelgerät, sondern in der Verbindung der Stationen</h2>
+        <p>Aus den Quellen und aus dem Poster ergeben sich mehrere Ergebnislinien. Erstens ist digitale Infrastruktur bereits vorhanden. Automatische Standortdaten, digitale Einsatzdokumentation, Einsatznavigation, Telemetrie, Klinikvoranmeldung und Telenotarzt sind keine Science-Fiction. Zweitens entstehen die Probleme dort, wo diese Bausteine nicht zuverlässig miteinander sprechen. Drittens sind die stärksten Effekte dort zu erwarten, wo Informationen früher und strukturierter weitergegeben werden.</p>
+        <div class="mini-grid">
+          <div class="mini"><strong>Standort und Notruf</strong>Automatische Standortdaten können Rückfragen reduzieren und die Disposition beschleunigen. App-Notruf, strukturierte Abfrage und Chat können Lagebilder verbessern.</div>
+          <div class="mini"><strong>Ersthelfer und AED</strong>Smartphonebasierte Ersthelferalarmierung kann das therapiefreie Intervall verkürzen. Dafür müssen AED-Daten, Qualifikation, Alarmierungslogik und Verfügbarkeit zusammenpassen.</div>
+          <div class="mini"><strong>RTW, TNA und Klinik</strong>Digitale Dokumentation, EKG-Übertragung, Vitaldaten, IVENA-Code und Klinikvoranmeldung machen aus Einzelmaßnahmen eine vorbereitete Behandlungskette.</div>
+        </div>
+        <p>Bei Ersthelfer-Apps zeigt die Forschung, dass nicht nur die Distanz entscheidend ist. Ganter et al. untersuchen die Turnout Time, also die Zeit zwischen Alarmannahme und tatsächlichem Aufbruch des First Responders. Diese lag median bei 1:45 Minuten und machte etwa ein Drittel der Gesamtreaktionszeit aus. Die Gesamtzeit lag median bei 5:22 Minuten. Daraus folgt: Gute Algorithmen dürfen nicht nur Luftlinie oder Fahrstrecke berechnen, sondern müssen Startverzögerung, Tageszeit und Verhaltensmuster berücksichtigen.<sup><a href="#fn10">10</a></sup></p>
+        <p>Auch scheinbar kleine Prozessentscheidungen können relevant sein. Talikowska et al. zeigen am Beispiel spezieller Dispatch-Codes für offensichtliche oder erwartete Todesfälle, dass präzisere Disposition Ressourcen schonen kann, ohne die Patientensicherheit zu gefährden. Für den deutschen Kontext ist das keine direkte Übernahme, aber ein gutes Beispiel dafür, dass digitale Dispositionslogik nicht nur schneller, sondern auch differenzierter werden muss.<sup><a href="#fn11">11</a></sup></p>
+      </section>
+
+      <section id="saalekreis">
+        <div class="kicker">Positivbeispiel</div>
+        <h2>Der Saalekreis zeigt, wie der Rettungsdienst technisch in Zukunft aussehen kann</h2>
+        <p>Der Saalekreis ist für diese Seite bewusst nicht als Werbebeispiel eingebaut, sondern als positives Fallbeispiel aus der Praxisperspektive. Der Punkt ist: Hier erscheint Digitalisierung nicht als einzelnes Gerät im Fahrzeug, sondern als Bündel aus Leitstellenanbindung, Standortdaten, digitaler Dokumentation, Klinikvoranmeldung, Telenotarzt-Option und ergänzender Ersthelferalarmierung.</p>
+        <p>Aus der Praxisperspektive ergibt sich ein technisch sehr interessantes Bild: Die NORA-App kann Standortdaten und Chatkommunikation übermitteln. Klassische Notrufe laufen weiter über die Leitstelle, aber digitale Zusatzinformationen können die Disposition ergänzen. Rettungsdienste arbeiten mit Meldern, Tablets und Systemen wie Rescuetrack oder corpuls. EKG-Daten und Einsatzdaten können in Richtung Klinik oder Dokumentationssystem weitergegeben werden. Über IVENA können Zielkliniken abgefragt und Voranmeldungen strukturiert werden. Der Telenotarzt kann bei bestimmten Lagen konsultiert werden, wodurch ärztliche Entscheidungskompetenz früher in die Rettungskette eingebunden wird.</p>
+        <p>NORA ist dabei mehr als ein zusätzlicher Eingangskanal auf dem Smartphone. Die offizielle Notruf-App der Bundesländer leitet Notrufe an die jeweils zuständige Einsatzleitstelle weiter, übermittelt den über das Mobilgerät ermittelten Standort, ermöglicht eine strukturierte Abfrage der Notfallart und stellt nach dem Absenden eine Chatverbindung zur Leitstelle her. Gerade für Menschen, die nicht oder nur eingeschränkt telefonieren können, ist das ein eigenständiger Zugang zu Polizei, Feuerwehr und Rettungsdienst.<sup><a href="#fn13">13</a></sup></p>
+        <p>Für die Leitstelle entsteht daraus eine konkrete Systemanforderung: Die Leitstellensoftware darf solche App-Notrufe nicht nur als externe Meldung anzeigen, sondern muss Standort, strukturierte Angaben, Chatverlauf, Zeitstempel und Zuständigkeit belastbar verarbeiten können. Belastbar heißt hier technisch und organisatorisch: Das System muss Datenlastspitzen aushalten, Meldungen priorisieren, Protokollierung und Nachvollziehbarkeit sichern, Medienbrüche vermeiden und trotzdem im Einsatz schnell bedienbar bleiben. Eine gute NORA-Anbindung ist deshalb nicht nur eine App-Frage, sondern eine Frage der Leitstellenarchitektur.</p>
+        <p>Die Informationen aus der Praxisnotiz lassen sich direkt in die Prozesslogik einbauen: Zunächst können Notrufdaten, Standortinformationen und gegebenenfalls textbasierte Zusatzinformationen in der Leitstelle ankommen. Dort werden sie nicht als Ersatz für die Disposition verstanden, sondern als Ergänzung der klassischen Notrufabfrage. Nach der Alarmierung werden die relevanten Einsatzdaten an RTW oder NEF weitergegeben. Im Fahrzeug können mobile Endgeräte, digitale Einsatzdokumentation und medizinische Geräte wie Patientenmonitor oder Defibrillator miteinander verbunden werden.</p>
+        <p>Gleichzeitig sollte die Schnittstellenlogik nicht so eng gedacht werden, dass jeder Landkreis nur ein zentrales Standardszenario abbilden kann. Sinnvoll ist eine Architektur, in der über definierte Schnittstellen auch eigene, zum jeweiligen Use Case passende Infrastrukturen angebunden werden können: etwa regionale Ersthelferalarmierung, lokale AED-Datenbestände, besondere Klinik- oder IVENA-Prozesse, eigene Auswertungs- und Lagebildsysteme oder landkreisspezifische Redundanzwege. Der Kern ist Interoperabilität: NORA und Leitstellensoftware müssen bundesweit verlässlich funktionieren, zugleich aber genug Anschlussfähigkeit bieten, damit Landkreise ihre gewachsene Rettungsdienststruktur sinnvoll integrieren können.</p>
+        <h3>Ideelles Informatiksystem aus Sicht der Leitstellendisposition</h3>
+        <figure class="architecture">
+          <img src="leitstellen_architektur_technisch.svg" alt="Technische Leitstellenarchitektur mit Notruf-Eingang, CAD-Kernsystem, Middleware, Fachsystemen und Patientenakte" />
+          <figcaption>Ideelle technische Architektur einer vernetzten Leitstelle: Der Disponent arbeitet im CAD-Kernsystem, während Telefonie, Aufzeichnung, Fachsysteme, Warn- und Alarmierungskanäle sowie Patientenakte über Schnittstellen angebunden werden.</figcaption>
+        </figure>
+        <p>Der Notruf-Eingang läuft in diesem Modell über PSTN beziehungsweise Mobilfunk und wird über eine CTI-Schnittstelle, also Computer Telephony Integration, in die Leitstellenumgebung eingebunden. Technisch kann die Sprachkommunikation über einen SIP-Trunk geführt werden. Für die Aufzeichnung ist SIPREC relevant: Der IETF-Standard erlaubt, den Audiostream einer SIP-basierten Sprachverbindung parallel an einen Recording-Server zu spiegeln, ohne den eigentlichen Gesprächsaufbau zu verändern. Die Aufzeichnung liegt anschließend nicht als schwerer Binärblock in der Einsatzakte, sondern wird per Referenz, etwa Datei-ID oder URI, mit dem passenden Einsatzdatensatz im CAD-System verknüpft.</p>
+        <p>Das CAD-Kernsystem, also Computer Aided Dispatch, bildet den operativen Mittelpunkt. Dort entsteht die Einsatzakte mit Einsatznummer, Zeitstempeln, Einsatzort, Meldebild, disponierten Kräften, Statusmeldungen, Beteiligten und Protokolleinträgen. Solche strukturierten Einsatzdaten liegen typischerweise relational, weil Abfragen, Auditierbarkeit und Transaktionssicherheit dort gut beherrschbar sind. Für Freitext, Chatverläufe, Protokollfragmente oder maschinennahe Ereignislogs kann eine dokumentenorientierte Komponente sinnvoll sein. Ob man diesen hybriden Ansatz wählt, ist keine Geschmacksfrage, sondern hängt von Audit-Anforderungen, Suchmustern, Abfragelast und Archivierungsregeln ab.</p>
+        <p>Die API-Gateway- und Middleware-Schicht ist der entscheidende Baustein für eine agile Anbindung lokaler Fachsysteme. Das CAD-System sollte nicht direkt jedes einzelne Zielsystem kennen. Stattdessen publiziert es über REST-Endpunkte oder über einen Message-Broker wie Kafka, RabbitMQ oder MQTT standardisierte Ereignisse, zum Beispiel „Einsatz eröffnet“, „Warnlage aktiv“ oder „Patient übergeben“. Adapter übersetzen diese internen Ereignisse in die proprietären Formate der angebundenen Systeme. Damit folgt die Architektur im Kern dem Adapter-Pattern: Jedes Fachsystem bekommt einen schmalen, austauschbaren Übersetzer zwischen eigenem Protokoll und internem Eventformat.</p>
+        <p>Bei den angebundenen Kanälen muss man zwischen eingehenden und ausgehenden Datenflüssen unterscheiden. NORA ist ein eingehender Kanal aus der Bevölkerung in Richtung Leitstelle. KATWARN und NINA sind ausgehende Warnkanäle von der zuständigen Stelle in Richtung Bevölkerung. KatRetter und ein Alarmdispatcher sind ebenfalls ausgehende Push-Systeme, aber mit unterschiedlichen Zielgruppen: registrierte Laien-Ersthelfer einerseits, disponierte Einsatzkräfte und Rettungsmittel andererseits. Die Patientenakte ist in dieser Liste der wichtigste bidirektionale Kanal: Der RTW schreibt Vitaldaten und Maßnahmen, der Telenotarzt ergänzt ärztliche Einschätzungen, und die Klinik liest vorbereitend mit. Idealerweise geschieht das über Standards wie FHIR statt über proprietäre Formate, damit ein Wechsel von Rettungsdienstträger, Klinik-IT oder Fachanwendung nicht sofort die gesamte Schnittstelle bricht.</p>
+        <p>Entscheidend ist dann die Weitergabe in Richtung Klinik. EKG, Vitaldaten, Einsatzverlauf und Verdachtsdiagnose können strukturierter verfügbar sein, bevor der Patient eintrifft. Über IVENA oder vergleichbare Systeme lassen sich geeignete Zielkliniken abfragen und Voranmeldungen standardisieren. Ergänzend kann ein Telenotarzt eingebunden werden, wenn ärztliche Entscheidungskompetenz gebraucht wird, ohne dass ein zusätzlicher Notarzt physisch am Einsatzort sein muss.</p>
+        <div class="chain" aria-label="Vernetzte Rettungskette im Positivbeispiel Saalekreis">
+          <span>NORA / Standort / Chat</span>
+          <span>Leitstelle</span>
+          <span>Schnittstellen</span>
+          <span>RTW / NEF</span>
+          <span>Telenotarzt</span>
+          <span>IVENA / Klinik</span>
+          <span>Digitale Dokumentation</span>
+        </div>
+        <div class="simplebox greenbox">Das Positivbeispiel ist kein einzelnes Produkt. Das Positivbeispiel ist die technische Vorstellung einer durchgängigen Rettungskette: App-Notruf und Notrufdaten → belastbare Leitstellensoftware → offene Schnittstellen → RTW/NEF → Telenotarzt → Klinik → digitale Patientenakte.</div>
+        <p>Genau darin liegt der Zukunftswert: Wenn Daten nicht mehrfach telefonisch, handschriftlich oder über Funk wiederholt werden müssen, sinkt das Risiko von Informationsverlusten. Außerdem können Kliniken früher reagieren. Schockraum, Herzkatheterlabor, CT oder Fachabteilung werden nicht erst am Kliniktor relevant, sondern bereits auf der Anfahrt.</p>
+      </section>
+
+      <section id="theorie">
+        <div class="kicker">Theoretischer Rahmen</div>
+        <h2>Der Rettungsdienst ist ein soziotechnisches System</h2>
+        <p>Das Poster nutzt vier theoretische Perspektiven. Erstens technische Artefakte: Ein Telenotarzt-System besteht nicht nur aus Kamera, Audio, Datenkanal und Monitor. Seine Funktion entsteht erst im Anwendungskontext: Wer darf es nutzen? Wann wird es aktiviert? Welche rechtliche Wirkung hat die Entscheidung? Welche Rückfallebene gibt es?</p>
+        <p>Zweitens das soziotechnische System: Leitstelle, Rettungswagen, Notarzt, Krankenhaus, Software, Funknetz, Recht, Hersteller und Patient bilden keine getrennten Welten. Sie wirken in einer gemeinsamen Rettungskette. Eine App ohne Leitstellenintegration ist nur eine App. Ein Monitor ohne Datenfluss in Dokumentation und Klinik bleibt ein isoliertes Gerät.</p>
+        <p>Drittens Technikdeterminismus und seine Grenze: Es reicht nicht, dass eine Lösung technisch möglich oder medizinisch sinnvoll ist. Telenotarzt, Ersthelferalarmierung oder Klinikvoranmeldung verbreiten sich nicht automatisch, weil sie gut sind. Föderale Zuständigkeiten, Ausschreibungen, Finanzierung, Herstellerinteressen, Schulungsaufwand und Rechtsrahmen bestimmen mit, ob Technik überhaupt im Alltag ankommt.</p>
+        <p>Viertens Cultural Lag: Die Technik entwickelt sich schneller als die institutionellen und kulturellen Routinen. AEDs, Ersthelfer-Apps, Telemetrie oder digitale Übergabeformate sind vorhanden, aber Nutzung, Pflege der Datenbestände, Zuständigkeiten und Akzeptanz hinken teilweise hinterher.</p>
+      </section>
+
+      <section id="it">
+        <div class="kicker">IT-Sicherheit</div>
+        <h2>Digitalisierung darf nicht von Serverglück abhängen</h2>
+        <p>IT-Sicherheit ist in diesem Thema keine nachträgliche Zusatzfrage. Rettungsdienstsysteme verarbeiten Gesundheitsdaten, Bewegungsdaten, Einsatzdaten und medizinische Vitaldaten. Zugleich werden sie mobil, unter Stress, in Funknetzen, mit wechselnden Anwendern und oft über mehrere Organisationen hinweg genutzt. Das macht sie besonders anfällig für die klassischen Zielkonflikte zwischen Verfügbarkeit, Vertraulichkeit, Integrität und einfacher Bedienbarkeit.</p>
+        <p>eMergent zeigt, dass Sicherheitsprobleme im Rettungsdienst häufig aus Produktdesign, Konfiguration und Implementierung entstehen. Das ist für die Bewertung wichtig, weil die Lösung nicht einfach „weniger Vernetzung“ lauten kann. Vielmehr braucht es sichere Standards, saubere Schnittstellen, rollenbasierte Rechte, Updatefähigkeit, Protokollierung, Ausfallkonzepte und klare Verantwortlichkeiten zwischen Herstellern und Betreibern.<sup><a href="#fn12">12</a></sup></p>
+        <div class="simplebox warnbox">Eine digitale Rettungskette muss im Idealfall schneller sein. Sie muss aber auch dann funktionieren, wenn ein System ausfällt. Papier, Funk, Telefon und manuelle Dokumentation bleiben als Rückfallebene relevant.</div>
+      </section>
+
+      <section id="fazit">
+        <div class="kicker">Fazit</div>
+        <h2>Digitalisierung ist kein Wundermittel, aber ein plausibler Zeitgewinn</h2>
+        <p>Die Untersuchung kommt zu einem differenzierten Ergebnis. Viele digitale Lösungen sind bereits verfügbar und teilweise praktisch etabliert. Ihre eigentliche Stärke liegt aber nicht im einzelnen Gerät, sondern in der Vernetzung der Stationen. Wenn Standort, Notrufinhalt, Einsatzdaten, Vitalwerte, EKG, Medikamentengabe, Telenotarztentscheidung, Klinikverfügbarkeit und Voranmeldung zusammengeführt werden, kann die präklinische Versorgung schneller und strukturierter werden.</p>
+        <p>Das Gegenargument ist nicht, dass Digitalisierung unnötig wäre. Das Gegenargument ist, dass schlecht integrierte Digitalisierung neue Medienbrüche erzeugen kann. Ein Tablet ersetzt keine Interoperabilität. Eine App ersetzt keine Leitstellenintegration. Ein Telenotarzt ersetzt keine rechtlich und organisatorisch saubere Einbindung. Eine Klinikvoranmeldung hilft nur, wenn sie verlässlich, standardisiert und im Krankenhaus handlungsrelevant ankommt.</p>
+        <p>Der Saalekreis ist deshalb als positives Beispiel interessant: Er zeigt, wie eine zukünftige Rettungskette technisch aussehen kann, wenn mehrere Bausteine zusammen gedacht werden. Das ist genau der Punkt des Posters: Jede Minute kann zählen. Aber gewonnen wird sie nicht durch Technik allein, sondern durch eine Rettungskette, in der Technik, Menschen, Organisation und Recht ineinandergreifen.</p>
+        <div class="simplebox greenbox">Mein Dank gilt allen im Rettungsdienst und in den Leitstellen tätigen Personen, die ihre fachliche Expertise, ihre Praxiserfahrung und ihre Perspektiven in diese Arbeit eingebracht haben.</div>
+      </section>
+
+      <section id="weitere-informationen" class="refs">
+        <div class="kicker">Weitere Informationen</div>
+        <h2>Weiterführende Links</h2>
+        <ul>
+          <li><a href="https://www.nora-notruf.de/de-as/startseite" target="_blank" rel="noopener">nora: offizielle Notruf-App der Bundesländer</a></li>
+          <li><a href="https://katretter.de/katretter-mitmachen.php" target="_blank" rel="noopener">KatRetter: als Ersthelfer mitmachen</a></li>
+          <li><a href="https://www.bbk.bund.de/DE/Warnung-Vorsorge/Warn-App-NINA/warn-app-nina_node.html" target="_blank" rel="noopener">BBK: Warn-App NINA</a></li>
+          <li><a href="https://www.katwarn.de/anmeldung-app.php" target="_blank" rel="noopener">KATWARN: App-Anmeldung und Informationen</a></li>
+          <li><a href="https://lis-gmbh.com/leitsysteme/leitstellensystem" target="_blank" rel="noopener">LIS GmbH: Leitstellensysteme</a></li>
+          <li><a href="https://www.bsi.bund.de/DE/Service-Navi/Presse/Alle-Meldungen-News/Meldungen/eMergent_250124.html" target="_blank" rel="noopener">BSI: eMergent - Digitalisierung im Rettungsdienst</a></li>
+        </ul>
+      </section>
+
+      <section id="quellen" class="refs">
+        <div class="kicker">Fußnoten</div>
+        <h2>Nachweise</h2>
+        <ol>
+          <li id="fn1">Vgl. Bundesamt für Sicherheit in der Informationstechnik/FZI Forschungszentrum Informatik, <em>Befragung und Studie zum Stand der Digitalisierung. BSI-Projekt 453: eMergent – Digitalisierung im Rettungsdienst. Teilstudie I</em>, Bonn 2023, besonders Kurzfassung und Fazit.</li>
+          <li id="fn2">Vgl. ältere Posterfassung <em>Wenn Vernetzung Leben rettet. Eine Untersuchung der Digitalisierung in der präklinischen Notfallmedizin</em>, dort Einleitung und Ausgangsdaten.</li>
+          <li id="fn3">Vgl. Deutsches Reanimationsregister, <em>Öffentlicher Jahresbericht 2024 – Außerklinische Reanimation 2024</em>, Nürnberg 2025, Datenbasis und Hochrechnung.</li>
+          <li id="fn4">Vgl. Bernhard Gliwitzky u. a., <em>Gemeinsame Stellungnahme zu Reanimationsabbruch und -verzicht</em>, in: <em>Notfall + Rettungsmedizin</em>, 2025.</li>
+          <li id="fn5">Vgl. BSI/FZI, <em>eMergent Teilstudie I</em>, Bonn 2023, Beschreibung von Ländersache, Betreibermodellen, heterogenem Digitalisierungsstand und Interoperabilitätsproblemen.</li>
+          <li id="fn6">Vgl. Bundesamt für Sicherheit in der Informationstechnik/FZI Forschungszentrum Informatik, <em>Ergebnisse der Orientierungsstudie. BSI-Projekt 453: eMergent – Digitalisierung im Rettungsdienst</em>, Bonn 2023, Zielsetzung und Untersuchungsgrenzen.</li>
+          <li id="fn7">Vgl. BSI/FZI, <em>Befragung und Studie zum Stand der Digitalisierung</em>, Bonn 2023, Kurzfassung zu Navigationssystemen, Tablet-PCs, Monitoren und Telenotarzt.</li>
+          <li id="fn8">Vgl. BSI/FZI, <em>Befragung und Studie zum Stand der Digitalisierung</em>, Bonn 2023, Zusammenfassung der Orientierungsstudie und Nennung verbreiteter Systeme wie corpuls3, rescuetrack und NIDApad.</li>
+          <li id="fn9">Vgl. Bundesamt für Sicherheit in der Informationstechnik/FZI Forschungszentrum Informatik, <em>Ergebnisse der Sicherheitsuntersuchungen. BSI-Projekt 453: eMergent – Digitalisierung im Rettungsdienst. Teilstudie II</em>, Version 1.1, Bonn 2024, Schwachstellenkategorisierung und Fazit.</li>
+          <li id="fn10">Vgl. Julian Ganter u. a., <em>Turnout time in smartphone alerting systems: underestimated entity in the development of smartphone-related dispatch algorithms</em>, in: <em>Resuscitation</em> 217 (2025).</li>
+          <li id="fn11">Vgl. Milena Talikowska u. a., <em>Use of dispatch codes for obvious/expected deaths: Maintaining patient safety while reducing the number of lights-and-sirens responses</em>, in: <em>Resuscitation</em> 185 (2023).</li>
+          <li id="fn12">Vgl. BSI/FZI, <em>eMergent Teilstudie II</em>, Bonn 2024, Fazit der IT-Sicherheitsuntersuchungen.</li>
+          <li id="fn13">Vgl. nora, <em>Notruf-App. Die offizielle Notruf-App der Bundesländer</em>, https://www.nora-notruf.de/de-as/startseite; außerdem nora, <em>Was ist nora?</em> und <em>Wie funktioniert nora?</em>, zu Standortübermittlung, strukturierter Abfrage und Chat mit der Einsatzleitstelle.</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+  <footer>Felix Staacke · Projektseite zum wissenschaftlichen Poster · Präklinische Notfallmedizin, Digitalisierung und soziotechnische Systeme</footer>
+    <script src="../../../feedback-widget.js" defer></script>
+</body>
+</html>

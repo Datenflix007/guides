@@ -1,0 +1,1977 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>Prolog Guide für Dummies - Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        .prolog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .prolog-card,
+        .prolog-note {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .62);
+            padding: 16px;
+        }
+
+        .prolog-card strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .prolog-card p,
+        .prolog-note p {
+            margin: 0;
+            font-size: .95rem;
+        }
+
+        .prolog-analogy {
+            border: 1px solid rgba(167, 139, 250, .26);
+            border-radius: 8px;
+            background: linear-gradient(145deg, rgba(30, 20, 55, .72), rgba(12, 18, 25, .92));
+            padding: 18px;
+            margin: 22px 0;
+        }
+
+        .prolog-analogy h3 {
+            margin-top: 0;
+        }
+
+        .prolog-analogy p {
+            margin-bottom: 0;
+        }
+
+        .prolog-steps {
+            counter-reset: prolog-step;
+            display: grid;
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .prolog-step {
+            counter-increment: prolog-step;
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .56);
+            padding: 13px 14px 13px 48px;
+            position: relative;
+        }
+
+        .prolog-step::before {
+            content: counter(prolog-step);
+            position: absolute;
+            left: 14px;
+            top: 13px;
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            background: #a78bfa;
+            color: #111827;
+            font-weight: 800;
+            font-size: .82rem;
+        }
+
+        .prolog-figure {
+            margin: 22px 0;
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .48);
+            padding: 12px;
+        }
+
+        .prolog-figure img {
+            width: 100%;
+            max-height: 520px;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 6px;
+        }
+
+        .prolog-figure figcaption {
+            color: var(--muted);
+            font-size: .9rem;
+            line-height: 1.45;
+            margin-top: 10px;
+        }
+
+        .prolog-image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .prolog-image-grid .prolog-figure {
+            margin: 0;
+        }
+
+        .prolog-note {
+            border-left: 4px solid #a78bfa;
+            margin: 20px 0;
+        }
+
+        .prolog-note--warn {
+            border-left-color: #f97316;
+        }
+
+        .prolog-toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 24px 0 10px;
+        }
+
+        .prolog-toc a {
+            border: 1px solid rgba(148, 163, 184, .28);
+            border-radius: 999px;
+            padding: 8px 11px;
+            text-decoration: none;
+            color: #ddd6fe;
+            background: rgba(15, 23, 42, .62);
+            font-size: .92rem;
+        }
+
+        .prolog-inline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .prolog-inline-card {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .56);
+            padding: 14px;
+        }
+
+        .prolog-inline-card h4 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .prolog-inline-card p,
+        .prolog-inline-card ul {
+            margin: 0;
+            font-size: .94rem;
+            line-height: 1.5;
+        }
+
+        .prolog-inline-card ul {
+            padding-left: 18px;
+        }
+
+        .prolog-inline-card pre {
+            margin: 8px 0 0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            background: rgba(2, 6, 23, .72);
+        }
+
+        .guide-article pre {
+            position: relative;
+            border: 1px solid rgba(167, 139, 250, .18);
+        }
+
+        .copy-code-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: 1px solid rgba(148, 163, 184, .42);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .88);
+            color: #e5e7eb;
+            padding: 6px 9px;
+            font: 600 .78rem Inter, system-ui, sans-serif;
+            cursor: pointer;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            border: 1px solid rgba(167, 139, 250, .32);
+            border-radius: 999px;
+            color: #ddd6fe;
+            background: rgba(8, 13, 20, .86);
+            padding: 5px 9px;
+            font: 700 .72rem Inter, system-ui, sans-serif;
+        }
+
+        .guide-article pre code {
+            display: block;
+            padding-top: 24px;
+        }
+
+        .prolog-details {
+            margin: 18px 0 22px;
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .56);
+            padding: 0 14px;
+        }
+
+        .prolog-details summary {
+            cursor: pointer;
+            padding: 12px 0;
+            font-weight: 700;
+            color: #ddd6fe;
+        }
+
+        .prolog-details p,
+        .prolog-details ul {
+            margin: 0 0 12px;
+            font-size: .95rem;
+            line-height: 1.6;
+        }
+
+        .prolog-details ul {
+            padding-left: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../informatikstudium.html">&larr; Zurück zum Informatikstudium</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 22% 74%, #a78bfa 0%, transparent 50%),
+                radial-gradient(ellipse at 78% 18%, #22d3ee 0%, transparent 48%),
+                linear-gradient(160deg, #12091f 0%, #102033 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Deklarative Programmierung</span>
+                <span class="chip" style="margin-left: 6px;">Prolog</span>
+                <h1>Prolog Guide für Dummies</h1>
+                <p class="sub">Ein einsteigerfreundlicher Guide zu Fakten, Regeln, Unifikation, Rekursion und Listen - aufgebaut anhand der Zusammenfassung zur deklarativen Programmierung.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p><strong>Prolog</strong> ist keine Sprache, in der du dem Computer jeden einzelnen Schritt wie in Java, C oder Python vorschreibst. Du beschreibst stattdessen Fakten und Regeln. Danach stellst du Fragen, und Prolog versucht durch logisches Schließen passende Antworten zu finden.</p>
+
+            <p><strong>Deklarative Programmierung</strong> sagt nicht zuerst: „Mache Schritt 1, dann Schritt 2, dann Schritt 3.“ Sie beschreibt vielmehr, welche Tatsachen gelten sollen, welche Beziehungen zwischen Dingen bestehen und welche Bedingungen erfüllt sein müssen. Der Programmierer legt also eine Art Wissensbasis an; die Laufzeit sucht dann selbst nach Lösungen, die zu dieser Wissensbasis passen. Das ist ein anderer Schwerpunkt als in imperativen Sprachen: Nicht der Ablauf ist zentral, sondern die logische Struktur des Problems.</p>
+
+            <p>Der Begriff <strong>relational</strong> ist damit eng verwandt, aber nicht identisch. Relational bedeutet vor allem: Es geht um Beziehungen zwischen Objekten, etwa „X ist Mutter von Y“ oder „A steht in Verbindung mit B“. Deklarativ ist der größere Rahmen: Es umfasst nicht nur Beziehungen, sondern auch Regeln, Einschränkungen, logische Ableitungen und Suchprozesse. Prolog ist deshalb sowohl deklarativ als auch relational: Es arbeitet mit einer deklarativen Wissensbasis, in der Informationen vor allem als Relationen oder Regeln formuliert werden.</p>
+
+            <details class="prolog-details">
+                <summary>Mini-Anleitung: Prolog-Logik als Kern einer UI oder Datenbankanwendung</summary>
+                <p>Eine kleine Idee für echte Anwendungen ist diese:</p>
+                <ul>
+                    <li>Die <strong>Logik</strong> bleibt in Prolog oder in Regeln einer Datenbank.</li>
+                    <li>Die <strong>UI</strong> sammelt Eingaben und zeigt Ergebnisse an.</li>
+                    <li>Die <strong>Datenbank</strong> speichert Fakten, Nutzerinformationen oder Referenzdaten.</li>
+                </ul>
+                <p>So entsteht ein klarer Aufbau: Eingabe → Abfrage/Regelprüfung → Ergebnis → Darstellung. Das ist oft angenehmer als alles in einer einzigen Konsole oder einem einzigen Skript zu mischen.</p>
+            </details>
+
+            <div class="prolog-grid">
+                <div class="prolog-card">
+                    <strong>Imperativ</strong>
+                    <p>Du sagst: „Mache zuerst A, dann B, dann C.“</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Deklarativ</strong>
+                    <p>Du sagst: „Diese Beziehungen gelten. Finde heraus, was daraus folgt.“</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Prolog</strong>
+                    <p>Programm = Wissensbasis. Ausführung = Anfrage an diese Wissensbasis.</p>
+                </div>
+            </div>
+
+            <nav class="prolog-toc" aria-label="Prolog Guide Inhaltsnavigation">
+                <a href="#idee">Grundidee</a>
+                <a href="#ausprobieren">Ausprobieren</a>
+                <a href="#vergleich">Imperativ vs. Prolog</a>
+                <a href="#direktionalitaet">Spezielle Selektion</a>
+                <a href="#syntax">Syntax</a>
+                <a href="#unifikation">Unifikation</a>
+                <a href="#regeln">Regeln</a>
+                <a href="#rekursion">Rekursion</a>
+                <a href="#listen">Listen</a>
+                <a href="#advanced">Advanced</a>
+                <a href="#standard">Prädikate</a>
+                <a href="#projekte">Projekte</a>
+                <a href="#uebungen">Übungen</a>
+            </nav>
+
+            <hr>
+
+            <h2 id="idee">1. Die Grundidee</h2>
+            <p>In der imperativen Programmierung verändert ein Programm Schritt für Schritt den Speicherzustand. In der logischen Programmierung steht dagegen eine Wissensbasis im Mittelpunkt. Sie enthält Aussagen über die Welt und Regeln, mit denen neue Aussagen abgeleitet werden können.</p>
+
+            <figure class="prolog-figure">
+                <div class="prolog-inline-grid">
+                    <div class="prolog-inline-card">
+                        <h4>Relational</h4>
+                        <p>Statt Befehlen werden Beziehungen beschrieben: <code>mutter(diana, william)</code>.</p>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Deklarativ</h4>
+                        <p>Du gibst Regeln an und lässt Prolog daraus Folgen ableiten.</p>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Prädikatenlogisch</h4>
+                        <p>Die Wissensbasis besteht aus Fakten, Regeln und Anfragen – nicht aus Ablaufanweisungen.</p>
+                    </div>
+                </div>
+                <figcaption>Prolog steht in der Nähe der prädikatenlogischen, deklarativen Programmierung. Statt Befehlsfolgen stehen Relationen, Fakten, Regeln und Anfragen im Mittelpunkt.</figcaption>
+            </figure>
+
+            <table>
+                <thead>
+                    <tr><th>Begriff</th><th>Für Dummies erklärt</th><th>Prolog-Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Fakt</td><td>Eine Aussage, die als wahr gilt.</td><td><code>mutter(diana, william).</code></td></tr>
+                    <tr><td>Regel</td><td>Eine Aussage, die gilt, wenn andere Aussagen gelten.</td><td><code>elternteil(X, Y) :- mutter(X, Y).</code></td></tr>
+                    <tr><td>Anfrage</td><td>Eine Frage an die Wissensbasis.</td><td><code>?- elternteil(diana, william).</code></td></tr>
+                    <tr><td>Variable</td><td>Ein Platzhalter, den Prolog passend belegen darf.</td><td><code>?- mutter(X, william).</code></td></tr>
+                </tbody>
+            </table>
+
+            <div class="prolog-note">
+                <p><strong>Merksatz:</strong> Prolog rechnet nicht zuerst, sondern sucht zuerst nach einer Belegung von Variablen, die die Anfrage wahr macht.</p>
+            </div>
+
+            <figure class="prolog-figure">
+                <div class="prolog-inline-grid">
+                    <div class="prolog-inline-card">
+                        <h4>1. Prädikatenlogik</h4>
+                        <p>Man formuliert Aussagen über Objekte und ihre Beziehungen.</p>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>2. Klausellogik</h4>
+                        <p>Diese Aussagen werden als Klauseln geschrieben, also als Regeln mit mehreren Bedingungen.</p>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>3. Hornklauseln in Prolog</h4>
+                        <p>Für Prolog sind vor allem Regeln mit höchstens einem positiven Kopf wichtig.</p>
+                    </div>
+                </div>
+                <figcaption>Prolog lässt sich über Prädikatenlogik, Klausellogik und Hornklauseln verstehen. Für Anfänger wichtig: Prolog arbeitet meist mit Hornklauseln, also Regeln mit höchstens einem positiven Kopf.</figcaption>
+            </figure>
+
+            <h3>Klauseln und Hornklauseln in einfachen Worten</h3>
+            <p>Eine Klausel ist eine Oder-Verknüpfung von Literalen. Für Prolog sind besonders Hornklauseln wichtig. Eine Hornklausel ist eingeschränkter: Sie hat höchstens ein positives Literal. Genau dadurch kann man sie gut als Regel lesen: Wenn alle Bedingungen im Rumpf gelten, dann gilt der Kopf.</p>
+
+            <pre><code>% Logische Lesart:
+% elternteil(X, Y) gilt, wenn mutter(X, Y) gilt.
+
+elternteil(X, Y) :-
+    mutter(X, Y).</code></pre>
+
+            <div class="prolog-analogy">
+                <h3>Sinnbild: Prolog ist eher Detektiv als Kochrezept</h3>
+                <p>Eine imperative Sprache ist wie ein Kochrezept: Schritt 1 schneiden, Schritt 2 braten, Schritt 3 würzen. Prolog ist eher wie ein Detektiv mit Karteikarten: Es gibt Hinweise, Beziehungen und Regeln. Wenn du fragst „Wer ist verwandt?“, durchsucht Prolog die Karteikarten und kombiniert Hinweise, bis eine passende Erklärung gefunden ist.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="ausprobieren">2. Prolog ausprobieren: Web-UI oder lokal</h2>
+            <p>Für die ersten Beispiele brauchst du nicht sofort eine lokale Installation. Du kannst Prolog entweder direkt im Browser ausprobieren oder SWI-Prolog auf deinem Rechner installieren und mit eigenen <code>.pl</code>-Dateien arbeiten.</p>
+
+            <div class="prolog-grid">
+                <div class="prolog-card">
+                    <strong>Browser: SWISH</strong>
+                    <p>Schnellster Einstieg. Keine Installation, gut für kleine Tests, Unterricht und geteilte Beispiele.</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Lokal: SWI-Prolog</strong>
+                    <p>Besser für größere Projekte, Dateien, Python-Integration, Debugging und eigene Wissensbasen.</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Workflow</strong>
+                    <p>Code in <code>.pl</code>-Datei schreiben, laden, Anfragen stellen, Regeln schrittweise erweitern.</p>
+                </div>
+            </div>
+
+            <h3>Variante A: Web-UI SWISH</h3>
+            <p>SWISH ist die webbasierte SWI-Prolog-Umgebung. Du öffnest <a href="https://swish.swi-prolog.org/" target="_blank" rel="noopener">swish.swi-prolog.org</a>, schreibst links Fakten und Regeln hinein und stellst unten oder rechts Anfragen.</p>
+
+            <pre><code>% In SWISH in den Programmbereich kopieren:
+mutter(diana, william).
+mutter(diana, harry).
+
+kind(Kind, Mutter) :-
+    mutter(Mutter, Kind).</code></pre>
+
+            <pre><code>% Als Query ausführen:
+?- kind(X, diana).
+
+% Ergebnis:
+X = william ;
+X = harry.</code></pre>
+
+            <p>SWISH ist ideal, wenn du ein Konzept schnell testen willst: Fakten ändern, Query ausführen, weitere Lösung mit Semikolon anfordern. Für I/O-Beispiele mit echter Konsoleneingabe ist lokal installiertes SWI-Prolog meistens angenehmer.</p>
+
+            <h3>Variante B: SWI-Prolog lokal installieren</h3>
+            <p>Lokal arbeitest du mit dem Programm <code>swipl</code>. Die offizielle Download-Seite ist <a href="https://www.swi-prolog.org/download/stable" target="_blank" rel="noopener">swi-prolog.org/download/stable</a>.</p>
+
+            <table>
+                <thead>
+                    <tr><th>System</th><th>Typischer Weg</th><th>Prüfen</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Windows</td><td>Installer von der SWI-Prolog-Downloadseite nutzen.</td><td><code>swipl --version</code></td></tr>
+                    <tr><td>macOS</td><td>Installer von SWI-Prolog oder Paketmanager wie Homebrew.</td><td><code>swipl --version</code></td></tr>
+                    <tr><td>Linux</td><td>Paketmanager der Distribution oder offizieller Download.</td><td><code>swipl --version</code></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Lokaler Mini-Workflow</h3>
+            <p>Lege eine Datei <code>stammbaum.pl</code> an:</p>
+
+            <pre><code>mutter(diana, william).
+mutter(diana, harry).
+
+kind(Kind, Mutter) :-
+    mutter(Mutter, Kind).</code></pre>
+
+            <p>Dann im Terminal im gleichen Ordner:</p>
+
+            <pre><code>swipl
+?- [stammbaum].
+true.
+
+?- kind(X, diana).
+X = william ;
+X = harry.</code></pre>
+
+            <p>Alternativ kannst du die Datei direkt beim Start laden:</p>
+
+            <pre><code>swipl stammbaum.pl</code></pre>
+
+            <h3>Nützliche lokale Kommandos</h3>
+            <table>
+                <thead>
+                    <tr><th>Kommando</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>?- [dateiname].</code></td><td>Datei <code>dateiname.pl</code> laden.</td></tr>
+                    <tr><td><code>?- consult('datei.pl').</code></td><td>Datei explizit laden.</td></tr>
+                    <tr><td><code>?- make.</code></td><td>Geänderte Dateien neu laden.</td></tr>
+                    <tr><td><code>?- listing.</code></td><td>Geladene Fakten und Regeln anzeigen.</td></tr>
+                    <tr><td><code>?- halt.</code></td><td>SWI-Prolog verlassen.</td></tr>
+                    <tr><td><code>?- trace.</code></td><td>Tracer einschalten, um die Suche zu beobachten.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="prolog-note">
+                <p><strong>Empfehlung:</strong> Nutze SWISH für erste Experimente und kurze Übungen. Nutze lokales SWI-Prolog, sobald du mehrere Dateien, Python-Anbindung, dynamische Fakten oder echte Projektstruktur brauchst.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="vergleich">3. Imperative Selektion vs. Prolog-Regeln</h2>
+            <p>In imperativen Sprachen bedeutet Selektion meistens: <code>if</code>, <code>else if</code>, <code>else</code>. Der Programmfluss entscheidet aktiv, welcher Block ausgeführt wird. In Prolog formulierst du keine Verzweigung als Ablaufplan, sondern mehrere Fälle als Regeln. Prolog probiert dann, welche Regel zur Anfrage passt.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Imperative Sprache</th><th>Prolog</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Programm läuft von oben nach unten.</td><td>Anfrage wird gegen Fakten und Regeln bewiesen.</td></tr>
+                    <tr><td><code>if</code> entscheidet einen Kontrollfluss.</td><td>Regeln beschreiben Fälle, die wahr sein können.</td></tr>
+                    <tr><td>Variable bekommt meist einen neuen Wert.</td><td>Variable wird durch Unifikation passend gebunden.</td></tr>
+                    <tr><td>Eine Funktion liefert normalerweise genau einen Rückgabewert.</td><td>Eine Anfrage kann null, eine oder viele Lösungen haben.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Beispiel: Alterskategorie in JavaScript</h3>
+            <pre><code>function kategorie(alter) {
+  if (alter &lt; 13) {
+    return "kind";
+  }
+
+  if (alter &lt; 18) {
+    return "jugendlich";
+  }
+
+  return "erwachsen";
+}</code></pre>
+
+            <p>Hier wird ein Pfad gewählt. Sobald eine Bedingung zutrifft, wird ein Wert zurückgegeben.</p>
+
+            <h3>Dasselbe Denken in Prolog</h3>
+            <pre><code>kategorie(Alter, kind) :-
+    Alter &lt; 13.
+
+kategorie(Alter, jugendlich) :-
+    Alter &gt;= 13,
+    Alter &lt; 18.
+
+kategorie(Alter, erwachsen) :-
+    Alter &gt;= 18.</code></pre>
+
+            <pre><code>?- kategorie(15, Kategorie).
+Kategorie = jugendlich.</code></pre>
+
+            <p>Das sieht ähnlich aus, bedeutet aber etwas anderes: Die Regeln sagen nicht „springe in diesen Block“, sondern „diese Beziehung zwischen Alter und Kategorie gilt, wenn die Bedingungen erfüllt sind“.</p>
+
+            <h3>Beispiel mit mehreren Lösungen</h3>
+            <pre><code>farbe(apfel, rot).
+farbe(banane, gelb).
+farbe(kirsche, rot).
+
+rot(X) :-
+    farbe(X, rot).</code></pre>
+
+            <pre><code>?- rot(Was).
+Was = apfel ;
+Was = kirsche.</code></pre>
+
+            <div class="prolog-note">
+                <p><strong>Sinnbild:</strong> Ein imperatives <code>if</code> ist wie eine Weiche auf einer Schiene. Prolog-Regeln sind wie mehrere passende Karteikarten. Eine Anfrage kann eine Karteikarte finden, mehrere finden oder keine finden.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="direktionalitaet">4. Deine spezielle Selektion: Direktionalität</h2>
+            <p>In deiner Zusammenfassung taucht ein sehr wichtiger Gedanke auf: Bei Prolog ist nicht nur der Wert eines Arguments wichtig, sondern auch, <strong>ob ein Argument schon instanziiert ist</strong>. Ein Prädikat kann also je nach „Richtung“ der Anfrage anders arbeiten.</p>
+
+            <div class="prolog-grid">
+                <div class="prolog-card">
+                    <strong>Argument ist Eingabe</strong>
+                    <p>Es ist schon gebunden, zum Beispiel <code>summe(3, 4, X)</code>.</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Argument ist Ausgabe</strong>
+                    <p>Es ist noch frei und soll durch Prolog gefunden werden, zum Beispiel <code>summe(3, X, 7)</code>.</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Regel wählt Richtung</strong>
+                    <p>Mit <code>var</code>, <code>nonvar</code>, <code>number</code>, <code>is_list</code> usw. kann man Fälle trennen.</p>
+                </div>
+            </div>
+
+            <figure class="prolog-figure">
+                <div class="prolog-inline-grid">
+                    <div class="prolog-inline-card">
+                        <h4>Fall A: A und B sind Eingaben</h4>
+                        <pre><code>add(2, 3, X).</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Fall B: Ergebnis ist schon bekannt</h4>
+                        <pre><code>add(2, X, 5).</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Fall C: Erster Wert wird gesucht</h4>
+                        <pre><code>add(X, 3, 5).</code></pre>
+                    </div>
+                </div>
+                <figcaption>Ein Prädikat kann über Direktionalitäten unterscheiden, welche Argumente bereits Zahlen sind und welches Argument noch berechnet werden soll.</figcaption>
+            </figure>
+
+            <p>Das ist eine Art Selektion, aber nicht wie ein normales <code>if/else</code>. Es ist eher eine Auswahl passender Prädikat-Fälle anhand des Zustands der Argumente.</p>
+
+            <h3>Beispiel: ein Additionsprädikat mit mehreren Richtungen</h3>
+            <pre><code>add(A, B, C) :-
+    number(A),
+    number(B),
+    var(C),
+    C is A + B.
+
+add(A, B, C) :-
+    number(A),
+    var(B),
+    number(C),
+    B is C - A.
+
+add(A, B, C) :-
+    var(A),
+    number(B),
+    number(C),
+    A is C - B.</code></pre>
+
+            <pre><code>?- add(2, 3, X).
+X = 5.
+
+?- add(2, X, 5).
+X = 3.
+
+?- add(X, 3, 5).
+X = 2.</code></pre>
+
+            <h3>Warum ist das speziell?</h3>
+            <p>In JavaScript oder Java würdest du meistens eine Funktion mit fester Richtung schreiben: zwei Eingaben rein, ein Ergebnis raus. In Prolog kannst du ein Prädikat so bauen, dass es je nach Anfrage vorwärts oder rückwärts arbeitet. Dafür muss es aber wissen, welche Argumente schon belegt sind.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Typische Nutzung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>var(X)</code></td><td><code>X</code> ist noch ungebunden.</td><td>Ausgabeplatz erkennen</td></tr>
+                    <tr><td><code>nonvar(X)</code></td><td><code>X</code> ist schon gebunden.</td><td>Eingabeplatz erkennen</td></tr>
+                    <tr><td><code>number(X)</code></td><td><code>X</code> ist eine Zahl.</td><td>arithmetische Richtung absichern</td></tr>
+                    <tr><td><code>integer(X)</code></td><td><code>X</code> ist eine ganze Zahl.</td><td>Zähler, Indizes, Rekursion</td></tr>
+                    <tr><td><code>atom(X)</code></td><td><code>X</code> ist ein Atom.</td><td>Namen, Symbole, Labels</td></tr>
+                    <tr><td><code>is_list(X)</code></td><td><code>X</code> ist eine echte Liste.</td><td>Listenfälle absichern</td></tr>
+                </tbody>
+            </table>
+
+            <div class="prolog-note prolog-note--warn">
+                <p><strong>Wichtig:</strong> Diese Art von Selektion ist mächtig, aber auch gefährlich. Wenn die Argumente nicht so belegt sind, wie deine Regel es erwartet, scheitert sie oder läuft in eine falsche Richtung.</p>
+            </div>
+
+            <h3>Direktionalität als Modusdenken</h3>
+            <p>In vielen Prolog-Dokumentationen wird Direktionalität über Modi beschrieben. Ein Modus sagt, ob ein Argument vor dem Aufruf schon belegt sein soll, ob es Ergebnis sein soll oder ob beides möglich ist.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Modus</th><th>Lesart</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>+</code></td><td>muss Eingabe sein, also schon gebunden</td><td><code>number(+X)</code></td></tr>
+                    <tr><td><code>-</code></td><td>wird Ausgabe, also typischerweise freie Variable</td><td><code>read(-Term)</code></td></tr>
+                    <tr><td><code>?</code></td><td>kann Eingabe oder Ausgabe sein</td><td><code>length(?List, ?Length)</code></td></tr>
+                    <tr><td><code>:</code></td><td>ein Ziel, das ausgeführt werden kann</td><td><code>call(:Goal)</code></td></tr>
+                </tbody>
+            </table>
+
+            <p>Ein besonders gutes Beispiel ist <code>length/2</code>. Es kann in mehrere Richtungen genutzt werden:</p>
+
+            <pre><code>?- length([a, b, c], N).
+N = 3.
+
+?- length(L, 3).
+L = [_A, _B, _C].
+
+?- length(L, N).
+L = [],
+N = 0 ;
+L = [_A],
+N = 1 ;
+L = [_A, _B],
+N = 2.</code></pre>
+
+            <p>Das zeigt den Kern der Direktionalität: Ein Prädikat ist nicht automatisch eine Funktion mit festem Rückgabewert. Es ist eine Relation, die je nach Belegung der Argumente suchen, prüfen oder erzeugen kann.</p>
+
+            <hr>
+
+            <h2 id="syntax">5. Das erste Prolog-Programm</h2>
+            <p>Ein Prolog-Programm besteht aus Fakten und Regeln. Jede Aussage endet mit einem Punkt. Namen von Atomen beginnen klein, Variablen beginnen groß oder mit einem Unterstrich.</p>
+
+            <figure class="prolog-figure">
+                <div class="prolog-inline-grid">
+                    <div class="prolog-inline-card">
+                        <h4>Fakten</h4>
+                        <pre><code>big(bear).
+black(bear).
+</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Regel</h4>
+                        <pre><code>dark(Z) :- black(Z).</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Anfrage</h4>
+                        <pre><code>?- dark(X), big(X).</code></pre>
+                    </div>
+                </div>
+                <figcaption>Fakten wie <code>big(bear)</code> und Regeln wie <code>dark(Z) :- black(Z)</code> bilden eine kleine Wissensbasis. Eine Anfrage wie <code>dark(X), big(X)</code> sucht dann ein Objekt, das beide Bedingungen erfüllt.</figcaption>
+            </figure>
+
+            <pre><code>% familie.pl
+mutter(diana, william).
+mutter(diana, harry).
+vater(charles, william).
+vater(charles, harry).
+
+elternteil(X, Y) :- mutter(X, Y).
+elternteil(X, Y) :- vater(X, Y).
+
+geschwister(X, Y) :-
+    elternteil(Z, X),
+    elternteil(Z, Y),
+    X \== Y.</code></pre>
+
+            <h3>Anfragen</h3>
+            <pre><code>?- mutter(diana, william).
+true.
+
+?- mutter(X, william).
+X = diana.
+
+?- elternteil(charles, Kind).
+Kind = william ;
+Kind = harry.</code></pre>
+
+            <p>Das Semikolon in vielen Prolog-Umgebungen bedeutet: „Gib mir die nächste Lösung.“ Prolog sucht dann per Backtracking nach weiteren passenden Belegungen.</p>
+
+            <h3>Syntaxregeln, die fast immer Fehler verhindern</h3>
+            <ul>
+                <li><code>atom</code> beginnt klein: <code>diana</code>, <code>book</code>, <code>rot</code>.</li>
+                <li><code>Variable</code> beginnt groß: <code>X</code>, <code>Kind</code>, <code>Result</code>.</li>
+                <li><code>_</code> ist eine anonyme Variable: Der Wert ist egal und wird nicht wiederverwendet.</li>
+                <li>Jede Regel und jeder Fakt endet mit einem Punkt.</li>
+                <li><code>:-</code> liest man als „wenn“: <code>Kopf :- Bedingung.</code></li>
+            </ul>
+
+            <hr>
+
+            <h2 id="unifikation">6. Unifikation: Das Herz von Prolog</h2>
+            <p>In Prolog bedeutet <code>=</code> nicht einfach „Zuweisung“ wie in vielen imperativen Sprachen. Es bedeutet: Können beide Seiten durch passende Variablenbelegung gleich gemacht werden?</p>
+
+            <div class="prolog-image-grid">
+                <figure class="prolog-figure">
+                    <div class="prolog-inline-card">
+                        <h4>Arithmetik und Vergleich</h4>
+                        <p>Unifikation (<code>=</code>) und arithmetische Auswertung (<code>is</code>) sind unterschiedliche Dinge. Das ist der Kern der meisten Anfängerfehler.</p>
+                    </div>
+                    <figcaption>Die Tabelle unten fasst die wichtigsten Operatoren direkt als HTML-Zusammenfassung zusammen; dadurch ist die Erklärung ohne Bilddateien direkt lesbar.</figcaption>
+                </figure>
+                <figure class="prolog-figure">
+                    <div class="prolog-inline-card">
+                        <h4>Datenobjekte</h4>
+                        <ul>
+                            <li>Konstanten wie <code>prolog</code> oder <code>42</code></li>
+                            <li>Variablen wie <code>X</code> oder <code>Result</code></li>
+                            <li>Strukturen wie <code>book(1, 'Titel')</code></li>
+                        </ul>
+                    </div>
+                    <figcaption>Prolog arbeitet mit einfachen Objekten und Strukturen; beide lassen sich direkt in HTML erklären und verwenden.</figcaption>
+                </figure>
+            </div>
+
+            <table>
+                <thead>
+                    <tr><th>Operator</th><th>Bedeutung</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>=</code></td><td>unifizierbar</td><td><code>X = 5</code> bindet <code>X</code> an <code>5</code></td></tr>
+                    <tr><td><code>\=</code></td><td>nicht unifizierbar</td><td><code>5 \= 6</code> ist wahr</td></tr>
+                    <tr><td><code>==</code></td><td>strukturell identisch, ohne neue Bindung</td><td><code>a == a</code> ist wahr</td></tr>
+                    <tr><td><code>\==</code></td><td>nicht identisch</td><td><code>X \== Y</code> kann wahr sein, wenn beide ungebunden sind</td></tr>
+                    <tr><td><code>is</code></td><td>arithmetisch auswerten</td><td><code>X is 3 * 7</code></td></tr>
+                    <tr><td><code>=:=</code></td><td>numerisch gleich</td><td><code>2 + 3 =:= 5</code></td></tr>
+                    <tr><td><code>=\=</code></td><td>numerisch ungleich</td><td><code>4 =\= 5</code></td></tr>
+                </tbody>
+            </table>
+
+            <pre><code>?- X = 5.
+X = 5.
+
+?- X is 3 * 7.
+X = 21.
+
+?- 2 + 3 =:= 5.
+true.
+
+?- 2 + 3 = 5.
+false.</code></pre>
+
+            <div class="prolog-note prolog-note--warn">
+                <p><strong>Wichtig:</strong> <code>is</code> wertet die rechte Seite aus. Deshalb funktioniert <code>X is 3 * 7</code>, aber <code>3 * 7 is X</code> ist für Anfänger fast immer falsch gedacht.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="regeln">7. Regeln, Aufbau und Anfragenauswertung</h2>
+            <p>Eine Regel hat einen <strong>Kopf</strong> und einen <strong>Rumpf</strong>. Der Kopf ist das Ziel, das bewiesen werden soll. Der Rumpf enthält Teilziele, die Prolog der Reihe nach erfüllen muss.</p>
+
+            <div class="prolog-grid">
+                <div class="prolog-card">
+                    <strong>Kopf</strong>
+                    <p>Das, was durch die Regel behauptet wird: <code>grosses_dunkles_tier(Tier)</code>.</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Rumpf</strong>
+                    <p>Die Bedingungen nach <code>:-</code>. Sie müssen alle bewiesen werden.</p>
+                </div>
+                <div class="prolog-card">
+                    <strong>Komma</strong>
+                    <p>Logisches UND: erst dieses Teilziel, dann das nächste.</p>
+                </div>
+            </div>
+
+            <pre><code>grosses_dunkles_tier(Tier) :-
+    tier(Tier),
+    gross(Tier),
+    dunkel(Tier).</code></pre>
+
+            <p>Die Reihenfolge im Regelrumpf ist nicht nur Dekoration. Prolog versucht die Teilziele von links nach rechts. Dadurch kann eine Regel logisch richtig, aber praktisch ineffizient sein, wenn die Reihenfolge ungünstig ist.</p>
+
+            <h3>Wie Prolog eine Anfrage abarbeitet</h3>
+            <div class="prolog-steps">
+                <div class="prolog-step">Prolog nimmt die Anfrage als Ziel, zum Beispiel <code>grosses_dunkles_tier(X)</code>.</div>
+                <div class="prolog-step">Es sucht eine Regel oder einen Fakt, dessen Kopf mit dem Ziel unifizierbar ist.</div>
+                <div class="prolog-step">Die Variable wird passend gebunden, zum Beispiel <code>Tier = X</code>.</div>
+                <div class="prolog-step">Der Regelrumpf wird von links nach rechts als neue Zielliste abgearbeitet.</div>
+                <div class="prolog-step">Wenn ein Teilziel scheitert, geht Prolog zurück und probiert eine andere Möglichkeit.</div>
+            </div>
+
+            <p>Dieses Zurückgehen nennt man <strong>Backtracking</strong>. Sinnbildlich: Prolog läuft durch ein Labyrinth. Wenn ein Weg nicht funktioniert, geht es zum letzten Abzweig zurück und probiert den nächsten Weg.</p>
+
+            <div class="prolog-image-grid">
+                <figure class="prolog-figure">
+                    <img src="assets/prolog/anfragenauswertung-resolution.png" alt="Anfragenauswertung und Resolutionsgraph aus der Zusammenfassung">
+                    <figcaption>Diese Abbildung stammt aus der Vorlesung von Prof. Beckstein an der Universität Jena. Sie zeigt, wie bei der Anfrageauswertung geprüft wird, ob Ziele mit Fakten oder Regelköpfen unifizierbar sind. Variablen werden dabei umbenannt, damit keine Namenskonflikte entstehen.</figcaption>
+                </figure>
+                <figure class="prolog-figure">
+                    <img src="assets/prolog/sld-resolutionsbaum.png" alt="SLD-Resolutionsbaum aus der Zusammenfassung">
+                    <figcaption>Diese Abbildung stammt ebenfalls aus der Vorlesung von Prof. Beckstein an der Universität Jena. Sie zeigt SLD-Resolution als Baum: Prolog reduziert Ziele Schritt für Schritt. Ein erfolgreicher Pfad endet dort, wo keine Teilziele mehr offen sind.</figcaption>
+                </figure>
+            </div>
+
+            <h3>Strukturen</h3>
+            <p>Strukturen bestehen aus einem Funktor und Argumenten. Sie eignen sich, um zusammengesetzte Daten zu modellieren.</p>
+
+            <div class="prolog-note">
+                <p><strong>Sinnbild:</strong> Eine Struktur ist wie eine beschriftete Kiste. Der Funktor ist das Etikett auf der Kiste, die Argumente sind die Fächer darin. <code>author('Flavius', 'Josephus')</code> ist also eine Kiste mit dem Etikett <code>author</code> und zwei Fächern.</p>
+            </div>
+
+            <pre><code>book(0, 'de bello judaico', author('Flavius', 'Josephus')).
+book(1, 'historica arcana', author('Flavius', 'Josephus')).
+book(2, 'Epicteti dissertationes', author('Flavius', 'Arrianus')).
+
+?- book(Id, Title, author('Flavius', Name)).
+Id = 0,
+Title = 'de bello judaico',
+Name = 'Josephus' ;
+Id = 1,
+Title = 'historica arcana',
+Name = 'Josephus' ;
+Id = 2,
+Title = 'Epicteti dissertationes',
+Name = 'Arrianus'.</code></pre>
+
+            <h3>Typ- und Instanzprüfungen</h3>
+            <pre><code>?- var(X).
+true.
+
+?- nonvar(42).
+true.
+
+?- number(3.14).
+true.
+
+?- integer(3.14).
+false.
+
+?- atom(prolog).
+true.
+
+?- is_list([a, b, c]).
+true.</code></pre>
+
+            <hr>
+
+            <h2 id="rekursion">8. Rekursion statt Schleifen</h2>
+            <p>In Prolog gibt es nicht dieselbe Schleifenlogik wie in imperativen Sprachen. Wiederholung entsteht meist durch Rekursion: Ein Prädikat ruft sich selbst auf, bis eine Abbruchbedingung erreicht ist.</p>
+
+            <div class="prolog-analogy">
+                <h3>Sinnbild: Rekursion ist ein Stapel offener Aufgaben</h3>
+                <p>Stell dir vor, du willst eine Treppe hochgehen. Bei normaler Rekursion sagst du auf jeder Stufe: „Ich merke mir diese Stufe, gehe weiter und rechne später zurück.“ Bei Endrekursion nimmst du dagegen einen Notizzettel mit: „Bisheriges Ergebnis = ...“ und aktualisierst ihn auf jeder Stufe. Am Ende musst du nicht mehr zurückrechnen, weil das Ergebnis schon auf dem Zettel steht.</p>
+            </div>
+
+            <figure class="prolog-figure">
+                <div class="prolog-inline-grid">
+                    <div class="prolog-inline-card">
+                        <h4>Rekursiver Abstieg</h4>
+                        <pre><code>fibonacci(N, F) :-
+    N > 1,
+    N1 is N - 1,
+    N2 is N - 2,
+    fibonacci(N1, F1),
+    fibonacci(N2, F2),
+    F is F1 + F2.</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Basisfall</h4>
+                        <pre><code>fibonacci(0, 0).
+fibonacci(1, 1).</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Merksatz</h4>
+                        <ul>
+                            <li>Jeder Schritt verkleinert das Problem.</li>
+                            <li>Der Basisfall beendet die Rekursion.</li>
+                            <li>Das Ergebnis baut sich beim Zurückkommen auf.</li>
+                        </ul>
+                    </div>
+                </div>
+                <figcaption>Rekursive Aufrufe lassen sich direkt als kleinere Teilprobleme beschreiben. Bei normaler Rekursion bleiben unterwegs Aufgaben offen, die später in der richtigen Reihenfolge wieder aufgelöst werden müssen.</figcaption>
+            </figure>
+
+            <h3>Der typische Aufbau</h3>
+            <table>
+                <thead>
+                    <tr><th>Baustein</th><th>Aufgabe</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Startprädikat</td><td>Schöne öffentliche Schnittstelle für die Anfrage.</td><td><code>summe(Liste, Summe)</code></td></tr>
+                    <tr><td>Abbruchbedingung</td><td>Sagt, wann die Rekursion fertig ist.</td><td><code>summe_acc([], Acc, Acc).</code></td></tr>
+                    <tr><td>Rekursiver Fall</td><td>Zerlegt das Problem und ruft sich kleiner wieder auf.</td><td><code>summe_acc([H|T], Acc, Summe)</code></td></tr>
+                    <tr><td>Akkumulator</td><td>Trägt das Zwischenergebnis durch die Rekursion.</td><td><code>NextAcc is Acc + H</code></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Wertverlaufsrekursion: direkt, aber speicherintensiver</h3>
+            <p>Bei der Wertverlaufsrekursion entsteht das Ergebnis erst, nachdem rekursive Aufrufe fertig sind. Prolog muss sich also merken, was nach dem Rückweg noch zu tun ist.</p>
+            <pre><code>fibonacci(0, 0).
+fibonacci(1, 1).
+
+fibonacci(N, F) :-
+    N > 1,
+    N1 is N - 1,
+    N2 is N - 2,
+    fibonacci(N1, F1),
+    fibonacci(N2, F2),
+    F is F1 + F2.</code></pre>
+
+            <h3>Endrekursion: etwas mehr Code, aber speicherschonender</h3>
+            <p>Bei der Endrekursion steht der rekursive Aufruf ganz am Ende der Regel. Danach kommt keine weitere Rechnung mehr. Das Zwischenergebnis wird vorher in einen Akkumulator gepackt.</p>
+            <pre><code>fibonacci_fast(N, F) :-
+    fibonacci_acc(N, 0, 1, F).
+
+fibonacci_acc(0, A, _, A).
+fibonacci_acc(N, A, B, F) :-
+    N > 0,
+    N1 is N - 1,
+    Sum is A + B,
+    fibonacci_acc(N1, B, Sum, F).</code></pre>
+
+            <pre><code>?- fibonacci_fast(8, F).
+F = 21.</code></pre>
+
+            <h3>Endrekursion Schritt für Schritt</h3>
+            <pre><code>fibonacci_fast(4, F)
+fibonacci_acc(4, 0, 1, F)
+fibonacci_acc(3, 1, 1, F)
+fibonacci_acc(2, 1, 2, F)
+fibonacci_acc(1, 2, 3, F)
+fibonacci_acc(0, 3, 5, F)
+F = 3</code></pre>
+
+            <p>Die letzten beiden Zahlen im Akkumulator sind immer die beiden aktuellen Fibonacci-Werte. Bei jedem Schritt wandert das Fenster weiter. Dadurch muss Prolog nicht mehrere offene Additionen aufheben.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Variante</th><th>Idee</th><th>Für Anfänger</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Wertverlaufsrekursion</td><td>Ergebnis entsteht nach den rekursiven Aufrufen.</td><td>Leicht zu lesen, aber schnell teuer.</td></tr>
+                    <tr><td>Endrekursion</td><td>Zwischenergebnis wird als Akkumulator weitergereicht.</td><td>Etwas ungewohnter, aber effizienter.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="prolog-note">
+                <p><strong>Merksatz zur Endrekursion:</strong> Wenn der rekursive Aufruf das Letzte ist, was eine Regel tut, und alle Zwischenergebnisse schon als Argumente mitgegeben werden, ist die Regel endrekursiv.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="listen">9. Listen verstehen</h2>
+            <p>Listen sind in Prolog rekursiv aufgebaut. Die Schreibweise <code>[Head | Tail]</code> zerlegt eine Liste in erstes Element und Restliste.</p>
+
+            <div class="prolog-analogy">
+                <h3>Sinnbild: Eine Liste ist eine Kette</h3>
+                <p><code>[a, b, c]</code> ist nicht einfach ein Block, sondern eher eine Kette aus erstem Glied und Restkette. <code>Head</code> ist das erste Glied, <code>Tail</code> ist alles, was danach noch kommt. Deshalb passen Listen so gut zu Rekursion: Man bearbeitet vorne ein Element und gibt den Rest wieder an dieselbe Regel weiter.</p>
+            </div>
+
+            <pre><code>?- [Head | Tail] = [a, b, c].
+Head = a,
+Tail = [b, c].</code></pre>
+
+            <h3>Interne Vorstellung: Paar aus Kopf und Rest</h3>
+            <p>Die Zusammenfassung beschreibt Listen als verkettete Paare, deren letztes Element die leere Liste ist. Sinnbildlich ist <code>[1,2,3]</code> also nicht „ein Arrayblock“, sondern eher:</p>
+
+            <pre><code>[1, 2, 3]
+% entspricht gedanklich:
+.(1, .(2, .(3, [])))</code></pre>
+
+            <p>Deshalb ist der Zugriff auf das erste Element billig, aber der Zugriff auf spätere Elemente braucht Traversierung. Eine Liste wird von vorne nach hinten durchlaufen.</p>
+
+            <h3>Länge einer Liste</h3>
+            <figure class="prolog-figure">
+                <div class="prolog-inline-grid">
+                    <div class="prolog-inline-card">
+                        <h4>Leere Liste</h4>
+                        <pre><code>list_length([], 0).</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Rekursiver Fall</h4>
+                        <pre><code>list_length([_ | Tail], Length) :-
+    list_length(Tail, TailLength),
+    Length is TailLength + 1.</code></pre>
+                    </div>
+                    <div class="prolog-inline-card">
+                        <h4>Muster</h4>
+                        <ul>
+                            <li>Basisfall für <code>[]</code></li>
+                            <li>Rekursion mit <code>[Head | Tail]</code></li>
+                            <li>Zwischenergebnis wird weitergereicht</li>
+                        </ul>
+                    </div>
+                </div>
+                <figcaption>Listenprädikate folgen meist demselben Muster. Eine Regel behandelt die leere Liste, die andere zerlegt <code>[Head | Tail]</code> und arbeitet rekursiv weiter.</figcaption>
+            </figure>
+
+            <pre><code>list_length([], 0).
+list_length([_ | Tail], Length) :-
+    list_length(Tail, TailLength),
+    Length is TailLength + 1.</code></pre>
+
+            <h3>Member: Ist ein Element enthalten?</h3>
+            <p>Auch hier lohnt sich eine kurze Vorüberlegung zur Direktionalität.</p>
+            <pre><code>% Ziel: member_of(+Element, +Liste)
+% oder alternativ: member_of(?Element, +Liste)
+%
+% Direktionalität:
+%   - mit festem Element und Liste kann man prüfen, ob es enthalten ist
+%   - mit einer freien Variable als erstem Argument kann man alle Elemente erzeugen
+
+member_of(X, [X | _]).
+member_of(X, [_ | Tail]) :-
+    member_of(X, Tail).</code></pre>
+
+            <p><code>member_of/2</code> ist ein gutes Beispiel für mehrere Richtungen. Man kann fragen, ob ein konkretes Element enthalten ist, oder sich alle Elemente nacheinander ausgeben lassen.</p>
+
+            <pre><code>?- member_of(b, [a, b, c]).
+true.
+
+?- member_of(X, [a, b, c]).
+X = a ;
+X = b ;
+X = c.</code></pre>
+
+            <h3>Insert: Element an beliebiger Stelle einfügen</h3>
+            <p>Die folgende Version zeigt, wie man ein Prädikat mit klarer Vorüberlegung schreibt.</p>
+            <pre><code>% Ziel: insert_anywhere(+Element, +Liste, -Ergebnis)
+%
+% Direktionalität:
+%   - Element und Liste sind Eingabe
+%   - Ergebnis ist Ausgabe
+%   - Die Rekursion baut schrittweise neue Listen auf
+
+insert_anywhere(X, List, [X | List]).
+insert_anywhere(X, [Head | Tail], [Head | Result]) :-
+    insert_anywhere(X, Tail, Result).</code></pre>
+
+            <pre><code>?- insert_anywhere(x, [a, b], Result).
+Result = [x, a, b] ;
+Result = [a, x, b] ;
+Result = [a, b, x].</code></pre>
+
+            <h3>Append: Zwei Listen verbinden</h3>
+            <p>Auch hier ist es hilfreich, zuerst zu klären, welche Argumente Eingabe und welche Ergebnis sind.</p>
+            <pre><code>% Ziel: append_list(+Liste1, +Liste2, -Ergebnis)
+%
+% Direktionalität:
+%   - Liste1 und Liste2 sind Eingaben
+%   - Ergebnis ist Ausgabe
+%   - Die Rekursion arbeitet sich durch Liste1 hindurch
+
+append_list([], List, List).
+append_list([Head | Tail], List, [Head | Result]) :-
+    append_list(Tail, List, Result).</code></pre>
+
+            <h3>Delete: Element entfernen</h3>
+            <p>Ein weiteres typisches Beispiel für eine kleine Prädikat-Analyse vor dem Schreiben.</p>
+            <pre><code>% Ziel: delete_one(+Element, +Liste, -Ergebnis)
+%
+% Direktionalität:
+%   - Element und Liste sind Eingabe
+%   - Ergebnis ist Ausgabe
+%   - die erste passende Stelle wird entfernt
+
+delete_one(X, [X | Tail], Tail).
+delete_one(X, [Head | Tail], [Head | Result]) :-
+    delete_one(X, Tail, Result).</code></pre>
+
+            <h3>Reverse: Liste umdrehen</h3>
+            <p>Die folgende Version ersetzt die Abbildung aus der Zusammenfassung durch direkt kopierbaren Code. Die Kommentare übernehmen die Denkweise aus dem Bild: erst Direktionalität klären, dann das eigentliche endrekursive Hilfsprädikat mit Akkumulator aufbauen.</p>
+
+            <pre><code>% VORÜBERLEGUNG:
+% Ziel: my_reverse(+List, -Reversed)
+%
+% Direktionalität 1:
+%   arg1 = Liste, die umgedreht werden soll
+%   arg2 = freie Variable für das Ergebnis
+%
+% Idee:
+%   Wir laufen von links nach rechts durch arg1.
+%   Dabei legen wir jedes gelesene Element vorne auf einen Akkumulator.
+%   Am Ende enthält der Akkumulator die Liste bereits umgedreht.
+%
+% Beispiel:
+%   [1,2,3], Acc=[]
+%   [2,3],   Acc=[1]
+%   [3],     Acc=[2,1]
+%   [],      Acc=[3,2,1]
+
+my_reverse(List, Reversed) :-
+    my_reverse_iter(List, [], Reversed).
+
+% Fall 1: Eingabeliste ist leer.
+% Dann ist der Akkumulator bereits das fertige Ergebnis.
+my_reverse_iter([], Accumulator, Accumulator).
+
+% Fall 2: Eingabeliste hat Head und Tail.
+% Head wird vorne auf den Akkumulator gelegt.
+% Danach geht es mit Tail weiter.
+my_reverse_iter([Head | Tail], Accumulator, Reversed) :-
+    NextAccumulator = [Head | Accumulator],
+    my_reverse_iter(Tail, NextAccumulator, Reversed).</code></pre>
+
+            <pre><code>?- my_reverse([1, 2, 3], R).
+R = [3, 2, 1].
+
+?- my_reverse([a, b, c, d], R).
+R = [d, c, b, a].</code></pre>
+
+            <div class="prolog-note">
+                <p><strong>Warum Akkumulator?</strong> Ohne Akkumulator müsste man beim Zurücklaufen der Rekursion immer wieder hinten anhängen. Das ist bei Listen teuer. Mit Akkumulator wird jedes Element einmal vorne angefügt; das ist das typische endrekursive Muster.</p>
+            </div>
+
+            <h3>Flatten: verschachtelte Listen abflachen</h3>
+            <p><code>flatten</code> nimmt eine Liste, in der wieder Listen liegen können, und macht daraus eine flache Liste. Das ist rekursiv etwas anspruchsvoller, weil man zwischen drei Fällen unterscheiden muss: leere Liste, Kopf ist selbst Liste, Kopf ist normales Element.</p>
+
+            <pre><code>flatten_list([], []).
+
+flatten_list([Head | Tail], Flat) :-
+    is_list(Head),
+    flatten_list(Head, FlatHead),
+    flatten_list(Tail, FlatTail),
+    append_list(FlatHead, FlatTail, Flat).
+
+flatten_list([Head | Tail], [Head | FlatTail]) :-
+    \+ is_list(Head),
+    flatten_list(Tail, FlatTail).</code></pre>
+
+            <pre><code>?- flatten_list([a, [b, c], [[d]], e], X).
+X = [a, b, c, d, e].</code></pre>
+
+            <h3>Listen, Laufzeit und Speicher</h3>
+            <table>
+                <thead>
+                    <tr><th>Operation</th><th>Typische Kosten</th><th>Warum?</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Kopf lesen</td><td><code>O(1)</code></td><td><code>[Head | _]</code> passt direkt auf das erste Paar.</td></tr>
+                    <tr><td>Element suchen</td><td><code>O(n)</code></td><td>Prolog läuft die Liste von vorne nach hinten ab.</td></tr>
+                    <tr><td>Am Anfang einfügen</td><td><code>O(1)</code></td><td><code>[X | List]</code> baut nur ein neues Paar davor.</td></tr>
+                    <tr><td>Hinten anhängen</td><td><code>O(n)</code></td><td>Das Ende muss erst gefunden werden.</td></tr>
+                    <tr><td>Naives Reverse</td><td>oft teuer</td><td>Wiederholtes Anhängen kann unnötige Traversierung erzeugen.</td></tr>
+                    <tr><td>Reverse mit Akkumulator</td><td><code>O(n)</code></td><td>Jedes Element wird einmal nach vorne in den Akkumulator gelegt.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Ausprobieren</h3>
+            <pre><code>?- list_length([a, b, c], L).
+L = 3.
+
+?- member_of(b, [a, b, c]).
+true.
+
+?- append_list([1, 2], [3, 4], X).
+X = [1, 2, 3, 4].
+
+?- delete_one(b, [a, b, c], X).
+X = [a, c].
+
+?- my_reverse([1, 2, 3], X).
+X = [3, 2, 1].</code></pre>
+
+            <div class="prolog-note">
+                <p><strong>Listen-Merksatz:</strong> Fast alle Listenprogramme bestehen aus zwei Fällen: leere Liste als Abbruchbedingung und <code>[Head | Tail]</code> als rekursiver Fall.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="advanced">10. Advanced: IO, Calls, Bäume und Speicher</h2>
+            <p>Wenn Fakten, Regeln, Rekursion und Listen sitzen, kommen die typischen Praxisfragen: Wie liest man Eingaben? Wie schreibt man Ausgaben? Wie wartet man kurz? Wie ruft man Ziele dynamisch auf? Wie modelliert man Bäume? Und was passiert im Speicher?</p>
+
+            <h3>Eingabe und Ausgabe</h3>
+            <p>Prolog ist eigentlich für logisches Schließen gebaut, kann aber natürlich auch mit der Konsole sprechen. Für Lernprogramme reichen oft <code>write/1</code>, <code>writeln/1</code>, <code>read/1</code> und <code>nl/0</code>.</p>
+
+            <p>Und ja: Genau wie man aus Prolog eine CLI-Anwendung machen kann, kann man darüber auch eine UI legen. In der Praxis bedeutet das oft: Die eigentliche Logik bleibt in Prolog oder in einer Datenbank als Regel- und Faktenbasis erhalten, während eine Web- oder Desktop-Oberfläche nur Eingaben sammelt und Ergebnisse darstellt. Man spricht dann eher von einer „Frontend-Schicht“ über einer logischen Kernschicht. Ein klassisches Beispiel wäre eine kleine Such- oder Entscheidungsanwendung: Die UI fragt nach Daten, die Logik sucht passende Lösungen, und die UI zeigt sie verständlich an.</p>
+
+            <p>Wenn man zusätzlich ein DBMS einsetzt, ist das oft derselbe Gedanke auf höherer Ebene: Die Daten liegen strukturiert in einer Datenbank, die Anwendung stellt Abfragen, und die Logik entscheidet, welche Ergebnisse angezeigt oder weiterverarbeitet werden. Prolog ist dann nicht unbedingt die gesamte Anwendung, sondern eher ein Teil der Denk- und Regelmaschine darunter.</p>
+
+            <pre><code>frage_name :-
+    write('Wie heißt du? '),
+    read(Name),
+    write('Hallo, '),
+    write(Name),
+    write('!'),
+    nl.</code></pre>
+
+            <pre><code>?- frage_name.
+Wie heißt du? felix.
+Hallo, felix!
+true.</code></pre>
+
+            <p><code>read/1</code> liest einen Prolog-Term. Deshalb muss die Eingabe mit einem Punkt enden. Wer normale Textstrings lesen will, nutzt in SWI-Prolog eher <code>read_line_to_string/2</code>.</p>
+
+            <pre><code>:- use_module(library(readutil)).
+
+frage_text :-
+    write('Name: '),
+    read_line_to_string(user_input, Name),
+    format('Hallo, ~w!~n', [Name]).</code></pre>
+
+            <h3>Warten und kleine Konsolenprogramme</h3>
+            <p>Für kurze Pausen kann man in SWI-Prolog <code>sleep/1</code> verwenden. Das ist praktisch für Demos, Animationen oder schrittweise Ausgaben.</p>
+
+            <pre><code>countdown(0) :-
+    writeln('Start!').
+
+countdown(N) :-
+    N > 0,
+    writeln(N),
+    sleep(1),
+    N1 is N - 1,
+    countdown(N1).</code></pre>
+
+            <pre><code>?- countdown(3).
+3
+2
+1
+Start!
+true.</code></pre>
+
+            <h3>Call, Fail und Cut</h3>
+            <p><code>call/1</code> führt ein Ziel aus, das als Term vorliegt. Das ist advanced, weil man damit Prädikate wie Daten behandeln kann.</p>
+
+            <pre><code>sicher_ausfuehren(Ziel) :-
+    write('Starte: '),
+    writeln(Ziel),
+    call(Ziel),
+    writeln('Erfolgreich.').</code></pre>
+
+            <pre><code>?- sicher_ausfuehren(member(X, [a, b])).
+Starte: member(_G, [a,b])
+X = a ;
+X = b.</code></pre>
+
+            <p><code>fail</code> erzwingt Scheitern. Das wirkt zunächst seltsam, ist aber nützlich, wenn man durch Backtracking absichtlich alle Lösungen erzeugen will.</p>
+
+            <pre><code>drucke_alle_farben :-
+    farbe(Ding, Farbe),
+    format('~w ist ~w~n', [Ding, Farbe]),
+    fail.
+
+drucke_alle_farben.</code></pre>
+
+            <p><code>!</code> heißt Cut. Ein Cut sagt: „Ab hier nicht mehr zurückgehen und keine alternativen Regeln davor probieren.“ Das kann Programme schneller und eindeutiger machen, aber auch logische Eleganz zerstören.</p>
+
+            <pre><code>note(Punkte, sehr_gut) :-
+    Punkte >= 90,
+    !.
+note(Punkte, bestanden) :-
+    Punkte >= 50,
+    !.
+note(_, nicht_bestanden).</code></pre>
+
+            <div class="prolog-note prolog-note--warn">
+                <p><strong>Cut-Regel:</strong> Nutze <code>!</code> erst, wenn du erklären kannst, welche Alternativen abgeschnitten werden. Für Anfänger ist ein expliziter zusätzlicher Vergleich oft verständlicher.</p>
+            </div>
+
+            <h3>Bäume als Prolog-Strukturen</h3>
+            <p>Bäume passen sehr gut zu Prolog, weil ein Baum rekursiv aufgebaut ist. Ein leerer Baum ist ein Basisfall, ein Knoten enthält Wert, linken Teilbaum und rechten Teilbaum.</p>
+
+            <pre><code>% empty oder node(Wert, Links, Rechts)
+baum(
+    node(5,
+        node(3, empty, empty),
+        node(8, empty, empty)
+    )
+).</code></pre>
+
+            <h3>Suche im binären Suchbaum</h3>
+            <pre><code>tree_member(X, node(X, _, _)).
+
+tree_member(X, node(Value, Left, _)) :-
+    X &lt; Value,
+    tree_member(X, Left).
+
+tree_member(X, node(Value, _, Right)) :-
+    X &gt; Value,
+    tree_member(X, Right).</code></pre>
+
+            <pre><code>?- baum(T), tree_member(3, T).
+true.
+
+?- baum(T), tree_member(7, T).
+false.</code></pre>
+
+            <h3>Tiefensuche über beliebige Bäume</h3>
+            <pre><code>dfs(X, node(X, _, _)).
+dfs(X, node(_, Left, _)) :-
+    dfs(X, Left).
+dfs(X, node(_, _, Right)) :-
+    dfs(X, Right).</code></pre>
+
+            <p>Das ist dieselbe Denkweise wie bei Listen: Ein Baum hat einen Basisfall und rekursive Teilstrukturen. Nur gibt es hier nicht einen Tail, sondern mehrere Teilbäume.</p>
+
+            <h3>Speicher: Was Prolog sich merken muss</h3>
+            <p>Prolog braucht Speicher nicht nur für Daten, sondern auch für die Suche. Besonders wichtig sind Zielstapel, Variablenbindungen und Choice Points.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Speicheridee</th><th>Bedeutung</th><th>Warum wichtig?</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Zielstapel</td><td>Welche Teilziele sind noch offen?</td><td>Normale Rekursion legt viele offene Aufgaben ab.</td></tr>
+                    <tr><td>Variablenbindungen</td><td>Welche Variable wurde woran gebunden?</td><td>Unifikation muss nachvollziehbar bleiben.</td></tr>
+                    <tr><td>Choice Points</td><td>Wo gibt es alternative Lösungen?</td><td>Backtracking springt zu diesen Punkten zurück.</td></tr>
+                    <tr><td>Trail</td><td>Welche Bindungen müssen rückgängig gemacht werden?</td><td>Beim Zurückgehen muss Prolog alte Zustände wiederherstellen.</td></tr>
+                    <tr><td>Akkumulator</td><td>Zwischenergebnis als Argument.</td><td>Endrekursion reduziert offene Nacharbeit.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="prolog-note">
+                <p><strong>Speicher-Merksatz:</strong> Normale Rekursion spart Schreibarbeit, kann aber viele offene Aufgaben erzeugen. Endrekursion verschiebt Arbeit in Akkumulatoren und ist deshalb oft speicherschonender.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="standard">11. Prädikate: SWI-Prolog und eigene Beispiele</h2>
+            <p>SWI-Prolog enthält sehr viele eingebaute Prädikate und zusätzlich Bibliotheken wie <code>library(lists)</code>. Die folgende Übersicht ist deshalb kein Ersatz für die komplette offizielle Predicate-Summary, sondern ein praktischer Lern-Spickzettel für die Prädikate, die man in Anfänger- und Aufbauaufgaben ständig braucht.</p>
+
+            <p>Für die vollständige Suche nutzt du in SWI-Prolog selbst <code>apropos/1</code> oder die offizielle Übersicht: <a href="https://www.swi-prolog.org/pldoc/man?section=predsummary" target="_blank" rel="noopener">SWI-Prolog Predicate Summary</a>.</p>
+
+            <h3>Von dir bzw. in diesem Guide manuell definierte Prädikate</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Rolle</th><th>Direktionalität</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>mutter/2</code>, <code>vater/2</code></td><td>Familienfakten</td><td><code>mutter(?Mutter, ?Kind)</code></td></tr>
+                    <tr><td><code>elternteil/2</code></td><td>Regel aus Mutter/Vater</td><td>prüfen oder passende Eltern/Kinder suchen</td></tr>
+                    <tr><td><code>geschwister/2</code></td><td>gemeinsames Elternteil finden</td><td>mehrere Lösungen durch Backtracking</td></tr>
+                    <tr><td><code>kategorie/2</code></td><td>imperative Selektion als Prolog-Fälle</td><td><code>kategorie(+Alter, -Kategorie)</code></td></tr>
+                    <tr><td><code>add/3</code></td><td>deine Direktionalitäts-Selektion</td><td><code>add(+,+,-)</code>, <code>add(+,-,+)</code>, <code>add(-,+,+)</code></td></tr>
+                    <tr><td><code>fibonacci/2</code></td><td>Wertverlaufsrekursion</td><td><code>fibonacci(+N, -F)</code></td></tr>
+                    <tr><td><code>fibonacci_fast/2</code>, <code>fibonacci_acc/4</code></td><td>Endrekursion mit Akkumulator</td><td>öffentlicher Einstieg plus internes Hilfsprädikat</td></tr>
+                    <tr><td><code>list_length/2</code></td><td>Listenlänge selbst implementiert</td><td>hier primär <code>list_length(+List, -Length)</code></td></tr>
+                    <tr><td><code>member_of/2</code></td><td>Element in Liste suchen</td><td><code>member_of(?Element, +List)</code></td></tr>
+                    <tr><td><code>insert_anywhere/3</code></td><td>Element an mehreren Positionen einsetzen</td><td>erzeugt per Backtracking mehrere Ergebnislisten</td></tr>
+                    <tr><td><code>append_list/3</code></td><td>Listen verbinden</td><td>Relation zwischen Prefix, Suffix und Gesamtlist</td></tr>
+                    <tr><td><code>delete_one/3</code></td><td>ein Vorkommen entfernen</td><td><code>delete_one(?X, +List, -Result)</code></td></tr>
+                    <tr><td><code>my_reverse/2</code>, <code>my_reverse_iter/3</code></td><td>Liste mit Akkumulator umdrehen</td><td>endrekursives Muster mit kommentiertem Aufbau</td></tr>
+                    <tr><td><code>flatten_list/2</code></td><td>verschachtelte Listen abflachen</td><td>nutzt <code>is_list/1</code> als Selektionsprüfung</td></tr>
+                    <tr><td><code>frage_name/0</code>, <code>frage_text/0</code></td><td>Konsolen-Eingabe/Ausgabe</td><td>Seiteneffekt statt reine Relation</td></tr>
+                    <tr><td><code>countdown/1</code></td><td>Warten mit <code>sleep/1</code></td><td><code>countdown(+N)</code></td></tr>
+                    <tr><td><code>sicher_ausfuehren/1</code></td><td>Meta-Call mit <code>call/1</code></td><td><code>sicher_ausfuehren(:Goal)</code></td></tr>
+                    <tr><td><code>tree_member/2</code>, <code>dfs/2</code></td><td>Baumsuche</td><td>rekursive Strukturprädikate</td></tr>
+                    <tr><td><code>sum_list/2</code>, <code>sum_acc/3</code></td><td>Summieren mit Akkumulator</td><td>klassische Endrekursion</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Typprüfung und Instanziierung</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Typischer Einsatz</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>var/1</code></td><td>Argument ist freie Variable</td><td>Ausgaberichtung erkennen</td></tr>
+                    <tr><td><code>nonvar/1</code></td><td>Argument ist bereits gebunden</td><td>Eingaberichtung erkennen</td></tr>
+                    <tr><td><code>atom/1</code></td><td>Term ist Atom</td><td>Symbolnamen prüfen</td></tr>
+                    <tr><td><code>atomic/1</code></td><td>Term ist atomar</td><td>Atom, Zahl, String usw.</td></tr>
+                    <tr><td><code>number/1</code></td><td>Term ist Zahl</td><td>vor <code>is/2</code> oder Vergleichen prüfen</td></tr>
+                    <tr><td><code>integer/1</code></td><td>Term ist Ganzzahl</td><td>Zähler und Indizes</td></tr>
+                    <tr><td><code>float/1</code></td><td>Term ist Gleitkommazahl</td><td>numerische Spezialfälle</td></tr>
+                    <tr><td><code>string/1</code></td><td>Term ist SWI-Prolog-String</td><td>Textverarbeitung</td></tr>
+                    <tr><td><code>compound/1</code></td><td>Term ist zusammengesetzt</td><td>Strukturen wie <code>node(...)</code></td></tr>
+                    <tr><td><code>callable/1</code></td><td>Term kann als Ziel aufgerufen werden</td><td>vor <code>call/1</code></td></tr>
+                    <tr><td><code>is_list/1</code></td><td>Term ist echte Liste</td><td>Listenfälle absichern</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Unifikation, Vergleich und Arithmetik</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat/Operator</th><th>Bedeutung</th><th>Beispielidee</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>=/2</code></td><td>Unifikation</td><td><code>X = 5</code></td></tr>
+                    <tr><td><code>\=/2</code></td><td>nicht unifizierbar</td><td><code>a \= b</code></td></tr>
+                    <tr><td><code>==/2</code>, <code>\==/2</code></td><td>identisch / nicht identisch ohne Bindung</td><td>Strukturvergleich</td></tr>
+                    <tr><td><code>@&lt;/2</code>, <code>@=&lt;/2</code>, <code>@&gt;/2</code>, <code>@&gt;=/2</code></td><td>Standardordnung von Termen</td><td>sortierbare Termordnung</td></tr>
+                    <tr><td><code>compare/3</code></td><td>Termvergleich mit Ergebnis <code>&lt;</code>, <code>=</code>, <code>&gt;</code></td><td>Vergleichsergebnis weiterverarbeiten</td></tr>
+                    <tr><td><code>is/2</code></td><td>arithmetischen Ausdruck auswerten</td><td><code>X is 2+3</code></td></tr>
+                    <tr><td><code>=:=/2</code>, <code>=\=/2</code></td><td>numerisch gleich / ungleich</td><td><code>2+3 =:= 5</code></td></tr>
+                    <tr><td><code>&lt;/2</code>, <code>=&lt;/2</code>, <code>&gt;/2</code>, <code>&gt;=/2</code></td><td>numerische Vergleiche</td><td>Grenzen, Selektion, Rekursion</td></tr>
+                    <tr><td><code>between/3</code></td><td>Ganzzahlen in Bereich erzeugen oder prüfen</td><td><code>between(1, 5, X)</code></td></tr>
+                    <tr><td><code>succ/2</code></td><td>Nachfolgerbeziehung natürlicher Zahlen</td><td>rekursive Zähler</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Kontrollprädikate und Backtracking</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Warnung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>true/0</code></td><td>gelingt immer</td><td>neutraler Erfolgsfall</td></tr>
+                    <tr><td><code>fail/0</code>, <code>false/0</code></td><td>scheitert immer</td><td>Backtracking erzwingen</td></tr>
+                    <tr><td><code>!/0</code></td><td>Cut, schneidet Alternativen ab</td><td>vorsichtig verwenden</td></tr>
+                    <tr><td><code>,/2</code></td><td>UND</td><td>Teilziele von links nach rechts</td></tr>
+                    <tr><td><code>;/2</code></td><td>ODER</td><td>Alternativen</td></tr>
+                    <tr><td><code>-&gt;/2</code></td><td>If-Then</td><td>nicht rein logisch</td></tr>
+                    <tr><td><code>*-&gt;/2</code></td><td>Soft-Cut</td><td>SWI-spezifischer Advanced-Fall</td></tr>
+                    <tr><td><code>\+/1</code></td><td>Negation als Scheitern</td><td>heißt nicht klassische logische Negation</td></tr>
+                    <tr><td><code>once/1</code></td><td>nur erste Lösung nehmen</td><td>entspricht oft Goal + Cut</td></tr>
+                    <tr><td><code>repeat/0</code></td><td>unendliche Choice Points erzeugen</td><td>nur mit Abbruchbedingung verwenden</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Listen und Sammlungen</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Hinweis</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>length/2</code></td><td>Listenlänge oder Liste mit Länge erzeugen</td><td>sehr gutes Direktionalitätsbeispiel</td></tr>
+                    <tr><td><code>member/2</code></td><td>Element ist in Liste</td><td>kann Elemente generieren</td></tr>
+                    <tr><td><code>memberchk/2</code></td><td>deterministischer Member-Test</td><td>nur erste passende Lösung</td></tr>
+                    <tr><td><code>append/3</code></td><td>Listen verknüpfen oder zerlegen</td><td>Relation zwischen Prefix, Suffix, Gesamtlist</td></tr>
+                    <tr><td><code>select/3</code></td><td>Element aus Liste auswählen/entfernen</td><td>ähnlich deinem <code>delete_one/3</code></td></tr>
+                    <tr><td><code>delete/3</code></td><td>alle passenden Elemente entfernen</td><td>aus <code>library(lists)</code></td></tr>
+                    <tr><td><code>reverse/2</code></td><td>Liste umdrehen</td><td>SWI-Version ist optimiert</td></tr>
+                    <tr><td><code>permutation/2</code></td><td>Permutation erzeugen/prüfen</td><td>kann schnell teuer werden</td></tr>
+                    <tr><td><code>sort/2</code></td><td>sortieren und Duplikate entfernen</td><td>Standard-Termordnung</td></tr>
+                    <tr><td><code>msort/2</code></td><td>sortieren mit Duplikaten</td><td>Multi-Set-ähnlich</td></tr>
+                    <tr><td><code>keysort/2</code></td><td>Paare nach Schlüssel sortieren</td><td><code>Key-Value</code>-Listen</td></tr>
+                    <tr><td><code>maplist/2..5</code></td><td>Prädikat auf Listen anwenden</td><td>höherwertiges Listenmuster</td></tr>
+                    <tr><td><code>include/3</code>, <code>exclude/3</code></td><td>filtern</td><td>mit Prädikat als Bedingung</td></tr>
+                    <tr><td><code>partition/4</code></td><td>Liste nach Bedingung teilen</td><td>wahr/falsch-Listen</td></tr>
+                    <tr><td><code>flatten/2</code></td><td>verschachtelte Liste abflachen</td><td>praktisch, aber nicht immer bestes Datenmodell</td></tr>
+                    <tr><td><code>nth0/3</code>, <code>nth1/3</code></td><td>Element per Index</td><td>0- bzw. 1-basiert</td></tr>
+                    <tr><td><code>last/2</code></td><td>letztes Element</td><td>muss bis Listenende laufen</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Alle Lösungen sammeln</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Unterschied</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>findall/3</code></td><td>alle Lösungen als Liste sammeln</td><td>liefert bei keiner Lösung <code>[]</code></td></tr>
+                    <tr><td><code>bagof/3</code></td><td>Lösungen gruppiert nach freien Variablen sammeln</td><td>scheitert bei keiner Lösung</td></tr>
+                    <tr><td><code>setof/3</code></td><td>wie <code>bagof/3</code>, aber sortiert und ohne Duplikate</td><td>gut für eindeutige Ergebnismengen</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Ein-/Ausgabe, Dateien und Text</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Typischer Einsatz</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>write/1</code>, <code>writeln/1</code></td><td>Term ausgeben</td><td>einfache Konsolenausgabe</td></tr>
+                    <tr><td><code>format/2</code>, <code>format/3</code></td><td>formatierte Ausgabe</td><td><code>~w</code>, <code>~n</code></td></tr>
+                    <tr><td><code>nl/0</code></td><td>neue Zeile</td><td>nach <code>write/1</code></td></tr>
+                    <tr><td><code>read/1</code></td><td>Prolog-Term lesen</td><td>Eingabe endet mit Punkt</td></tr>
+                    <tr><td><code>read_line_to_string/2</code></td><td>Zeile als String lesen</td><td><code>library(readutil)</code></td></tr>
+                    <tr><td><code>open/3</code>, <code>close/1</code></td><td>Datei öffnen/schließen</td><td>Streams</td></tr>
+                    <tr><td><code>setup_call_cleanup/3</code></td><td>Ressource sicher öffnen/nutzen/schließen</td><td>besser als manuelles Cleanup</td></tr>
+                    <tr><td><code>read_file_to_string/3</code></td><td>Datei komplett lesen</td><td><code>library(readutil)</code></td></tr>
+                    <tr><td><code>sleep/1</code></td><td>warten</td><td>Demos, kleine Animationen</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Dynamische Wissensbasis und Programme laden</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat/Direktive</th><th>Bedeutung</th><th>Hinweis</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>consult/1</code>, <code>['file.pl']</code></td><td>Datei laden</td><td>klassischer Einstieg</td></tr>
+                    <tr><td><code>use_module/1</code></td><td>Modul/Bibliothek laden</td><td>z. B. <code>library(lists)</code></td></tr>
+                    <tr><td><code>listing/0</code>, <code>listing/1</code></td><td>geladene Klauseln anzeigen</td><td>Debug/Orientierung</td></tr>
+                    <tr><td><code>dynamic/1</code></td><td>Prädikat zur Laufzeit veränderbar machen</td><td>Direktive: <code>:- dynamic fact/1.</code></td></tr>
+                    <tr><td><code>assertz/1</code>, <code>asserta/1</code></td><td>Klausel hinten/vorne hinzufügen</td><td>verändert Wissensbasis</td></tr>
+                    <tr><td><code>retract/1</code></td><td>eine passende Klausel entfernen</td><td>backtracking-fähig</td></tr>
+                    <tr><td><code>retractall/1</code></td><td>alle passenden Klauseln entfernen</td><td>Reset-Muster</td></tr>
+                    <tr><td><code>abolish/1</code></td><td>Prädikat vollständig entfernen</td><td>vorsichtig verwenden</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Meta-Calls, Debugging und Hilfe</h3>
+            <table>
+                <thead>
+                    <tr><th>Prädikat</th><th>Bedeutung</th><th>Typischer Einsatz</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>call/1..8</code></td><td>Ziel dynamisch aufrufen</td><td>Meta-Programmierung</td></tr>
+                    <tr><td><code>ignore/1</code></td><td>Ziel versuchen, Fehler/Scheitern ignorieren</td><td>Cleanup und optionale Aktionen</td></tr>
+                    <tr><td><code>notrace/1</code></td><td>Ziel ohne Tracer ausführen</td><td>Debug-Ausnahmen</td></tr>
+                    <tr><td><code>trace/0</code>, <code>notrace/0</code></td><td>Tracer an/aus</td><td>Anfragenauswertung beobachten</td></tr>
+                    <tr><td><code>spy/1</code>, <code>nospy/1</code></td><td>Breakpoint setzen/entfernen</td><td>Prädikat gezielt debuggen</td></tr>
+                    <tr><td><code>gtrace/0</code></td><td>grafischen Tracer starten</td><td>SWI-Prolog GUI</td></tr>
+                    <tr><td><code>help/1</code></td><td>Dokumentation anzeigen</td><td><code>help(member/2)</code></td></tr>
+                    <tr><td><code>apropos/1</code></td><td>Prädikate nach Stichwort suchen</td><td><code>apropos(list)</code></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Standardprädikate direkt ausprobieren</h3>
+            <pre><code>?- apropos(list).
+% zeigt passende Prädikate und Dokumentationseinträge
+
+?- help(length/2).
+% öffnet die Dokumentation zu length/2
+
+?- use_module(library(lists)).
+true.</code></pre>
+
+            <div class="prolog-note">
+                <p><strong>Merksatz:</strong> Die wichtigste Frage bei jedem Standardprädikat ist nicht nur „Was macht es?“, sondern auch „In welchen Richtungen kann ich es benutzen?“ Genau dort hängt Prolog stark von Direktionalität ab.</p>
+            </div>
+
+            <hr>
+
+            <h2 id="uebungen">12. Mini-Übungen</h2>
+            <p>Diese Aufgaben passen gut zum direkten Ausprobieren in SWI-Prolog oder SWISH.</p>
+
+            <ol>
+                <li>Ergänze weitere Familienfakten und frage alle Kinder einer Person ab.</li>
+                <li>Schreibe <code>grosselternteil(X, Y)</code> mit einer Zwischenvariable <code>Z</code>.</li>
+                <li>Teste den Unterschied zwischen <code>=</code>, <code>==</code> und <code>is</code>.</li>
+                <li>Schreibe <code>last_element(List, X)</code> für das letzte Element einer Liste.</li>
+                <li>Baue <code>sum_list(List, Sum)</code> einmal normal rekursiv und einmal mit Akkumulator.</li>
+            </ol>
+
+            <h3>Musterlösung: Großelternteil</h3>
+            <pre><code>grosselternteil(X, Y) :-
+    elternteil(X, Z),
+    elternteil(Z, Y).</code></pre>
+
+            <h3>Musterlösung: Summe mit Akkumulator</h3>
+            <pre><code>sum_list(List, Sum) :-
+    sum_acc(List, 0, Sum).
+
+sum_acc([], Acc, Acc).
+sum_acc([Head | Tail], Acc, Sum) :-
+    NextAcc is Acc + Head,
+    sum_acc(Tail, NextAcc, Sum).</code></pre>
+
+            <hr>
+
+            <h2 id="projekte">13. Erste Prolog-Projekte zum Kopieren</h2>
+            <p>Die folgenden Mini-Projekte sind bewusst klein. Sie funktionieren als erste eigene Dateien, lassen sich erweitern und zeigen typische Prolog-Stärken: Beziehungen modellieren, Regeln ableiten, mehrere Lösungen suchen und Prolog als kleine Wissensdatenbank nutzen.</p>
+
+            <h3>Projektidee 1: Stammbaum</h3>
+            <p>Das ist das klassische erste Prolog-Projekt, weil Familienbeziehungen fast direkt als Fakten und Regeln formuliert werden können.</p>
+
+            <pre><code>% stammbaum.pl
+person(elizabeth).
+person(charles).
+person(diana).
+person(william).
+person(harry).
+person(george).
+person(charlotte).
+person(louis).
+
+frau(elizabeth).
+frau(diana).
+frau(charlotte).
+
+mann(charles).
+mann(william).
+mann(harry).
+mann(george).
+mann(louis).
+
+mutter(diana, william).
+mutter(diana, harry).
+vater(charles, william).
+vater(charles, harry).
+vater(william, george).
+vater(william, charlotte).
+vater(william, louis).
+
+elternteil(X, Y) :-
+    mutter(X, Y).
+elternteil(X, Y) :-
+    vater(X, Y).
+
+kind(Kind, Elternteil) :-
+    elternteil(Elternteil, Kind).
+
+grosselternteil(X, Y) :-
+    elternteil(X, Z),
+    elternteil(Z, Y).
+
+geschwister(X, Y) :-
+    elternteil(Z, X),
+    elternteil(Z, Y),
+    X \== Y.
+
+vorfahr(X, Y) :-
+    elternteil(X, Y).
+vorfahr(X, Y) :-
+    elternteil(X, Z),
+    vorfahr(Z, Y).</code></pre>
+
+            <pre><code>?- grosselternteil(charles, Wer).
+Wer = george ;
+Wer = charlotte ;
+Wer = louis.
+
+?- geschwister(william, Wer).
+Wer = harry.
+
+?- vorfahr(charles, Wer).
+Wer = william ;
+Wer = harry ;
+Wer = george ;
+Wer = charlotte ;
+Wer = louis.</code></pre>
+
+            <p>Erweiterungsideen: Ehepartner, Cousins/Cousinen, Onkel/Tante, Generationentiefe, Ausgabe als Stammbaum-Kante für Graphviz.</p>
+
+            <h3>Projektidee 2: Mini-Expertensystem</h3>
+            <p>Ein Expertensystem ist eine Regelbasis, die aus beobachteten Fakten eine Diagnose oder Empfehlung ableitet.</p>
+
+            <pre><code>% expertensystem.pl
+symptom(pc_startet_nicht, kein_bild).
+symptom(pc_startet_nicht, kein_luefter).
+symptom(internet_problem, kein_wlan).
+symptom(internet_problem, router_blinkt_rot).
+symptom(drucker_problem, papierstau).
+symptom(drucker_problem, druckauftrag_haengt).
+
+empfehlung(pc_startet_nicht, 'Netzteil und Stromkabel pruefen.').
+empfehlung(internet_problem, 'Router neu starten und Verbindung pruefen.').
+empfehlung(drucker_problem, 'Papierstau entfernen und Warteschlange leeren.').
+
+diagnose(Problem, Empfehlung) :-
+    symptom(Problem, Symptom),
+    beobachtet(Symptom),
+    empfehlung(Problem, Empfehlung).
+
+% Beispielwissen fuer eine Sitzung:
+beobachtet(kein_wlan).
+beobachtet(router_blinkt_rot).</code></pre>
+
+            <pre><code>?- diagnose(Problem, Empfehlung).
+Problem = internet_problem,
+Empfehlung = 'Router neu starten und Verbindung pruefen.' ;
+Problem = internet_problem,
+Empfehlung = 'Router neu starten und Verbindung pruefen.'.</code></pre>
+
+            <p>Erweiterungsideen: Doppelte Diagnosen mit <code>setof/3</code> entfernen, Gewichtungen einbauen, Fragen interaktiv stellen.</p>
+
+            <h3>Projektidee 3: Kurs- oder Modul-Datenbank</h3>
+            <p>Prolog eignet sich gut als kleine Wissensdatenbank für Kurse, Voraussetzungen und Empfehlungen.</p>
+
+            <pre><code>% studium.pl
+modul(algo_dat, 5, sommer).
+modul(theoretische_informatik, 5, winter).
+modul(datenbanken, 5, sommer).
+modul(ki, 5, winter).
+
+voraussetzung(ki, algo_dat).
+voraussetzung(datenbanken, algo_dat).
+
+interesse(felix, logik).
+interesse(felix, daten).
+thema(theoretische_informatik, logik).
+thema(datenbanken, daten).
+thema(ki, logik).
+
+kann_belegen(Person, Modul) :-
+    modul(Modul, _, _),
+    \+ voraussetzung(Modul, _).
+
+kann_belegen(Person, Modul) :-
+    voraussetzung(Modul, Voraussetzung),
+    bestanden(Person, Voraussetzung).
+
+empfohlen(Person, Modul) :-
+    interesse(Person, Thema),
+    thema(Modul, Thema),
+    kann_belegen(Person, Modul).
+
+bestanden(felix, algo_dat).</code></pre>
+
+            <pre><code>?- empfohlen(felix, Modul).
+Modul = theoretische_informatik ;
+Modul = ki ;
+Modul = datenbanken.</code></pre>
+
+            <p>Erweiterungsideen: ECTS-Summe, Semesterplanung, Konflikte, Pflicht-/Wahlpflichtmodule, Ausgabe als Wochenplan.</p>
+
+            <h3>Projektidee 4: Kleine Routen- und Graphsuche</h3>
+            <p>Graphen sind Beziehungen. Genau dafür ist Prolog stark.</p>
+
+            <pre><code>% routen.pl
+kante(jena, weimar).
+kante(weimar, erfurt).
+kante(erfurt, gotha).
+kante(jena, naumburg).
+kante(naumburg, halle).
+
+verbunden(X, Y) :-
+    kante(X, Y).
+verbunden(X, Y) :-
+    kante(Y, X).
+
+route(Start, Ziel, Route) :-
+    route(Start, Ziel, [Start], Route).
+
+route(Ziel, Ziel, Besucht, Route) :-
+    reverse(Besucht, Route).
+
+route(Aktuell, Ziel, Besucht, Route) :-
+    verbunden(Aktuell, Naechster),
+    \+ member(Naechster, Besucht),
+    route(Naechster, Ziel, [Naechster | Besucht], Route).</code></pre>
+
+            <pre><code>?- route(jena, erfurt, Route).
+Route = [jena, weimar, erfurt].</code></pre>
+
+            <p>Erweiterungsideen: Kantengewichte, kürzeste Route, verbotene Knoten, Visualisierung.</p>
+
+            <h3>Projektidee 5: Regelbasierter Quiz-Checker</h3>
+            <p>Hier kann Prolog prüfen, ob Antworten korrekt sind, und Folgefragen auswählen.</p>
+
+            <pre><code>% quiz.pl
+frage(q1, 'Was ist ein Fakt in Prolog?').
+antwort(q1, korrekt, 'Eine Aussage, die als wahr gilt.').
+antwort(q1, falsch, 'Eine Schleife.').
+
+frage(q2, 'Was macht Unifikation?').
+antwort(q2, korrekt, 'Sie macht Terme durch Variablenbindung gleich.').
+antwort(q2, falsch, 'Sie sortiert Listen.').
+
+richtig(Frage, Text) :-
+    antwort(Frage, korrekt, Text).
+
+feedback(Frage, Text, 'Richtig!') :-
+    richtig(Frage, Text).
+
+feedback(Frage, Text, 'Leider falsch.') :-
+    antwort(Frage, falsch, Text).</code></pre>
+
+            <pre><code>?- feedback(q2, 'Sie macht Terme durch Variablenbindung gleich.', F).
+F = 'Richtig!'.</code></pre>
+
+            <hr>
+
+            <h2>14. Prolog als Datenbank in Python nutzen</h2>
+            <p>Du kannst Prolog gut als regelbasierte Datenbank verwenden: Fakten und Regeln liegen in einer <code>.pl</code>-Datei, Python stellt Anfragen und nutzt die Antworten. Das ist sinnvoll, wenn die Logik sehr relational ist, zum Beispiel Stammbäume, Expertensysteme, Regelprüfungen, Stundenplanbedingungen oder Wissensgraphen.</p>
+
+            <h3>Variante A: PySwip</h3>
+            <p>PySwip ist ein Python-Interface zu SWI-Prolog. Es lädt eine Prolog-Datei und liefert Query-Ergebnisse als Python-Dictionaries.</p>
+
+            <pre><code>pip install pyswip</code></pre>
+
+            <p>Datei <code>stammbaum.pl</code>:</p>
+            <pre><code>mutter(diana, william).
+mutter(diana, harry).
+vater(charles, william).
+vater(charles, harry).
+
+elternteil(X, Y) :-
+    mutter(X, Y).
+elternteil(X, Y) :-
+    vater(X, Y).
+
+kind(Kind, Elternteil) :-
+    elternteil(Elternteil, Kind).</code></pre>
+
+            <p>Datei <code>main.py</code>:</p>
+            <pre><code>from pathlib import Path
+from pyswip import Prolog
+
+base_dir = Path(__file__).parent
+prolog = Prolog()
+prolog.consult(str(base_dir / "stammbaum.pl"))
+
+print("Kinder von Diana:")
+for result in prolog.query("kind(Kind, diana)"):
+    print("-", result["Kind"])
+
+print("Eltern von William:")
+for result in prolog.query("elternteil(Elternteil, william)"):
+    print("-", result["Elternteil"])</code></pre>
+
+            <p>Typische Ausgabe:</p>
+            <pre><code>Kinder von Diana:
+- william
+- harry
+Eltern von William:
+- diana
+- charles</code></pre>
+
+            <h3>Konkretes Beispiel: Python-UI mit Prolog als Hintergrundlogik</h3>
+            <p>Hier ist ein sehr einfaches Muster: Python stellt eine kleine GUI oder Web-UI bereit, aber die eigentliche Entscheidungslogik läuft in Prolog.</p>
+
+            <p>Datei <code>familie.pl</code>:</p>
+            <pre><code>mutter(diana, william).
+mutter(diana, harry).
+vater(charles, william).
+vater(charles, harry).
+
+elternteil(X, Y) :-
+    mutter(X, Y).
+
+elternteil(X, Y) :-
+    vater(X, Y).
+
+kind(Kind, Elternteil) :-
+    elternteil(Elternteil, Kind).</code></pre>
+
+            <p>Datei <code>ui.py</code>:</p>
+            <pre><code>from pyswip import Prolog
+
+prolog = Prolog()
+prolog.consult("familie.pl")
+
+name = input("Gib einen Namen ein: ")
+
+results = list(prolog.query(f"kind(Kind, {name})"))
+if results:
+    print("Gefundene Kinder:")
+    for item in results:
+        print("-", item["Kind"])
+else:
+    print("Keine Ergebnisse gefunden.")</code></pre>
+
+            <p>Das Muster ist einfach und gut verständlich:</p>
+            <ul>
+                <li>Python übernimmt die Eingabe und Ausgabe.</li>
+                <li>Prolog liefert die passenden Lösungen über Regeln.</li>
+                <li>Die UI muss sich nicht um die logische Suche kümmern.</li>
+            </ul>
+
+            <p>Wenn du das später zu einer echten App ausbaust, kannst du die gleiche Struktur auf eine Web-UI übertragen: Flask oder FastAPI nimmt die Anfrage, Prolog liefert die Antwort, und das Frontend zeigt das Ergebnis an.</p>
+
+            <h3>Prolog dynamisch aus Python füttern</h3>
+            <p>Wenn Python Fakten zur Laufzeit einfügen soll, brauchst du in Prolog ein dynamisches Prädikat.</p>
+
+            <pre><code>% facts.pl
+:- dynamic produkt/2.
+
+teuer(Name) :-
+    produkt(Name, Preis),
+    Preis > 100.</code></pre>
+
+            <pre><code>from pyswip import Prolog
+
+prolog = Prolog()
+prolog.consult("facts.pl")
+
+prolog.assertz("produkt(laptop, 899)")
+prolog.assertz("produkt(maus, 25)")
+
+for result in prolog.query("teuer(Name)"):
+    print(result["Name"])
+
+prolog.retractall("produkt(_, _)")</code></pre>
+
+            <h3>Variante B: Janus/SWI-Prolog</h3>
+            <p>SWI-Prolog dokumentiert mit Janus eine bidirektionale Schnittstelle zwischen Python und Prolog. Janus ist interessant, wenn du enger mit SWI-Prolog arbeiten willst oder auch Python aus Prolog heraus nutzen möchtest.</p>
+
+            <pre><code>pip install janus-swi</code></pre>
+
+            <pre><code>import janus_swi as janus
+
+janus.consult("stammbaum.pl")
+
+for result in janus.query("kind(Kind, diana)"):
+    print(result["Kind"])</code></pre>
+
+            <div class="prolog-note">
+                <p><strong>Architekturidee:</strong> Python bleibt die App-Schicht für UI, API, Dateien, Datenbankzugriff oder Machine Learning. Prolog bleibt die Regel- und Wissensschicht. Python fragt: „Welche Regeln treffen zu?“ Prolog antwortet mit passenden Bindungen.</p>
+            </div>
+
+            <h3>Wann Prolog als Datenbank sinnvoll ist</h3>
+            <table>
+                <thead>
+                    <tr><th>Sinnvoll</th><th>Eher nicht sinnvoll</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Viele Regeln und Beziehungen</td><td>reine CRUD-Datenhaltung</td></tr>
+                    <tr><td>mehrere mögliche Lösungen</td><td>sehr große Massendaten ohne logische Regeln</td></tr>
+                    <tr><td>Erklärbare Ableitungen</td><td>hoher Schreibdurchsatz wie bei Eventlogs</td></tr>
+                    <tr><td>Expertensysteme, Stammbäume, Planer</td><td>klassische Tabellenreports ohne Inferenz</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <div class="prolog-note">
+                <p><strong>Weiterführender Guide:</strong> Wenn du Scheme separat kennenlernen willst, findest du einen eigenen Einstieg in <a href="scheme-guide.html">scheme-guide.html</a>.</p>
+            </div>
+
+            <h2>Kurzfazit</h2>
+            <p>Prolog fühlt sich am Anfang ungewohnt an, weil man nicht in Befehlsfolgen, sondern in Beziehungen denkt. Die wichtigsten Bausteine sind Fakten, Regeln, Anfragen, Unifikation und Rekursion. Sobald diese Begriffe sitzen, werden auch Listen, Backtracking und komplexere Regeln deutlich verständlicher.</p>
+
+            <p>Für Anfänger lohnt sich ein kleines Vorgehen: erst Fakten schreiben, dann einfache Anfragen testen, danach Regeln ergänzen und zuletzt Rekursion für wiederholte Strukturen verwenden.</p>
+
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">© 2026 Felix Staacke</div>
+    </footer>
+
+    <script>
+        document.querySelectorAll(".guide-article pre").forEach((block) => {
+            const code = block.querySelector("code")?.innerText ?? "";
+            const label = document.createElement("span");
+            label.className = "code-label";
+            label.textContent = code.trim().startsWith("?-") ? "Anfrage" : "Prolog";
+            block.appendChild(label);
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "copy-code-button";
+            button.textContent = "Kopieren";
+            button.addEventListener("click", async () => {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    button.textContent = "Kopiert";
+                    setTimeout(() => {
+                        button.textContent = "Kopieren";
+                    }, 1400);
+                } catch {
+                    button.textContent = "Fehler";
+                    setTimeout(() => {
+                        button.textContent = "Kopieren";
+                    }, 1400);
+                }
+            });
+            block.appendChild(button);
+        });
+    </script>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

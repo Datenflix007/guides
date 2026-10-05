@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Der Jenaer Wald und wir</title>
+  <meta name="description" content="Ein digitales Arbeitsblatt fuer einen Workshop zur Geschichte des Jenaer Waldes.">
+    <link rel="icon" type="image/png" href="../../../media/favicon.png">
+<link rel="apple-touch-icon" href="img/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="notes-drawer" id="notesDrawer" aria-label="Notizblatt">
+      <section class="notes-panel" id="notesPanel">
+        <div class="notes-panel__header">
+          <div>
+            <p class="eyebrow">Eigenes Notizblatt</p>
+            <h2>Beobachtungen sammeln</h2>
+          </div>
+          <button class="notes-close" id="notesClose" type="button" aria-label="Notizblatt schließen">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <label class="notes-label" for="notesInput">Funde, Ortsnamen, Fragen oder Berufsideen</label>
+        <textarea id="notesInput" placeholder="Zum Beispiel: Gibt es in unserer Umgebung Hinweise auf alte Forstberufe oder Ortsnamen mit historischem Bezug?"></textarea>
+        <div class="notes-actions">
+          <button id="saveNotesButton" type="button">Notizen speichern</button>
+          <button id="clearNotesButton" type="button" class="button-secondary">Leeren</button>
+        </div>
+        <p class="notes-hint">Die Notizen werden lokal im Browser gespeichert.</p>
+      </section>
+      <button class="notes-toggle" id="notesToggle" type="button" aria-expanded="false" aria-controls="notesPanel">
+        Notizen
+      </button>
+    </aside>
+
+    <main id="app" class="app" aria-live="polite"></main>
+  </div>
+
+  <template id="dashboardTemplate">
+    <section class="dashboard">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Digitales Arbeitsblatt</p>
+          <h1 id="dashboardTitle">Historische Waldberufe entdecken</h1>
+          <p class="hero-text" id="dashboardDescription">
+            Spuren vergangener Arbeit entdecken und die Bedeutung historischer Waldberufe für Mensch und Umwelt verstehen.
+          </p>
+          <div class="event-selection">
+            <label for="eventSelect">Veranstaltung auswählen</label>
+            <select id="eventSelect">
+              <option value="general" selected>Allgemeine Verwendung</option>
+              <option value="jenaWorkshop">Workshop: Der Jenaer Wald und wir</option>
+            </select>
+          </div>
+          <div class="hero-actions">
+            <button class="button-primary" data-route="intro">Erkundung starten</button>
+          </div>
+        </div>
+
+        <div class="slides-card">
+          <div class="slides-track" id="slidesTrack">
+            <article class="slide is-active">
+              <img src="img/köhler1.jpg" alt="Köhler am Meiler im Wald">
+              <div class="slide-caption">
+                <span>Berufe im Fokus</span>
+                <strong>Köhler am Meiler</strong>
+              </div>
+            </article>
+            <article class="slide">
+              <img src="img/glasbläser1.jpg" alt="Glasbläser bei der Arbeit an der Glashütte">
+              <div class="slide-caption">
+                <span>Berufe im Fokus</span>
+                <strong>Glasbläser an der Glashütte</strong>
+              </div>
+            </article>
+            <article class="slide">
+              <img src="img/händler1.jpg" alt="Händler und Kaufleute auf dem mittelalterlichen Markt">
+              <div class="slide-caption">
+                <span>Berufe im Fokus</span>
+                <strong>Händler auf dem Markt</strong>
+              </div>
+            </article>
+          </div>
+          <div class="slide-indicators" id="slideIndicators" aria-label="Slide-Auswahl"></div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <script src="script.js"></script>
+    <script src="../../../feedback-widget.js" defer></script>
+</body>
+</html>

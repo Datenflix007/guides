@@ -1,0 +1,507 @@
+.history-lab-enhanced {
+    --lab-command-bg: rgba(8, 17, 28, .9);
+    --lab-command-line: rgba(98, 210, 255, .18);
+    --lab-command-muted: #a9b6c8;
+}
+
+.history-lab-enhanced .app-shell {
+    width: min(1360px, calc(100vw - 28px));
+    padding-top: 12px;
+}
+
+.history-lab-enhanced .intro-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.history-lab-enhanced .intro-panel > div:first-child {
+    padding: 18px;
+}
+
+.history-lab-enhanced .intro-panel h1 {
+    font-size: clamp(30px, 3.4vw, 38px);
+}
+
+.history-lab-enhanced .intro-panel p:not(.eyebrow) {
+    max-width: 82ch;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.history-lab-enhanced .intro-links {
+    margin-top: 12px;
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .intro-panel {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .intro-panel > div:first-child {
+    border: 0;
+    padding: 4px 0 8px;
+    background: transparent;
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .intro-panel h1 {
+    max-width: 760px;
+    font-size: clamp(27px, 3vw, 34px);
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .intro-panel p:not(.eyebrow),
+.history-lab-enhanced:not(.lab-focus-details) .machine-visual,
+.history-lab-enhanced:not(.lab-focus-details) .lambda-visual {
+    display: none;
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .intro-links {
+    margin-top: 8px;
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .intro-links a {
+    min-height: 30px;
+    padding: 6px 9px;
+    font-size: 12px;
+}
+
+.lab-commandbar {
+    position: sticky;
+    top: 60px;
+    z-index: 12;
+    display: grid;
+    grid-template-columns: minmax(210px, .7fr) minmax(270px, .9fr) auto;
+    gap: 14px;
+    align-items: center;
+    margin: 0 0 10px;
+    padding: 8px 0;
+    border: 0;
+    border-top: 1px solid var(--lab-command-line);
+    border-bottom: 1px solid var(--lab-command-line);
+    border-radius: 0;
+    background: var(--lab-command-bg);
+    box-shadow: none;
+    backdrop-filter: blur(12px);
+}
+
+.lab-command-title,
+.lab-workflow,
+.lab-actions {
+    min-width: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.lab-command-title {
+    padding: 0;
+}
+
+.lab-command-title span {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.lab-command-title strong {
+    display: block;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.2;
+}
+
+.lab-command-title small {
+    display: block;
+    margin-top: 5px;
+    color: var(--lab-command-muted);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.lab-workflow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+}
+
+.lab-workflow span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.2;
+    background: transparent;
+}
+
+.lab-workflow b {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--accent-2);
+    color: #1a1002;
+    font-size: 11px;
+}
+
+.lab-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+}
+
+.lab-view-tabs,
+.lab-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+    background: rgba(6, 14, 24, .78);
+}
+
+.lab-view-tabs button,
+.lab-quick-actions button {
+    min-height: 28px;
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 9px;
+    background: transparent;
+    font-size: 12px;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.lab-view-tabs button[aria-pressed="true"] {
+    background: var(--accent-2);
+    color: #1a1002;
+}
+
+.lab-quick-actions button.primary {
+    background: var(--accent-2);
+    color: #1a1002;
+}
+
+.lab-statusline {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    margin: 10px 0 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 7px 10px;
+    background: rgba(6, 14, 24, .7);
+    color: var(--lab-command-muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.lab-statusline::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(98, 210, 255, .55);
+    flex: 0 0 auto;
+}
+
+.history-lab-enhanced:not(.lab-focus-details) .source-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-focus-details .source-panel {
+    display: grid;
+}
+
+.history-lab-enhanced.lab-focus-details .lab-commandbar {
+    border-color: rgba(244, 185, 90, .45);
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-work .flow-strip,
+.history-lab-enhanced.lab-module-lambda:not(.lab-focus-details) .concept-strip {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-analytical .machine-visual {
+    grid-template-columns: 94px minmax(84px, 1fr) 94px;
+    gap: 10px;
+    padding: 14px;
+}
+
+.history-lab-enhanced.lab-module-analytical .card-chain span,
+.history-lab-enhanced.lab-module-analytical .store-stack span,
+.history-lab-enhanced.lab-module-analytical .store-stack strong {
+    padding: 7px;
+    font-size: 11px;
+}
+
+.history-lab-enhanced.lab-module-analytical .mill-gear {
+    border-width: 10px;
+}
+
+.history-lab-enhanced .workspace {
+    gap: 12px;
+}
+
+.history-lab-enhanced .panel {
+    border-color: rgba(98, 210, 255, .16);
+    padding: 15px;
+    background: rgba(13, 23, 36, .78);
+    box-shadow: none;
+}
+
+.history-lab-enhanced textarea {
+    min-height: 280px;
+    background: rgba(5, 12, 22, .92);
+}
+
+.history-lab-enhanced .button-row {
+    gap: 7px;
+}
+
+.history-lab-enhanced .editor-panel > .button-row,
+.history-lab-enhanced .editor-panel #sampleBtn {
+    display: none;
+}
+
+.history-lab-enhanced .syntax-note {
+    gap: 6px;
+    margin-top: 10px;
+    opacity: .82;
+}
+
+.history-lab-enhanced .panel-head {
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+}
+
+.history-lab-enhanced .panel-head h2 {
+    font-size: 18px;
+}
+
+.history-lab-enhanced .status-pill {
+    flex: 0 0 auto;
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-work .workspace {
+    grid-template-columns: minmax(340px, .9fr) minmax(420px, 1fr);
+    grid-template-areas:
+        "editor output";
+    align-items: start;
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-work .library-panel,
+.history-lab-enhanced.lab-module-a0.lab-focus-work .state-panel,
+.history-lab-enhanced.lab-module-a0.lab-focus-work .log-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-work .compiler-summary {
+    display: block;
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-work .tape-output {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-work textarea {
+    min-height: 300px;
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-steps .workspace {
+    grid-template-columns: minmax(260px, .7fr) minmax(380px, 1fr) minmax(360px, 1fr);
+    grid-template-areas:
+        "library output log"
+        "state output log";
+}
+
+.history-lab-enhanced.lab-module-a0.lab-focus-steps .editor-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-work .workspace {
+    grid-template-columns: minmax(340px, .9fr) minmax(520px, 1.1fr);
+    grid-template-areas:
+        "editor accum";
+    align-items: start;
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-work .deck-panel,
+.history-lab-enhanced.lab-module-eniac.lab-focus-work .constants-panel,
+.history-lab-enhanced.lab-module-eniac.lab-focus-work .log-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-work .accumulator-wall {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-work .accumulator:not(.relevant) {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-work textarea {
+    min-height: 300px;
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-steps .workspace {
+    grid-template-columns: minmax(420px, 1fr) minmax(340px, .85fr) minmax(340px, .85fr);
+    grid-template-areas:
+        "accum deck log"
+        "constants deck log";
+}
+
+.history-lab-enhanced.lab-module-eniac.lab-focus-steps .editor-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-work .workspace {
+    grid-template-columns: minmax(340px, .9fr) minmax(390px, 1fr) minmax(300px, .75fr);
+    grid-template-areas:
+        "editor store mill";
+    align-items: start;
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-work .deck-panel,
+.history-lab-enhanced.lab-module-analytical.lab-focus-work .printer-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-work .store-wall {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-work .store-cell:not(.relevant) {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-work textarea {
+    min-height: 300px;
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-steps .workspace {
+    grid-template-columns: minmax(330px, .85fr) minmax(330px, .85fr) minmax(360px, 1fr);
+    grid-template-areas:
+        "store mill printer"
+        "deck deck printer";
+}
+
+.history-lab-enhanced.lab-module-analytical.lab-focus-steps .editor-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-work .workspace {
+    grid-template-columns: minmax(340px, .9fr) minmax(390px, 1fr) minmax(320px, .78fr);
+    grid-template-areas:
+        "editor memory unit";
+    align-items: start;
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-work .tape-panel,
+.history-lab-enhanced.lab-module-z3.lab-focus-work .log-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-work .memory-wall {
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-work .memory-cell:not(.relevant) {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-work textarea {
+    min-height: 300px;
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-steps .workspace {
+    grid-template-columns: minmax(330px, .9fr) minmax(360px, .9fr) minmax(380px, 1fr);
+    grid-template-areas:
+        "memory unit log"
+        "tape tape log";
+    align-items: start;
+}
+
+.history-lab-enhanced.lab-module-z3.lab-focus-steps .editor-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-lambda.lab-focus-work .workspace {
+    grid-template-columns: minmax(340px, .9fr) minmax(420px, 1fr);
+    grid-template-areas:
+        "editor result";
+}
+
+.history-lab-enhanced.lab-module-lambda.lab-focus-work .history-panel,
+.history-lab-enhanced.lab-module-lambda.lab-focus-work .practice-panel {
+    display: none;
+}
+
+.history-lab-enhanced.lab-module-lambda.lab-focus-steps .workspace {
+    grid-template-columns: minmax(330px, .8fr) minmax(430px, 1.1fr) minmax(330px, .9fr);
+    grid-template-areas:
+        "result history practice";
+}
+
+.history-lab-enhanced.lab-module-lambda.lab-focus-steps .editor-panel {
+    display: none;
+}
+
+@media (max-width: 1120px) {
+    .lab-commandbar {
+        position: static;
+        grid-template-columns: 1fr;
+    }
+
+    .history-lab-enhanced.lab-focus-work .workspace,
+    .history-lab-enhanced.lab-focus-steps .workspace {
+        grid-template-columns: 1fr;
+        grid-template-areas: none;
+    }
+
+    .history-lab-enhanced.lab-focus-work .panel,
+    .history-lab-enhanced.lab-focus-steps .panel {
+        grid-area: auto;
+    }
+
+}
+
+@media (max-width: 760px) {
+    .history-lab-enhanced .app-shell {
+        width: min(100% - 18px, 720px);
+        padding-top: 12px;
+    }
+
+    .history-lab-enhanced .intro-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .lab-workflow {
+        grid-template-columns: 1fr;
+    }
+
+    .lab-view-tabs button,
+    .lab-quick-actions button {
+        flex: 1 1 140px;
+        white-space: normal;
+    }
+}

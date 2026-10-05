@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../../media/favicon.png">
+    <title>ENIAC Emulator - Informatikgeschichte</title>
+    <meta name="description" content="Didaktischer ENIAC Emulator mit Akkumulatoren, Patch-Deck, Impulsleitungen und Quellenarbeit." />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/history-lab-ui.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="../../../informatikgeschichte.html">Informatikgeschichte</a>
+        <nav>
+            <a href="../../../informatikgeschichte.html#zeitstrahl">Zeitstrahl</a>
+            <a href="../a0-compiler/index.html">A-0</a>
+            <a href="../../../projekte.html">Projekte</a>
+        </nav>
+    </header>
+
+    <main class="app-shell">
+        <section class="intro-panel" aria-label="ENIAC Emulator">
+            <div>
+                <p class="eyebrow">Electronic Numerical Integrator and Computer, 1943-1946</p>
+                <h1>ENIAC Emulator</h1>
+                <p>
+                    Dieser Emulator bildet ENIAC als didaktisches Patch-Deck nach: Werte liegen in 20 dezimalen Akkumulatoren,
+                    Konstanten kommen aus einem Konstantensender, Recheneinheiten senden Impulse, und der Master Programmer arbeitet Schrittfolgen ab.
+                    Es ist keine elektrische 1:1-Emulation, sondern ein historisch erklärendes Arbeitsmodell.
+                </p>
+                <div class="intro-links">
+                    <a href="https://library.si.edu/digital-library/book/reportoneniacel00moor" target="_blank" rel="noopener">Historischer Report, 1946</a>
+                    <a href="https://bitsavers.informatik.uni-stuttgart.de/pdf/univOfPennsylvania/eniac/ENIAC_Operating_Manual_Jun46.pdf" target="_blank" rel="noopener">Operating Manual</a>
+                    <a href="#quellenarbeit">Quellenarbeit lesen</a>
+                </div>
+            </div>
+            <div class="machine-visual" aria-hidden="true">
+                <div class="rack">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <strong>ACC</strong>
+                </div>
+                <div class="cable-map">
+                    <i></i><i></i><i></i><i></i>
+                    <b>MASTER<br>PROGRAMMER</b>
+                </div>
+                <div class="rack">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <strong>FUNC</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace" aria-label="ENIAC Arbeitsbereich">
+            <section class="panel editor-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Patch-Deck</p>
+                        <h2>Programmierung per Impulsfolge</h2>
+                    </div>
+                    <select id="sampleSelect" aria-label="ENIAC Aufgabe waehlen">
+                        <option value="flight">Flugbahn-Tabelle</option>
+                        <option value="ballisticTable">Ballistische Tabelle</option>
+                        <option value="range">Wurfweite grob</option>
+                        <option value="drag">Abbremsung mit Widerstand</option>
+                    </select>
+                    <button type="button" id="sampleBtn">Beispiel laden</button>
+                </div>
+                <textarea id="sourceEditor" spellcheck="false" aria-label="ENIAC Patch-Deck"></textarea>
+                <div class="button-row">
+                    <button type="button" class="primary" id="compileBtn">Patch stecken</button>
+                    <button type="button" id="stepBtn">Impuls</button>
+                    <button type="button" id="runBtn">Laufen lassen</button>
+                    <button type="button" id="resetBtn">Zurücksetzen</button>
+                </div>
+                <div class="syntax-note">
+                    <code>CONST G = -10</code>
+                    <code>SET A0 = 0</code>
+                    <code>REPEAT 5</code>
+                    <code>ADD A0 A1 -> A0</code>
+                    <code>PRINT A0</code>
+                </div>
+            </section>
+
+            <section class="panel accumulator-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">20 Akkumulatoren</p>
+                        <h2>Dezimalspeicher</h2>
+                    </div>
+                    <span id="cycleStatus" class="status-pill">Zyklus 0</span>
+                </div>
+                <div id="accumulatorWall" class="accumulator-wall"></div>
+            </section>
+
+            <section class="panel deck-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Master Programmer</p>
+                        <h2>Gesteckte Schritte</h2>
+                    </div>
+                    <span id="compileStatus" class="status-pill">bereit</span>
+                </div>
+                <ol id="compiledDeck" class="compiled-deck"></ol>
+            </section>
+
+            <section class="panel constants-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Konstantensender</p>
+                        <h2>Konstanten und Ausgabe</h2>
+                    </div>
+                </div>
+                <div id="constantTable" class="constant-table"></div>
+                <div class="card-output">
+                    <h3>Punched-Card-Ausgabe</h3>
+                    <pre id="cardOutput"></pre>
+                </div>
+            </section>
+
+            <section class="panel log-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Impulsleitungen</p>
+                        <h2>Signalprotokoll</h2>
+                    </div>
+                    <span id="pcStatus" class="status-pill">PC 0</span>
+                </div>
+                <ol id="pulseLog" class="pulse-log"></ol>
+            </section>
+        </section>
+
+        <section class="source-panel" id="quellenarbeit" aria-label="Historische Einordnung und Quellenarbeit">
+            <div>
+                <h2>Historische Einordnung</h2>
+                <p>
+                    ENIAC war ursprünglich nicht wie heutige Computer über ein gespeichertes Programm nutzbar.
+                    Programme wurden durch Kabelverbindungen, Schalterstellungen, Funktions- und Konstantentafeln eingerichtet.
+                    Dieser Emulator übersetzt diese Idee in ein lesbares Patch-Deck: Jede Zeile steht für eine gesteckte Impulsverbindung oder eine vorbereitete Schalterstellung.
+                </p>
+                <p>
+                    Quellenkritisch wichtig ist: „programmierbar“ bedeutet hier nicht automatisch „stored-program“.
+                    ENIAC war ein elektronischer, allgemeiner Rechner, aber das Programmieren war zunächst physische Konfiguration.
+                </p>
+            </div>
+            <div class="source-grid">
+                <article class="source-card">
+                    <h3>Primärquellen</h3>
+                    <p>
+                        <em>A Report on the ENIAC</em>, Moore School of Electrical Engineering, 1. Juni 1946, sowie das
+                        <em>ENIAC Operating Manual</em> von Arthur W. Burks und Harry D. Huskey.
+                    </p>
+                    <a href="https://library.si.edu/digital-library/book/reportoneniacel00moor" target="_blank" rel="noopener">Smithsonian-Report öffnen</a>
+                    <a href="https://bitsavers.informatik.uni-stuttgart.de/pdf/univOfPennsylvania/eniac/ENIAC_Operating_Manual_Jun46.pdf" target="_blank" rel="noopener">Operating Manual öffnen</a>
+                </article>
+                <article class="source-card">
+                    <h3>Quellenkritische Leitfragen</h3>
+                    <ul>
+                        <li>Welche Einheiten waren Speicher, welche Recheneinheiten, welche Steuerung?</li>
+                        <li>Wie unterscheiden sich Kabelprogrammierung und gespeichertes Programm?</li>
+                        <li>Welche Rolle hatten die ENIAC-Programmiererinnen bei der Übersetzung mathematischer Probleme in Schaltkonfigurationen?</li>
+                        <li>Welche Vereinfachung nimmt dieses Patch-Deck gegenüber den realen Funktions- und Programmtafeln vor?</li>
+                    </ul>
+                </article>
+                <article class="source-card">
+                    <h3>Sekundärquellen</h3>
+                    <p>
+                        Für Kontext, Maße, öffentliche Einordnung und die Rolle der Programmiererinnen werden kuratierte historische Seiten gegengeprüft.
+                    </p>
+                    <p>
+                        <a href="https://www.engineering.upenn.edu/about/history-heritage/eniac/" target="_blank" rel="noopener">Penn Engineering</a>
+                        · <a href="https://www.computerhistory.org/revolution/birth-of-the-computer/4/78" target="_blank" rel="noopener">Computer History Museum</a>
+                        · <a href="https://ethw.org/Milestones%3AElectronic_Numerical_Integrator_and_Computer%2C_1946" target="_blank" rel="noopener">IEEE ETHW</a>
+                    </p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="../shared/history-lab-ui.js" defer></script>
+    <script src="../../../../feedback-widget.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../../media/favicon.png">
+    <title>A-0 Compiler Emulator - Informatikgeschichte</title>
+    <meta name="description" content="Didaktischer A-0 Compiler Emulator nach dem historischen Linker-Loader-Prinzip von Grace Hopper." />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/history-lab-ui.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="../../../informatikgeschichte.html">Informatikgeschichte</a>
+        <nav>
+            <a href="../../../informatikgeschichte.html#zeitstrahl">Zeitstrahl</a>
+            <a href="../../../projekte.html">Projekte</a>
+        </nav>
+    </header>
+
+    <main class="app-shell">
+        <section class="intro-panel" aria-label="A-0 Compiler Emulator">
+            <div>
+                <p class="eyebrow">A-0 System Compiler, 1951-1952</p>
+                <h1>A-0 Compiler Emulator</h1>
+                <p>
+                    Dieser Emulator bildet das historische Prinzip didaktisch nach: Ein symbolisches Programm ruft mathematische Routinen per Name oder Nummer auf.
+                    Beim Kompilieren entsteht ein Objektband aus Daten, Routine-Links und Sprungadressen. Beim Ausführen werden die verlinkten Routinen Schritt für Schritt abgearbeitet.
+                </p>
+                <p>
+                    Entscheidend ist dabei die neue Abstraktionsebene: Beim A-0-System wurde zuerst ein Compiler- bzw. Übersetzungsprogramm gebaut.
+                    Erst dadurch musste eine Programmiererin nicht mehr jede Maschinenfolge direkt formulieren, sondern konnte Routinen symbolisch anstoßen.
+                    Dieser Schritt machte spätere Hochsprachen denkbar, weil Programmieren von der konkreten Maschine weg und hin zu beschreibbaren Operationen verschoben wurde.
+                </p>
+                <div class="intro-links">
+                    <a href="https://dl.acm.org/doi/10.1145/609784.609818" target="_blank" rel="noopener">Historisches Paper: Hopper 1952</a>
+                    <a href="#quellenarbeit">Quellenarbeit lesen</a>
+                </div>
+            </div>
+            <div class="machine-visual" aria-hidden="true">
+                <div class="tape-reel left"></div>
+                <div class="tape-window">
+                    <span>DATA A</span>
+                    <span>CALL 01</span>
+                    <span>CALL 05</span>
+                    <span>PRINT</span>
+                </div>
+                <div class="tape-reel right"></div>
+            </div>
+        </section>
+
+        <section class="flow-strip" aria-label="A-0 Ablauf">
+            <article class="flow-step active" id="flowSource">
+                <span>1</span>
+                <strong>Quelle</strong>
+                <small>symbolische Aufrufe</small>
+            </article>
+            <article class="flow-step" id="flowCompile">
+                <span>2</span>
+                <strong>Objektband</strong>
+                <small>Routine-Links</small>
+            </article>
+            <article class="flow-step" id="flowRun">
+                <span>3</span>
+                <strong>Ausf&uuml;hrung</strong>
+                <small>Speicher + Ausgabe</small>
+            </article>
+            <p id="flowHint">Das Beispiel ist geladen. Das Objektband zeigt, wie A-0 symbolische Aufrufe in verlinkte Routinen &uuml;bersetzt.</p>
+        </section>
+
+        <section class="workspace" aria-label="Emulator Arbeitsbereich">
+            <section class="panel editor-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Symbolisches Programm</p>
+                        <h2>Quelle</h2>
+                    </div>
+                    <select id="sampleSelect" aria-label="Beispielprogramm ausw&auml;hlen">
+                        <option value="score">Wertung berechnen</option>
+                        <option value="circle">Kreisformel</option>
+                        <option value="growth">Wachstum</option>
+                        <option value="trajectory">Wurfweite abschaetzen</option>
+                        <option value="rms">RMS aus Messwerten</option>
+                        <option value="standardize">Z-Wert normalisieren</option>
+                    </select>
+                    <button type="button" id="sampleBtn">Beispiel laden</button>
+                </div>
+                <textarea id="sourceEditor" spellcheck="false" aria-label="A-0 Quellprogramm"></textarea>
+                <div class="button-row">
+                    <button type="button" class="primary" id="compileBtn">Kompilieren</button>
+                    <button type="button" id="stepBtn">Schritt</button>
+                    <button type="button" id="runBtn">Ausführen</button>
+                    <button type="button" id="resetBtn">Zurücksetzen</button>
+                </div>
+                <div class="syntax-note">
+                    <code>DATA A = 12</code>
+                    <code>CALL ADD A B -> SUM</code>
+                    <code>CALL 05 SUM -> ROOT</code>
+                    <code>PRINT ROOT</code>
+                </div>
+            </section>
+
+            <section class="panel library-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Routinenband</p>
+                        <h2>Bibliothek</h2>
+                    </div>
+                </div>
+                <div class="next-call" id="nextCall">Naechster Aufruf: nach dem Kompilieren sichtbar</div>
+                <div id="routineLibrary" class="routine-library"></div>
+            </section>
+
+            <section class="panel output-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Compiler-Ausgabe</p>
+                        <h2>Objektband</h2>
+                    </div>
+                    <span id="compileStatus" class="status-pill">bereit</span>
+                </div>
+                <div id="compilerSummary" class="compiler-summary"></div>
+                <pre id="objectTape" class="tape-output"></pre>
+                <div class="explain-box" id="tapeHint">DATA-Zeilen legen Werte an. LINK-Zeilen zeigen, welche Routine aus dem Routinenband eingebunden wird.</div>
+            </section>
+
+            <section class="panel state-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Speicher</p>
+                        <h2>Symboltabelle</h2>
+                    </div>
+                </div>
+                <div id="symbolTable" class="symbol-table"></div>
+            </section>
+
+            <section class="panel log-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Laufzeit</p>
+                        <h2>Ausführungslog</h2>
+                    </div>
+                    <span id="pcStatus" class="status-pill">PC 0</span>
+                </div>
+                <ol id="executionLog" class="execution-log"></ol>
+                <div class="printer-box">
+                    <h3>Ausgabe</h3>
+                    <pre id="printOutput">Noch keine Ausgabe.</pre>
+                </div>
+            </section>
+        </section>
+
+        <section class="source-panel" id="quellenarbeit" aria-label="Historische Einordnung und Quellenarbeit">
+            <div>
+                <h2>Historische Einordnung</h2>
+                <p>
+                    Der echte A-0 war kein moderner Hochsprachencompiler. Er war ein früher automatischer Programmieransatz, der Unterprogramme verwaltete und aus symbolischen Aufrufen ein ausführbares Arrangement erzeugte.
+                    Genau diese Idee simuliert die Seite: Routinen werden nicht jedes Mal neu geschrieben, sondern aus einer Bibliothek in ein Objektband eingebunden.
+                </p>
+                <p>
+                    Historisch wichtig ist die Reihenfolge: Zuerst musste ein Programm entstehen, das überhaupt übersetzen, Routinen auswählen und Maschinenabläufe zusammenstellen konnte.
+                    Das A-0-System steht deshalb nicht nur für ein einzelnes Tool, sondern für den Aufbau einer Abstraktionsschicht zwischen Mensch und Maschine.
+                    Aus solchen Schichten konnten später Compilerketten, symbolische Sprachen und Hochsprachen entstehen.
+                </p>
+                <p>
+                    Hopper beschrieb diese Denkrichtung 1952 in <strong>„The Education of a Computer“</strong>. Für die Quellenarbeit ist wichtig:
+                    Das Wort „compiler“ muss historisch gelesen werden. A-0 steht am Übergang von manueller Maschinenprogrammierung zu automatischer Routineverwaltung.
+                </p>
+            </div>
+            <div class="source-grid">
+                <article class="source-card">
+                    <h3>Primärquelle</h3>
+                    <p>
+                        Grace Murray Hopper: <em>The Education of a Computer</em>, Proceedings of the 1952 ACM national meeting, Pittsburgh, S. 243-249.
+                    </p>
+                    <a href="https://dl.acm.org/doi/10.1145/609784.609818" target="_blank" rel="noopener">ACM-Paper öffnen</a>
+                </article>
+                <article class="source-card">
+                    <h3>Quellenkritische Leitfragen</h3>
+                    <ul>
+                        <li>Welche Arbeitslast sollte automatische Programmierung reduzieren?</li>
+                        <li>Welche Rolle spielen wiederverwendbare Unterprogramme?</li>
+                        <li>Welche neue Abstraktionsebene entsteht, wenn zuerst ein Compiler als Werkzeug gebaut wird?</li>
+                        <li>Warum ist A-0 eher Linker/Loader als moderner Compiler?</li>
+                        <li>Welche Vereinfachung nimmt dieser Emulator gegenüber UNIVAC vor?</li>
+                    </ul>
+                </article>
+                <article class="source-card">
+                    <h3>Sekundärquellen</h3>
+                    <p>
+                        Die Einordnung als Pionierleistung, aber auch als linker-/loaderähnliches System, wird mit kuratierten historischen Seiten abgeglichen.
+                    </p>
+                    <p>
+                        <a href="https://ethw.org/Milestones%3AA-0_Compiler_and_Initial_Development_of_Automatic_Programming%2C_1951-1952" target="_blank" rel="noopener">IEEE ETHW</a>
+                        · <a href="https://www.computinghistory.org.uk/det/5487/Grace-Hopper-completes-the-A-0-Compiler/" target="_blank" rel="noopener">Centre for Computing History</a>
+                        · <a href="https://sirismm.si.edu/EADpdfs/NMAH.AC.0324.pdf" target="_blank" rel="noopener">Smithsonian Hopper Collection</a>
+                    </p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="../shared/history-lab-ui.js" defer></script>
+    <script src="../../../../feedback-widget.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../media/favicon.png">
+    <title>Aus dem Informatikstudium – Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="Referenzen.html">Referenzen</a>
+                <a class="btn" href="projekte.html">Projekte</a>
+                <a class="btn" href="kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="page-hero">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 25% 75%, #0ea5e9 0%, transparent 52%),
+                radial-gradient(ellipse at 78% 18%, #6366f1 0%, transparent 50%),
+                linear-gradient(160deg, #0f1729 0%, #1e293b 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Studium</span>
+                <h1>Aus dem Informatikstudium</h1>
+                <p class="sub">Theorie, Projekte und Erkenntnisse aus dem Informatikstudium (Lehramt) an der Friedrich-Schiller-Universität Jena.</p>
+            </div>
+        </section>
+
+        <div class="blog-grid">
+
+            <article class="blog-card">
+                <div class="blog-thumb blog-thumb--placeholder" style="display:grid;place-items:center;background:linear-gradient(90deg, rgba(226,232,240,.16) 1px, transparent 1px) 0 0 / 30px 30px, linear-gradient(135deg,#08111c,#142238 52%,#2b1d0d);">
+                    <span style="font-size:2.2rem;font-weight:900;color:#f4b95a;">1843 | 1952</span>
+                </div>
+                <div class="blog-body">
+                    <span class="blog-date">Themenbereich</span>
+                    <h3>Informatikgeschichte</h3>
+                    <p class="desc">Zweispuriger Zeitstrahl: links zentrale Erfolge der theoretischen Informatik, rechts Maschinen, Compiler, Programmiersprachen und Netze der praktischen Informatik; mit Lambda-Kalk&uuml;l, Analytical Engine, A-0 und ENIAC als interaktiven Laboren.</p>
+                    <a href="informatikgeschichte.html" class="blog-link">Zum Zeitstrahl →</a>
+                    <a href="modules/Informatikgeschichte/lambda-calculus/index.html" class="blog-link" target="_blank">Lambda-Kalk&uuml;l Labor &ouml;ffnen →</a>
+                    <a href="modules/Informatikgeschichte/analytical-engine/index.html" class="blog-link" target="_blank">Analytical Engine Emulator &ouml;ffnen →</a>
+                    <a href="modules/Informatikgeschichte/a0-compiler/index.html" class="blog-link" target="_blank">A-0 Emulator öffnen →</a>
+                    <a href="modules/Informatikgeschichte/eniac-emulator/index.html" class="blog-link" target="_blank">ENIAC Emulator öffnen →</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-thumb blog-thumb--placeholder" style="display:grid;place-items:center;background:linear-gradient(135deg,#12091f,#102033);">
+                    <span style="font-size:3rem;font-weight:800;color:#ddd6fe;">?-</span>
+                </div>
+                <div class="blog-body">
+                    <span class="blog-date">Deklarative Programmierung</span>
+                    <h3>Prolog Guide f&uuml;r Dummies</h3>
+                    <p class="desc">Ein anschaulicher Einstieg in Prolog anhand der Zusammenfassung: mit Sinnbildern, Vergleich zu imperativer Selektion, Regeln, Unifikation, Endrekursion und Listen.</p>
+                    <a href="guides/prolog-dummies.html" class="blog-link">Zum Guide &rarr;</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-thumb">
+                    <img src="../media/projekte/fheap.png" alt="Fibonacci Heap Visualisierung">
+                </div>
+                <div class="blog-body">
+                    <span class="blog-date">Sommersemester 2026</span>
+                    <h3>Algorithmen und Datenstrukturen</h3>
+                    <p class="desc">Ein interaktiver Selbstlernkurs zu den Grundlagen der Algorithmen und Datenstrukturen – von Sortierverfahren über Graphentheorie bis hin zu komplexen Heap-Strukturen wie dem Fibonacci-Heap. Alle Konzepte werden mit Visualisierungen, Pseudocode und konkreten Beispielen aufbereitet.</p>
+                    <a href="modules/AlgoDatCourse/index.html" class="blog-link" target="_blank">Zum Kurs →</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-thumb blog-thumb--placeholder">
+                    <img src="../media/projekte/datastructureLab.png" alt="DatastructureLab Visualisierung">
+                </div>
+                <div class="blog-body">
+                    <span class="blog-date">Sommersemester 2026</span>
+                    <h3>DatastructureLab</h3>
+                    <p class="desc">Interaktives Labor zum visuellen Erkunden und Ausprobieren von Datenstrukturen – Einfügen, Suchen und Löschen direkt im Browser mit Echtzeit-Canvas-Visualisierung.</p>
+                    <a href="modules/AlgoDatCourse/DatastructureLab.html" class="blog-link" target="_blank">Zum Lab →</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-thumb blog-thumb--placeholder" style="display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,#164e63,#0f172a 65%);">
+                    <span style="font-size:3rem;font-weight:800;color:#67e8f9;letter-spacing:-.08em;">AL</span>
+                </div>
+                <div class="blog-body">
+                    <span class="blog-date">Sommersemester 2026</span>
+                    <h3>AutomataLab</h3>
+                    <p class="desc">Interaktives Labor zum Modellieren und Simulieren von DFA, NFA, Kellerautomaten und Turingmaschinen mit Grapheditor, Keller, Band und textuellem Regelprogramm.</p>
+                    <a href="modules/AutomataLab/index.html" class="blog-link" target="_blank">Zum AutomataLab →</a>
+                </div>
+            </article>
+
+            <!-- ================================================================
+            NEUEN EINTRAG HIER EINFÜGEN – Vorlage kopieren & befüllen:
+
+            <article class="blog-card">
+                <div class="blog-thumb" style="background: linear-gradient(135deg, #0f1729, #1e293b);">
+                    <img src="../media/..." alt="Vorschaubild">
+                </div>
+                <div class="blog-body">
+                    <span class="blog-date">TT.MM.JJJJ</span>
+                    <h3>Titel des Eintrags</h3>
+                    <p class="desc">Kurze Beschreibung des Inhalts – worum geht es, was war interessant?</p>
+                    <a href="#" class="blog-link">Weiterlesen →</a>
+                </div>
+            </article>
+
+            ================================================================ -->
+
+
+        </div>
+    </main>
+
+    <br /><br />
+    <footer>
+        <div class="container">© 2025 Felix Staacke</div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../../media/favicon.png">
+    <title>Z3 Emulator - Informatikgeschichte</title>
+    <meta name="description" content="Didaktischer Z3 Emulator zu Konrad Zuses Relaisrechner mit Programmstreifen, Speicher, Gleitkomma-Rechenwerk und Quellenarbeit." />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/history-lab-ui.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="../../../informatikgeschichte.html">Informatikgeschichte</a>
+        <nav>
+            <a href="../../../informatikgeschichte.html#zeitstrahl">Zeitstrahl</a>
+            <a href="../analytical-engine/index.html">Analytical Engine</a>
+            <a href="../eniac-emulator/index.html">ENIAC</a>
+            <a href="../../../projekte.html">Projekte</a>
+        </nav>
+    </header>
+
+    <main class="app-shell">
+        <section class="intro-panel" aria-label="Z3 Emulator">
+            <div>
+                <p class="eyebrow">Konrad Zuse, Z3, 1941</p>
+                <h1>Z3 Emulator</h1>
+                <p>
+                    Dieses Labor rekonstruiert die Z3 als lesbares Arbeitsmodell: Ein Programmstreifen wird nacheinander gelesen,
+                    Werte liegen in Speicherworten, das Rechenwerk nutzt zwei Register, und arithmetische Befehle arbeiten mit
+                    binaerer Gleitkomma-Idee. Die echte Z3 hatte 64 Speicherworte mit 22 Bit; das Labor zeigt bewusst nur
+                    eine kleine Auswahl, damit man den Ablauf versteht.
+                </p>
+                <p>
+                    Quellenkritisch wichtig ist: Die Z3 war programmgesteuert, aber kein moderner Stored-Program-Rechner mit
+                    Befehlen im Hauptspeicher. Der Streifen lief sequenziell, ohne komfortable bedingte Spruenge im heutigen Sinn.
+                </p>
+                <div class="intro-links">
+                    <a href="https://zuse.zib.de/item/axy7eq6AntFRwuJv" target="_blank" rel="noopener">Historische Quelle: Patentanmeldung Z391</a>
+                    <a href="https://zuse.zib.de/z3" target="_blank" rel="noopener">Zuse Internet Archive</a>
+                    <a href="#quellenarbeit">Quellenarbeit lesen</a>
+                </div>
+            </div>
+            <div class="machine-visual" aria-hidden="true">
+                <div class="relay-rack">
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                    <strong>Relais</strong>
+                </div>
+                <div class="tape-reader">
+                    <b>Filmstreifen</b>
+                    <i>LOAD</i>
+                    <i>MUL</i>
+                    <i>STORE</i>
+                </div>
+                <div class="relay-rack">
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                    <strong>Speicher</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace" aria-label="Z3 Arbeitsbereich">
+            <section class="panel editor-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Programmstreifen</p>
+                        <h2>Befehle eingeben</h2>
+                    </div>
+                    <select id="sampleSelect" aria-label="Beispielprogramm waehlen">
+                        <option value="pythagoras">Pythagoras</option>
+                        <option value="fahrenheit">Lineare Formel</option>
+                        <option value="fluglast">Quadratische Last</option>
+                        <option value="ballistic">Ballistische Tabelle</option>
+                        <option value="energy">Energievergleich</option>
+                        <option value="weighted">Gewichteter Mittelwert</option>
+                    </select>
+                    <button type="button" id="sampleBtn">Beispiel laden</button>
+                </div>
+                <textarea id="sourceEditor" spellcheck="false" aria-label="Z3 Programmstreifen"></textarea>
+                <div class="button-row">
+                    <button type="button" class="primary" id="compileBtn">Streifen lesen</button>
+                    <button type="button" id="stepBtn">Takt</button>
+                    <button type="button" id="runBtn">Durchlauf</button>
+                    <button type="button" id="resetBtn">Zuruecksetzen</button>
+                </div>
+                <div class="syntax-note">
+                    <code>MEM M0 = 3</code>
+                    <code>LOAD M0</code>
+                    <code>MUL</code>
+                    <code>SQRT</code>
+                    <code>STORE M3</code>
+                    <code>OUTPUT M3</code>
+                </div>
+            </section>
+
+            <section class="panel memory-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Speicher</p>
+                        <h2>Speicherworte</h2>
+                    </div>
+                    <span id="cycleStatus" class="status-pill">Takt 0</span>
+                </div>
+                <div id="memoryWall" class="memory-wall"></div>
+            </section>
+
+            <section class="panel unit-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Rechenwerk</p>
+                        <h2>Register und Operation</h2>
+                    </div>
+                    <span id="pcStatus" class="status-pill">PC 0</span>
+                </div>
+                <div class="registers">
+                    <div class="register-card" id="r1Card">
+                        <span>Register R1</span>
+                        <strong id="registerR1">leer</strong>
+                    </div>
+                    <div class="register-card" id="r2Card">
+                        <span>Register R2</span>
+                        <strong id="registerR2">leer</strong>
+                    </div>
+                </div>
+                <div class="operation-card">
+                    <span>Aktuelle Operation</span>
+                    <strong id="operationLabel">bereit</strong>
+                    <p id="operationHint">Streifen lesen, dann einen Takt ausfuehren.</p>
+                </div>
+                <pre id="machineOutput" class="machine-output"></pre>
+            </section>
+
+            <section class="panel tape-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Programmsteuerung</p>
+                        <h2>Gelesener Streifen</h2>
+                    </div>
+                    <span id="compileStatus" class="status-pill">bereit</span>
+                </div>
+                <ol id="instructionTape" class="instruction-tape"></ol>
+            </section>
+
+            <section class="panel log-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Taktprotokoll</p>
+                        <h2>Was passiert gerade?</h2>
+                    </div>
+                </div>
+                <ol id="executionLog" class="execution-log"></ol>
+            </section>
+        </section>
+
+        <section class="source-panel" id="quellenarbeit" aria-label="Historische Einordnung und Quellenarbeit">
+            <div>
+                <h2>Historische Einordnung</h2>
+                <p>
+                    Die Z3 wurde 1941 in Berlin vorgefuehrt und gilt in vielen Darstellungen als erster funktionsfaehiger,
+                    frei programmierbarer binaerer Rechner. Zuses Loesung war praktisch gepraegt: Relais statt unzuverlaessiger
+                    Mechanik, externe Streifensteuerung statt Umstecken, binaere Gleitkommazahlen statt rein dezimaler Register.
+                </p>
+                <p>
+                    Dieses Labor uebersetzt die historische Maschine in wenige heutige Begriffe. <strong>MEM</strong> steht fuer
+                    Speicherworte, <strong>LOAD/STORE</strong> fuer Datentransport zwischen Speicher und Rechenwerk, und
+                    <strong>ADD/SUB/MUL/DIV/SQRT</strong> fuer die arithmetischen Rechenschritte. Es behauptet nicht, Relaislogik,
+                    Taktzeiten oder das 22-Bit-Format exakt nachzubauen.
+                </p>
+            </div>
+            <div class="source-grid">
+                <article class="source-card">
+                    <h3>Primaerquelle</h3>
+                    <p>
+                        Konrad Zuse: <em>Patentanmeldung Z391</em>, 1941. Das Zuse Internet Archive ordnet dieses Dokument
+                        dem Thema Rechenmaschine Z3 zu.
+                    </p>
+                    <a href="https://zuse.zib.de/item/axy7eq6AntFRwuJv" target="_blank" rel="noopener">Archiv-Eintrag oeffnen</a>
+                </article>
+                <article class="source-card">
+                    <h3>Quellenkritische Leitfragen</h3>
+                    <ul>
+                        <li>Was ist im Original ein Speicherwort, was ein Register, was der Programmstreifen?</li>
+                        <li>Warum ist externe Streifensteuerung etwas anderes als ein gespeichertes Programm?</li>
+                        <li>Welche Rolle spielen binaere Gleitkommazahlen fuer technische Berechnungen?</li>
+                        <li>Welche Vereinfachungen macht dieses Labor gegenueber Relais, 22-Bit-Wort und Taktzeiten?</li>
+                    </ul>
+                </article>
+                <article class="source-card">
+                    <h3>Kontextquellen</h3>
+                    <p>
+                        Fuer Technik- und Ausstellungskontext werden kuratierte Museums- und Fachquellen herangezogen.
+                    </p>
+                    <p>
+                        <a href="https://zuse.zib.de/z3" target="_blank" rel="noopener">Zuse Internet Archive: Z3</a>
+                        / <a href="https://www.deutsches-museum.de/en/museumsinsel/ausstellung/computers" target="_blank" rel="noopener">Deutsches Museum</a>
+                        / <a href="https://technikmuseum.berlin/en/exhibitions/permanent-exhibition/computers/" target="_blank" rel="noopener">Deutsches Technikmuseum</a>
+                        / <a href="https://www.computerhistory.org/timeline/1941/" target="_blank" rel="noopener">Computer History Museum</a>
+                        / <a href="https://www.inf.fu-berlin.de/inst/ag-ki/rojas_home/documents/1996/Konrad_Zuses_Legacy.pdf" target="_blank" rel="noopener">Raul Rojas: Z1/Z3 architecture</a>
+                    </p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="../shared/history-lab-ui.js" defer></script>
+    <script src="../../../../feedback-widget.js" defer></script>
+</body>
+
+</html>

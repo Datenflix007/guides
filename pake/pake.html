@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>Pake Guide &ndash; Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../weitere-guides.html">&larr; Zur&uuml;ck zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 22% 78%, #14b8a6 0%, transparent 50%),
+                radial-gradient(ellipse at 78% 20%, #f59e0b 0%, transparent 46%),
+                linear-gradient(160deg, #06131f 0%, #17202f 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Desktop Apps</span>
+                <span class="chip" style="margin-left: 6px;">Rust &amp; Tauri</span>
+                <h1>Pake Guide</h1>
+                <p class="sub">Mit Pake fast jede Webseite in eine schlanke Desktop-Anwendung f&uuml;r Windows, macOS oder Linux verpacken.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p><strong>Pake</strong> ist ein Open-Source-Werkzeug, das aus einer URL oder einer lokalen HTML-Datei eine Desktop-Anwendung erzeugt. Statt eine komplette Browser-Laufzeit wie bei vielen Electron-Apps mitzuliefern, nutzt Pake <strong>Tauri</strong>, <strong>Rust</strong> und die WebView-Komponenten des jeweiligen Betriebssystems.</p>
+
+            <p>Das Ergebnis ist keine komplett neu programmierte native App, sondern ein nativer Container um eine Weboberfl&auml;che. Genau das ist f&uuml;r viele Webdienste praktisch: Chat-Tools, Dashboards, Lernplattformen, interne Admin-Oberfl&auml;chen oder pers&ouml;nliche Web-Apps bekommen ein eigenes Fenster, ein eigenes Icon und k&ouml;nnen wie normale Programme gestartet werden.</p>
+
+            <hr>
+
+            <h2>Was Pake macht</h2>
+            <ul>
+                <li>Eine Webseite wird in ein Desktop-Fenster gepackt.</li>
+                <li>Die App erh&auml;lt einen Namen, ein Icon und eine Start-URL.</li>
+                <li>Fenstergr&ouml;&szlig;e, Zoom, Dark Mode, Tray-Verhalten und Navigation k&ouml;nnen angepasst werden.</li>
+                <li>Pake erzeugt installierbare Pakete f&uuml;r Windows, macOS und Linux.</li>
+                <li>Die App bleibt technisch eine WebView-App: Sie rendert HTML, CSS und JavaScript wie ein Browserfenster.</li>
+            </ul>
+
+            <p>Ein typischer Aufruf sieht so aus:</p>
+            <pre><code>pake https://github.com --name GitHub</code></pre>
+
+            <p>Danach liegt die erzeugte Desktop-App im aktuellen Arbeitsordner. Beim ersten Build dauert es l&auml;nger, weil die Rust-/Tauri-Werkzeuge eingerichtet und kompiliert werden. Sp&auml;tere Builds sind meist deutlich schneller.</p>
+
+            <hr>
+
+            <h2>Theoretischer Hintergrund</h2>
+
+            <h3>Web-App, Desktop-App und Wrapper</h3>
+            <p>Eine normale Webseite l&auml;uft im Browser. Eine klassische Desktop-App wird f&uuml;r ein Betriebssystem gebaut und direkt installiert. Pake liegt dazwischen: Es nimmt eine Web-App und verpackt sie in eine Desktop-H&uuml;lle. Diese H&uuml;lle startet ein Fenster, l&auml;dt die Zielseite und stellt Betriebssystem-Funktionen wie Icon, Men&uuml;, Fensterzustand oder Installer bereit.</p>
+
+            <p>Das ist besonders n&uuml;tzlich, wenn eine Anwendung ohnehin als Web-App existiert. Statt die komplette Oberfl&auml;che in C#, Swift, Kotlin oder C++ neu zu schreiben, wird die bestehende Weboberfl&auml;che weiterverwendet.</p>
+
+            <h3>Warum Tauri statt Electron?</h3>
+            <p>Electron-Apps bringen in der Regel eine eigene Chromium- und Node.js-Laufzeit mit. Das ist bequem, aber schwer: Jede App enth&auml;lt viel Infrastruktur, die auf dem System oft ohnehin schon vorhanden ist. Tauri geht anders vor. Es nutzt die WebView des Betriebssystems und koppelt sie mit einem kleinen nativen Rust-Kern.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Ansatz</th><th>Idee</th><th>Folge</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>Browser-Tab</code></td><td>Webseite bleibt im normalen Browser</td><td>Einfach, aber nicht app-artig</td></tr>
+                    <tr><td><code>Electron</code></td><td>App bringt Chromium selbst mit</td><td>Sehr kompatibel, aber oft gro&szlig;</td></tr>
+                    <tr><td><code>Tauri/Pake</code></td><td>App nutzt System-WebView und Rust</td><td>Kompakter und ressourcenschonender</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Welche WebView wird verwendet?</h3>
+            <ul>
+                <li><strong>Windows:</strong> Microsoft Edge WebView2.</li>
+                <li><strong>macOS:</strong> WebKit, also die Safari-nahe System-WebView.</li>
+                <li><strong>Linux:</strong> WebKitGTK.</li>
+            </ul>
+
+            <p>Das erkl&auml;rt auch, warum eine Pake-App auf verschiedenen Betriebssystemen minimal unterschiedlich wirken kann. Sie nutzt nicht &uuml;berall exakt denselben Browserkern, sondern den jeweils vorhandenen System-Unterbau.</p>
+
+            <h3>Was Rust dabei macht</h3>
+            <p>Rust ist die Sprache, in der Tauri seine native Anwendungsschicht baut. Diese Schicht verwaltet Fenster, Men&uuml;s, Build-Ziele, Dateisystemzugriffe, Icons, Installer und optionale Systemfunktionen. F&uuml;r die eigentliche Webseite bleibt weiterhin HTML, CSS und JavaScript zust&auml;ndig.</p>
+
+            <p>Als Nutzer von Pake musst du normalerweise kein Rust programmieren. Rust wird gebraucht, damit der native App-Container kompiliert werden kann.</p>
+
+            <hr>
+
+            <h2>Wann Pake sinnvoll ist</h2>
+            <ul>
+                <li>Eine Webseite soll ein eigenes App-Fenster bekommen.</li>
+                <li>Ein internes Dashboard soll ohne Browser-Chaos ge&ouml;ffnet werden.</li>
+                <li>Eine Lernplattform, ein Wiki oder ein Tool soll wie eine Desktop-App wirken.</li>
+                <li>Du willst eine kleine Alternative zu schweren Electron-Wrappern bauen.</li>
+                <li>Du brauchst eine schnelle Verpackung, aber keine tiefen nativen Betriebssystem-Integrationen.</li>
+            </ul>
+
+            <h2>Wann Pake nicht ideal ist</h2>
+            <ul>
+                <li>Die Webseite funktioniert nur in einem ganz bestimmten Browser.</li>
+                <li>Sehr viele native APIs werden gebraucht, etwa komplexe Dateisystem-, Bluetooth- oder Hardwarezugriffe.</li>
+                <li>Die Zielseite blockiert WebViews, fremde User-Agents oder eingebettete Login-Flows.</li>
+                <li>Du willst eine offline-first App, obwohl die Webseite zwingend einen Server braucht.</li>
+                <li>Du musst App-Store-Verteilung, Signierung und Auto-Updates professionell betreiben. Das geht, ist aber mehr als ein Einzeiler.</li>
+            </ul>
+
+            <hr>
+
+            <h2>Installation der Dependencies</h2>
+
+            <p>F&uuml;r die normale Pake-CLI brauchst du vor allem <strong>Node.js</strong>, <strong>pnpm oder npm</strong>, <strong>Rust</strong> und die systemnahen Tauri-Abh&auml;ngigkeiten. Die offiziellen Pake-Hinweise empfehlen Node.js 22 oder neuer; Node 18+ kann funktionieren, aber f&uuml;r neue Setups ist Node 22 die sauberere Wahl.</p>
+
+            <h3>1. Node.js installieren</h3>
+            <h4>Windows mit WinGet</h4>
+            <pre><code>winget install --id OpenJS.NodeJS.LTS --exact
+node -v
+npm -v</code></pre>
+
+            <h4>macOS mit Homebrew</h4>
+            <pre><code>brew install node
+node -v
+npm -v</code></pre>
+
+            <h4>Linux mit Paketmanager</h4>
+            <pre><code># Debian/Ubuntu, falls die Distribution eine passende Node-Version anbietet
+sudo apt update
+sudo apt install nodejs npm
+
+# Version pr&uuml;fen
+node -v
+npm -v</code></pre>
+
+            <p>Wenn die Distribution nur eine alte Node-Version liefert, ist ein Versionsmanager wie <code>fnm</code>, <code>nvm</code> oder ein offizielles NodeSource-Paket sinnvoll.</p>
+
+            <h3>2. pnpm aktivieren</h3>
+            <p>Pake empfiehlt die Installation &uuml;ber <code>pnpm</code>. Moderne Node-Versionen bringen <code>corepack</code> mit:</p>
+            <pre><code>corepack enable
+pnpm -v</code></pre>
+
+            <p>Falls das nicht funktioniert, kann pnpm auch &uuml;ber npm installiert werden:</p>
+            <pre><code>npm install -g pnpm
+pnpm -v</code></pre>
+
+            <h3>3. Rust installieren</h3>
+            <h4>Windows</h4>
+            <pre><code>winget install --id Rustlang.Rustup --exact
+rustc --version
+cargo --version</code></pre>
+
+            <p>Unter Windows sollte die MSVC-Toolchain verwendet werden. Falls Rust bereits installiert war, kann sie so gesetzt werden:</p>
+            <pre><code>rustup default stable-msvc</code></pre>
+
+            <h4>macOS und Linux</h4>
+            <pre><code>curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+rustc --version
+cargo --version</code></pre>
+
+            <p>Nach der Installation muss das Terminal oft neu gestartet werden, damit <code>cargo</code> im Suchpfad verf&uuml;gbar ist.</p>
+
+            <h3>4. Systemabh&auml;ngigkeiten f&uuml;r Tauri</h3>
+
+            <h4>Windows</h4>
+            <p>F&uuml;r Windows werden die Microsoft C++ Build Tools und Microsoft Edge WebView2 ben&ouml;tigt. Auf Windows 10 und Windows 11 ist WebView2 h&auml;ufig bereits vorhanden. Die Build Tools installierst du &uuml;ber den Visual-Studio-Installer mit der Auswahl <strong>Desktop development with C++</strong>.</p>
+
+            <pre><code># Pr&uuml;fen, ob Node, Rust und Cargo erreichbar sind
+node -v
+npm -v
+rustc --version
+cargo --version</code></pre>
+
+            <h4>macOS</h4>
+            <p>F&uuml;r reine Desktop-Builds gen&uuml;gen normalerweise die Xcode Command Line Tools:</p>
+            <pre><code>xcode-select --install
+rustc --version
+node -v</code></pre>
+
+            <h4>Debian/Ubuntu</h4>
+            <pre><code>sudo apt update
+sudo apt install libwebkit2gtk-4.1-dev \
+  build-essential \
+  curl \
+  wget \
+  file \
+  libxdo-dev \
+  libssl-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev</code></pre>
+
+            <h4>Fedora</h4>
+            <pre><code>sudo dnf install webkit2gtk4.1-devel \
+  openssl-devel \
+  curl \
+  wget \
+  file \
+  libappindicator-gtk3-devel \
+  librsvg2-devel \
+  libxdo-devel
+
+sudo dnf group install "c-development"</code></pre>
+
+            <h4>Arch Linux</h4>
+            <pre><code>sudo pacman -Syu
+sudo pacman -S --needed \
+  webkit2gtk-4.1 \
+  base-devel \
+  curl \
+  wget \
+  file \
+  openssl \
+  appmenu-gtk-module \
+  libappindicator-gtk3 \
+  librsvg \
+  xdotool</code></pre>
+
+            <h3>5. Pake CLI installieren</h3>
+            <pre><code>pnpm install -g pake-cli
+pake --version
+pake --help</code></pre>
+
+            <p>Alternative mit npm:</p>
+            <pre><code>npm install -g pake-cli
+pake --version</code></pre>
+
+            <p>Ohne globale Installation kann Pake auch mit <code>npx</code> gestartet werden:</p>
+            <pre><code>npx pake-cli https://github.com --name GitHub</code></pre>
+
+            <hr>
+
+            <h2>Erste App bauen</h2>
+            <p>Wechsle in einen Ordner, in dem die fertige App landen soll, und starte:</p>
+
+            <pre><code>mkdir pake-apps
+cd pake-apps
+pake https://github.com --name GitHub</code></pre>
+
+            <p>Pake versucht automatisch, ein passendes Icon von der Webseite zu holen. Die erzeugte Datei ist je nach Betriebssystem ein anderes Paketformat, zum Beispiel <code>.exe</code>, <code>.msi</code>, <code>.dmg</code>, <code>.app</code>, <code>.deb</code>, <code>.rpm</code> oder <code>.AppImage</code>.</p>
+
+            <h3>Fenstergr&ouml;&szlig;e festlegen</h3>
+            <pre><code>pake https://calendar.google.com --name Kalender --width 1280 --height 900</code></pre>
+
+            <h3>Eigenes Icon verwenden</h3>
+            <pre><code>pake https://example.com --name BeispielApp --icon ./icon.png</code></pre>
+
+            <p>Pake kann lokale und entfernte Icons verwenden. Plattformabh&auml;ngig werden passende Formate erzeugt oder erwartet, etwa <code>.ico</code> f&uuml;r Windows, <code>.icns</code> f&uuml;r macOS und <code>.png</code> f&uuml;r Linux.</p>
+
+            <h3>Debug-Modus einschalten</h3>
+            <pre><code>pake https://example.com --name BeispielDebug --debug</code></pre>
+
+            <p>Der Debug-Modus ist hilfreich, wenn du die Entwicklerwerkzeuge brauchst, um CSS, JavaScript, Login-Probleme oder WebView-Unterschiede zu untersuchen.</p>
+
+            <hr>
+
+            <h2>Wichtige Optionen</h2>
+            <table>
+                <thead>
+                    <tr><th>Option</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>--name</code></td><td>Name der Anwendung</td></tr>
+                    <tr><td><code>--icon</code></td><td>Eigenes Icon als lokaler Pfad oder URL</td></tr>
+                    <tr><td><code>--width</code></td><td>Startbreite des Fensters</td></tr>
+                    <tr><td><code>--height</code></td><td>Starth&ouml;he des Fensters</td></tr>
+                    <tr><td><code>--min-width</code></td><td>Minimale Fensterbreite</td></tr>
+                    <tr><td><code>--min-height</code></td><td>Minimale Fensterh&ouml;he</td></tr>
+                    <tr><td><code>--zoom</code></td><td>Initialer Zoom in Prozent</td></tr>
+                    <tr><td><code>--fullscreen</code></td><td>App im Vollbild starten</td></tr>
+                    <tr><td><code>--maximize</code></td><td>Fenster maximiert starten</td></tr>
+                    <tr><td><code>--always-on-top</code></td><td>Fenster immer im Vordergrund halten</td></tr>
+                    <tr><td><code>--dark-mode</code></td><td>Dunkles Erscheinungsbild bevorzugen</td></tr>
+                    <tr><td><code>--debug</code></td><td>Entwicklerwerkzeuge aktivieren</td></tr>
+                    <tr><td><code>--show-system-tray</code></td><td>Tray-Icon aktivieren</td></tr>
+                    <tr><td><code>--hide-on-close</code></td><td>Fenster beim Schlie&szlig;en verstecken statt App beenden</td></tr>
+                    <tr><td><code>--user-agent</code></td><td>Eigenen Browser-User-Agent setzen</td></tr>
+                    <tr><td><code>--safe-domain</code></td><td>Zus&auml;tzliche vertrauensw&uuml;rdige Domains intern &ouml;ffnen</td></tr>
+                    <tr><td><code>--internal-url-regex</code></td><td>Regel f&uuml;r interne Navigation festlegen</td></tr>
+                    <tr><td><code>--targets</code></td><td>Ausgabeformat oder Zielarchitektur setzen</td></tr>
+                </tbody>
+            </table>
+
+            <p>Die vollst&auml;ndige Liste h&auml;ngt von der installierten Pake-Version ab. Deshalb lohnt sich immer:</p>
+            <pre><code>pake --help</code></pre>
+
+            <hr>
+
+            <h2>Beispiel 1: Eigene Webseite als Desktop-App</h2>
+            <p>Angenommen, du willst deine eigene Webseite als Desktop-App starten:</p>
+            <pre><code>pake https://datenflix007.github.io --name Datenflix \
+  --width 1200 \
+  --height 800 \
+  --min-width 900 \
+  --min-height 600</code></pre>
+
+            <p>Das ist sinnvoll, wenn du eine Webseite h&auml;ufig als eigenes Arbeitsfenster offen haben willst.</p>
+
+            <h2>Beispiel 2: Lokales HTML-Projekt verpacken</h2>
+            <p>Pake kann auch lokale HTML-Dateien verpacken. Das ist praktisch f&uuml;r kleine Tools, die komplett aus HTML, CSS und JavaScript bestehen:</p>
+            <pre><code>pake ./index.html --name MeinLokalesTool --width 1000 --height 720</code></pre>
+
+            <p>Wenn dein lokales Projekt mehrere Dateien verwendet, m&uuml;ssen relative Pfade zu CSS, JavaScript und Bildern weiterhin stimmen. Am besten testest du die Seite zuerst direkt im Browser.</p>
+
+            <h2>Beispiel 3: Dashboard mit interner Navigation</h2>
+            <p>Viele Dienste leiten beim Login auf weitere Subdomains oder SSO-Anbieter weiter. Mit <code>--safe-domain</code> kann man solche Domains in der App halten:</p>
+            <pre><code>pake https://dashboard.example.com --name FirmenDashboard \
+  --safe-domain example.com,login.example.com \
+  --width 1440 \
+  --height 950</code></pre>
+
+            <p>Ohne solche Regeln kann es passieren, dass ein Link oder Login-Redirect im normalen Browser statt in der Pake-App ge&ouml;ffnet wird.</p>
+
+            <h2>Beispiel 4: Kleine Always-on-top App</h2>
+            <p>F&uuml;r Timer, Statusseiten oder Notizzettel kann ein kleines Fenster praktisch sein:</p>
+            <pre><code>pake https://timer.example.com --name Timer \
+  --width 420 \
+  --height 620 \
+  --always-on-top</code></pre>
+
+            <h2>Beispiel 5: AppImage oder Debian-Paket bauen</h2>
+            <p>Unter Linux k&ouml;nnen Ausgabeziele explizit gesetzt werden:</p>
+            <pre><code>pake https://github.com --name GitHub --targets appimage
+pake https://github.com --name GitHub --targets deb</code></pre>
+
+            <p>Welche Targets sinnvoll sind, h&auml;ngt von Distribution, Architektur und installierten Build-Werkzeugen ab.</p>
+
+            <hr>
+
+            <h2>Typischer Workflow</h2>
+            <ol>
+                <li>Webseite im normalen Browser testen.</li>
+                <li>Pr&uuml;fen, ob Login, Cookies, Downloads und Navigation funktionieren.</li>
+                <li>Ersten Pake-Build mit <code>--debug</code> erzeugen.</li>
+                <li>Fenstergr&ouml;&szlig;e, Zoom und Icon anpassen.</li>
+                <li>Bei Login- oder Redirect-Problemen <code>--safe-domain</code> oder <code>--internal-url-regex</code> setzen.</li>
+                <li>Fertige App ohne Debug-Modus neu bauen.</li>
+                <li>Auf dem Zielbetriebssystem testen.</li>
+            </ol>
+
+            <pre><code># Entwicklungsbuild
+pake https://app.example.com --name BeispielApp --debug --width 1280 --height 860
+
+# Finaler Build
+pake https://app.example.com --name BeispielApp --width 1280 --height 860</code></pre>
+
+            <hr>
+
+            <h2>H&auml;ufige Probleme</h2>
+
+            <h3><code>pake</code> wird nicht gefunden</h3>
+            <p>Der globale npm-/pnpm-Bin&auml;rordner ist nicht im <code>PATH</code> oder das Terminal wurde nach der Installation nicht neu gestartet.</p>
+            <pre><code>pnpm env
+npm config get prefix
+pake --version</code></pre>
+
+            <h3>Rust oder Cargo wird nicht gefunden</h3>
+            <p>Rust wurde installiert, aber das Terminal kennt den neuen Suchpfad noch nicht. Terminal neu starten und dann pr&uuml;fen:</p>
+            <pre><code>rustc --version
+cargo --version</code></pre>
+
+            <h3>Windows-Build scheitert bei C++</h3>
+            <p>Installiere die Microsoft C++ Build Tools und w&auml;hle im Installer <strong>Desktop development with C++</strong>. Danach Terminal neu starten.</p>
+
+            <h3>Linux-Build scheitert bei WebKitGTK</h3>
+            <p>Die Tauri-Systempakete fehlen oder passen nicht zur Distribution. Installiere die WebKitGTK-, OpenSSL-, AppIndicator-, Build- und SVG-Pakete f&uuml;r deine Distribution.</p>
+
+            <h3>Login &ouml;ffnet sich im Browser</h3>
+            <p>Setze zus&auml;tzliche interne Domains:</p>
+            <pre><code>pake https://app.example.com --name BeispielApp --safe-domain example.com,auth.example.com</code></pre>
+
+            <h3>Die Webseite sieht anders aus als im Browser</h3>
+            <p>Das kann an der WebView liegen. Windows, macOS und Linux nutzen unterschiedliche Engines. Pr&uuml;fe mit <code>--debug</code>, ob CSS, JavaScript, User-Agent oder blockierte APIs die Ursache sind.</p>
+
+            <h3>Die erzeugte App ist nicht signiert</h3>
+            <p>Pake kann schnell lokale Apps erzeugen. Professionelle Verteilung ist ein eigener Schritt: Unter macOS sind Code Signing und Notarization relevant, unter Windows Zertifikate und SmartScreen-Reputation, unter Linux Paketformat und Repository-Verteilung.</p>
+
+            <hr>
+
+            <h2>Sicherheit und Datenschutz</h2>
+            <ul>
+                <li>Verpacke nur Webseiten, denen du vertraust.</li>
+                <li>Eine Pake-App ist nicht automatisch sicherer als die Webseite selbst.</li>
+                <li>Login-Daten, Cookies und Sessions liegen im Kontext der App-WebView.</li>
+                <li>Bei fremden Webdiensten gelten weiterhin deren Datenschutz- und Nutzungsbedingungen.</li>
+                <li>F&uuml;r Schul-, Uni- oder Unternehmenskontexte sollte gekl&auml;rt werden, ob eine inoffizielle Desktop-Verpackung erlaubt ist.</li>
+            </ul>
+
+            <hr>
+
+            <h2>Lizenz kurz erkl&auml;rt</h2>
+            <p>Pake selbst steht unter GPL-3.0. Das Projekt beschreibt zus&auml;tzlich eine Output Exception: Apps, die du mit Pake erzeugst, geh&ouml;ren dir und k&ouml;nnen unabh&auml;ngig verteilt werden. Wenn du Pake selbst forkst und als eigenes Produkt weiterentwickelst, greifen dagegen die Lizenzpflichten f&uuml;r diesen Fork.</p>
+
+            <hr>
+
+            <h2>Mini-Spickzettel</h2>
+            <pre><code># Pake installieren
+pnpm install -g pake-cli
+
+# Version und Hilfe
+pake --version
+pake --help
+
+# Webseite verpacken
+pake https://github.com --name GitHub
+
+# Fenster anpassen
+pake https://github.com --name GitHub --width 1400 --height 900
+
+# Eigenes Icon
+pake https://example.com --name Example --icon ./icon.png
+
+# Debug-Build
+pake https://example.com --name Example --debug
+
+# Zus&auml;tzliche Login-Domains intern halten
+pake https://app.example.com --name App --safe-domain example.com,auth.example.com</code></pre>
+
+            <hr>
+
+            <h2>Offizielle Quellen</h2>
+            <p>Aktuelle Details findest du im <a href="https://github.com/tw93/Pake" target="_blank" rel="noopener">Pake-Repository</a>, in der <a href="https://github.com/tw93/Pake/blob/main/docs/cli-usage.md" target="_blank" rel="noopener">Pake CLI Usage Guide</a> und in den <a href="https://v2.tauri.app/start/prerequisites/" target="_blank" rel="noopener">Tauri Prerequisites</a>.</p>
+
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">&copy; 2026 Felix Staacke</div>
+    </footer>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

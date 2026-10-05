@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>just Guide – Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <a class="guide-back" href="../weitere-guides.html">← Zurück zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 24% 76%, #f97316 0%, transparent 52%),
+                radial-gradient(ellipse at 80% 18%, #eab308 0%, transparent 48%),
+                linear-gradient(160deg, #241005 0%, #3a1b08 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Command Runner</span>
+                <span class="chip" style="margin-left: 6px;">Automatisierung</span>
+                <h1>just Guide</h1>
+                <p class="sub">Projektbefehle in einem justfile sammeln, dokumentieren und unter Windows, Linux und macOS zuverlässig ausführen.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+
+            <p><strong>just</strong> ist ein plattformübergreifender Command Runner. Wiederkehrende Befehle werden als sogenannte <em>Recipes</em> in einer Datei namens <code>justfile</code> abgelegt und anschließend über kurze, einheitliche Kommandos gestartet. So wird aus <code>docker compose -f compose.dev.yml up --build</code> beispielsweise einfach <code>just dev</code>.</p>
+
+            <p>Die Syntax ist von <code>make</code> inspiriert, aber <code>just</code> ist bewusst <strong>kein Build-System</strong>. Recipes werden immer als auszuführende Aufgaben behandelt. Dateizeitstempel, implizite Build-Regeln und <code>.PHONY</code>-Deklarationen spielen keine Rolle.</p>
+
+            <hr>
+
+            <h2>Warum just verwenden?</h2>
+            <ul>
+                <li>Wichtige Projektbefehle liegen versioniert direkt im Repository.</li>
+                <li>Alle Teammitglieder verwenden dieselben Befehle und Optionen.</li>
+                <li>Recipes können Parameter, Abhängigkeiten und Umgebungsvariablen besitzen.</li>
+                <li><code>.env</code>-Dateien lassen sich automatisch laden.</li>
+                <li>Recipes können Shell, PowerShell, Python, Node.js oder andere Interpreter verwenden.</li>
+                <li><code>just</code> findet das <code>justfile</code> auch beim Aufruf aus einem Unterordner.</li>
+                <li>Die Aufgabenliste dient gleichzeitig als ausführbare Projektdokumentation.</li>
+            </ul>
+
+            <hr>
+
+            <h2>Installation</h2>
+
+            <h3>Windows mit WinGet</h3>
+            <pre><code>winget install --id Casey.Just --exact
+just --version</code></pre>
+
+            <p>Alternativ stehen unter Windows unter anderem Scoop und Chocolatey zur Verfügung:</p>
+            <pre><code>scoop install just
+choco install just</code></pre>
+
+            <h3>macOS</h3>
+            <pre><code>brew install just</code></pre>
+
+            <h3>Linux</h3>
+            <pre><code># Debian 13 / Ubuntu 24.04 und neuere passende Distributionen
+sudo apt install just
+
+# Fedora
+sudo dnf install just
+
+# Arch Linux
+sudo pacman -S just
+
+# Alpine Linux
+sudo apk add just</code></pre>
+
+            <h3>Plattformübergreifend mit Rust</h3>
+            <pre><code>cargo install just</code></pre>
+
+            <p>Danach Installation und verfügbaren Suchpfad prüfen:</p>
+            <pre><code>just --version
+just --help</code></pre>
+
+            <hr>
+
+            <h2>Das erste justfile</h2>
+            <p>Lege im Wurzelverzeichnis des Projekts eine Datei namens <code>justfile</code> ohne Dateiendung an:</p>
+
+            <pre><code># Verfügbare Aufgaben anzeigen
+default:
+    @just --list
+
+# Entwicklungsserver starten
+dev:
+    npm run dev
+
+# Tests ausführen
+test:
+    npm test
+
+# Produktions-Build erzeugen
+build:
+    npm run build</code></pre>
+
+            <p>Recipes werden mit ihrem Namen aufgerufen:</p>
+            <pre><code>just          # führt die erste Recipe aus
+just dev
+just test
+just build</code></pre>
+
+            <p>Einrückung ist Teil der Syntax. Befehlszeilen müssen eingerückt sein; vier Leerzeichen sind eine gut lesbare Konvention. Mit <code>just --fmt</code> kann das justfile automatisch formatiert werden.</p>
+
+            <hr>
+
+            <h2>Recipes auflisten und beschreiben</h2>
+            <p>Kommentare direkt vor einer Recipe werden mit <code>just --list</code> als Beschreibung angezeigt, wenn sie mit <code>#</code> beginnen:</p>
+
+            <pre><code># Entwicklungsumgebung starten
+dev:
+    npm run dev
+
+# Alle automatisierten Prüfungen ausführen
+check:
+    npm run lint
+    npm test
+    npm run build</code></pre>
+
+            <pre><code>just --list
+just --summary</code></pre>
+
+            <table>
+                <thead>
+                    <tr><th>Befehl</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>just --list</code></td><td>Recipes mit Parametern und Beschreibungen anzeigen</td></tr>
+                    <tr><td><code>just --summary</code></td><td>Nur die Namen aller Recipes ausgeben</td></tr>
+                    <tr><td><code>just --show dev</code></td><td>Definition einer einzelnen Recipe anzeigen</td></tr>
+                    <tr><td><code>just --dump</code></td><td>Das ausgewertete justfile ausgeben</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>Befehlsausgabe steuern</h2>
+            <p>Normalerweise zeigt <code>just</code> jede Befehlszeile vor ihrer Ausführung an. Ein vorangestelltes <code>@</code> unterdrückt nur die Ausgabe dieser Zeile:</p>
+
+            <pre><code>hello:
+    @echo "Hallo!"
+
+install:
+    @echo "Installiere Abhängigkeiten …"
+    npm ci</code></pre>
+
+            <p>Mit <code>just --quiet RECIPE</code> kann die Befehlsanzeige für einen gesamten Aufruf abgeschaltet werden. Das unterdrückt nicht die eigentliche Programmausgabe.</p>
+
+            <hr>
+
+            <h2>Parameter verwenden</h2>
+
+            <h3>Pflichtparameter</h3>
+            <pre><code># Eine Migration mit frei gewähltem Namen anlegen
+migration name:
+    npx prisma migrate dev --name {{ name }}</code></pre>
+
+            <pre><code>just migration add-users</code></pre>
+
+            <h3>Standardwerte</h3>
+            <pre><code># Anwendung in einer Umgebung starten
+run environment="development":
+    npm run start -- --env {{ environment }}</code></pre>
+
+            <pre><code>just run
+just run production</code></pre>
+
+            <h3>Mehrere Werte entgegennehmen</h3>
+            <pre><code># Ausgewählte Tests starten; mindestens ein Wert ist erforderlich
+test-files +files:
+    pytest {{ files }}
+
+# Git-Commit mit optionalen zusätzlichen Dateien
+commit message *files:
+    git add {{ files }}
+    git commit -m "{{ message }}"</code></pre>
+
+            <p><code>+parameter</code> erwartet mindestens einen Wert, <code>*parameter</code> erlaubt auch null Werte. Werte mit Leerzeichen müssen beim Aufruf von der verwendeten Shell passend zitiert werden.</p>
+
+            <hr>
+
+            <h2>Variablen und Ausdrücke</h2>
+            <p>Variablen werden einmal definiert und mit <code>{{...}}</code> in Recipe-Zeilen eingesetzt:</p>
+
+            <pre><code>app := "meine-anwendung"
+port := "8080"
+image := "ghcr.io/beispiel/" + app
+
+serve:
+    python -m http.server {{ port }}
+
+container:
+    docker build -t {{ image }} .</code></pre>
+
+            <p>Backticks führen bereits beim Auswerten des justfile einen Befehl aus und speichern dessen Standardausgabe:</p>
+
+            <pre><code>revision := `git rev-parse --short HEAD`
+
+info:
+    @echo "Revision: {{ revision }}"</code></pre>
+
+            <p>Das ist nützlich für Metadaten, sollte aber nicht für Befehle mit Seiteneffekten verwendet werden.</p>
+
+            <hr>
+
+            <h2>Umgebungsvariablen und .env</h2>
+            <p>Mit <code>env_var()</code> werden vorhandene Umgebungsvariablen gelesen. <code>env_var_or_default()</code> liefert einen Ersatzwert, falls die Variable fehlt:</p>
+
+            <pre><code>api_url := env_var_or_default("API_URL", "http://localhost:3000")
+
+show-config:
+    @echo "API: {{ api_url }}"</code></pre>
+
+            <p>Um eine lokale <code>.env</code>-Datei automatisch einzulesen, wird die dotenv-Funktion aktiviert:</p>
+
+            <pre><code>set dotenv-load
+
+export DATABASE_URL := env_var("DATABASE_URL")
+
+database-check:
+    @echo "Prüfe Datenbankverbindung …"
+    npx prisma db pull</code></pre>
+
+            <p><code>export</code> gibt eine just-Variable zusätzlich als Umgebungsvariable an die gestarteten Prozesse weiter. Geheimnisse gehören nicht direkt in das versionierte justfile; verwende dafür lokale <code>.env</code>-Dateien oder den Secret Store der CI-Plattform.</p>
+
+            <hr>
+
+            <h2>Abhängigkeiten zwischen Recipes</h2>
+            <p>Abhängigkeiten hinter dem Doppelpunkt werden vor der eigentlichen Recipe ausgeführt:</p>
+
+            <pre><code>lint:
+    npm run lint
+
+test:
+    npm test
+
+build:
+    npm run build
+
+# Führt zuerst lint, test und build aus
+check: lint test build
+    @echo "Alle Prüfungen erfolgreich."
+
+# Deployment erst nach erfolgreichem Check
+deploy: check
+    ./scripts/deploy.sh</code></pre>
+
+            <p>Mehrere Recipes können auch direkt nacheinander angefordert werden:</p>
+            <pre><code>just lint test build</code></pre>
+
+            <hr>
+
+            <h2>Ausführungsverzeichnis</h2>
+            <p><code>just</code> sucht vom aktuellen Ordner aus nach oben nach einem justfile und führt Recipes standardmäßig in dessen Verzeichnis aus. Dadurch funktioniert <code>just test</code> auch aus einem Unterordner des Projekts.</p>
+
+            <pre><code># Recipe in einem bestimmten Unterordner ausführen
+[working-directory: "frontend"]
+frontend:
+    npm run dev
+
+[working-directory: "backend"]
+backend-test:
+    pytest</code></pre>
+
+            <p>Für ältere just-Versionen oder einfache Fälle ist ein explizites <code>cd</code> ebenfalls möglich. Jede normale Befehlszeile startet jedoch in einer eigenen Shell. Deshalb müssen zusammengehörige Befehle in derselben Zeile stehen:</p>
+
+            <pre><code># Falsch: Das zweite Kommando startet wieder im Projektverzeichnis
+broken:
+    cd frontend
+    npm test
+
+# Richtig
+frontend-test:
+    cd frontend &amp;&amp; npm test</code></pre>
+
+            <hr>
+
+            <h2>Windows und PowerShell</h2>
+            <p>Unter Unix verwendet <code>just</code> standardmäßig <code>sh</code>. Unter Windows kann dieses beispielsweise durch Git for Windows bereitgestellt werden. Wer native PowerShell-Befehle verwenden möchte, setzt die Shell ausdrücklich im justfile:</p>
+
+            <pre><code># Windows PowerShell 5.1
+set shell := ["powershell.exe", "-NoLogo", "-Command"]
+
+files:
+    Get-ChildItem -File
+
+clean:
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue dist</code></pre>
+
+            <p>Für PowerShell 7 wird stattdessen <code>pwsh</code> verwendet:</p>
+
+            <pre><code>set shell := ["pwsh", "-NoLogo", "-NoProfile", "-Command"]</code></pre>
+
+            <p>Soll ein justfile auf mehreren Betriebssystemen laufen, können plattformspezifische Shell-Einstellungen definiert werden:</p>
+
+            <pre><code>set windows-shell := ["pwsh", "-NoLogo", "-NoProfile", "-Command"]
+set shell := ["bash", "-cu"]
+
+platform:
+    @echo "Aktuelles Betriebssystem: {{ os() }}"</code></pre>
+
+            <p><code>windows-shell</code> gilt auf Windows, <code>shell</code> auf den übrigen Plattformen. Alle im Team benötigten Shells müssen installiert und über <code>PATH</code> erreichbar sein.</p>
+
+            <hr>
+
+            <h2>Mehrzeilige Scripts und andere Sprachen</h2>
+            <p>Mit einer Shebang-Recipe wird der gesamte eingerückte Block als ein Script ausgeführt. Variablen und Kontrollstrukturen bleiben dadurch über alle Zeilen erhalten:</p>
+
+            <pre><code>report:
+    #!/usr/bin/env python3
+    from pathlib import Path
+
+    files = list(Path("src").rglob("*.py"))
+    print(f"Python-Dateien: {len(files)}")</code></pre>
+
+            <p>Eine portable Alternative ohne Unix-Shebang ist das <code>[script]</code>-Attribut:</p>
+
+            <pre><code>[script("python3")]
+report-json:
+    import json
+    print(json.dumps({"status": "ok"}))</code></pre>
+
+            <p>Auch Parameter können an Script-Recipes übergeben werden:</p>
+
+            <pre><code>[script("python3")]
+greet name:
+    import sys
+    print(f"Hallo, {sys.argv[1]}!")</code></pre>
+
+            <hr>
+
+            <h2>Private Recipes, Aliase und Bestätigung</h2>
+
+            <h3>Hilfs-Recipes ausblenden</h3>
+            <pre><code>_prepare:
+    npm ci
+
+dev: _prepare
+    npm run dev</code></pre>
+
+            <p>Namen mit führendem Unterstrich erscheinen nicht in der normalen Aufgabenliste, können aber weiterhin direkt oder als Abhängigkeit ausgeführt werden.</p>
+
+            <h3>Kurze Aliase</h3>
+            <pre><code>alias t := test
+alias b := build
+
+test:
+    npm test
+
+build:
+    npm run build</code></pre>
+
+            <h3>Gefährliche Aktionen bestätigen lassen</h3>
+            <pre><code>[confirm("Produktivsystem wirklich deployen?")]
+deploy-production:
+    ./scripts/deploy-production.sh</code></pre>
+
+            <p>In nicht interaktiven CI-Läufen können bestätigungspflichtige Recipes mit <code>--yes</code> ausgeführt werden. Nutze dies nur in kontrollierten Pipelines.</p>
+
+            <hr>
+
+            <h2>Module und größere justfiles</h2>
+            <p>Wächst die Datei stark an, lassen sich Recipes in Module auslagern. In <code>justfile</code>:</p>
+
+            <pre><code>mod database
+mod docker</code></pre>
+
+            <p>Die Dateien <code>database.just</code> und <code>docker.just</code> enthalten die jeweiligen Recipes:</p>
+
+            <pre><code># database.just
+migrate:
+    npx prisma migrate deploy
+
+seed:
+    npx prisma db seed</code></pre>
+
+            <p>Modul-Recipes werden mit dem Modulnamen aufgerufen:</p>
+            <pre><code>just database migrate
+just database seed</code></pre>
+
+            <p>Mit <code>import 'shared.just'</code> werden Definitionen dagegen direkt in den aktuellen Namensraum importiert. Module sind bei größeren Projekten meist übersichtlicher, weil sie Namenskollisionen verhindern.</p>
+
+            <hr>
+
+            <h2>Praktisches vollständiges Beispiel</h2>
+            <pre><code>set dotenv-load
+
+app := "shop-api"
+port := env_var_or_default("PORT", "3000")
+
+alias t := test
+alias c := check
+
+# Verfügbare Aufgaben anzeigen
+default:
+    @just --list
+
+# Abhängigkeiten reproduzierbar installieren
+install:
+    npm ci
+
+# Entwicklungsserver starten
+dev:
+    npm run dev -- --port {{ port }}
+
+# Tests ausführen; optional kann ein Suchmuster angegeben werden
+test pattern="":
+    npm test -- {{ pattern }}
+
+# Quellcode prüfen
+lint:
+    npm run lint
+
+# Formatierung kontrollieren
+format-check:
+    npm run format:check
+
+# Produktions-Build erzeugen
+build:
+    npm run build
+
+# Gesamte lokale Qualitätsprüfung
+check: lint format-check test build
+    @echo "{{ app }} wurde erfolgreich geprüft."
+
+# Container-Image mit Git-Revision bauen
+image tag=`git rev-parse --short HEAD`: check
+    docker build -t {{ app }}:{{ tag }} .
+
+[confirm("Lokale Container und Volumes wirklich entfernen?")]
+clean-docker:
+    docker compose down --volumes --remove-orphans</code></pre>
+
+            <hr>
+
+            <h2>Verwendung in GitHub Actions</h2>
+            <p>In CI bleibt die eigentliche Befehlslogik im justfile. Die Pipeline muss dann nur <code>just</code> installieren und die passende Recipe starten:</p>
+
+            <pre><code>name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: extractions/setup-just@v3
+      - run: just install
+      - run: just check</code></pre>
+
+            <p>Damit lokale Entwicklung und CI wirklich dieselben Prüfungen ausführen, sollte die Pipeline bevorzugt vorhandene Recipes aufrufen statt deren Befehle erneut in YAML zu duplizieren.</p>
+
+            <hr>
+
+            <h2>Nützliche Kommandozeilenoptionen</h2>
+            <table>
+                <thead>
+                    <tr><th>Option</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>-f, --justfile DATEI</code></td><td>Eine bestimmte justfile-Datei verwenden</td></tr>
+                    <tr><td><code>-d, --working-directory ORDNER</code></td><td>Arbeitsverzeichnis für den Aufruf festlegen</td></tr>
+                    <tr><td><code>-l, --list</code></td><td>Verfügbare Recipes auflisten</td></tr>
+                    <tr><td><code>-s, --show RECIPE</code></td><td>Recipe-Quelltext anzeigen</td></tr>
+                    <tr><td><code>--summary</code></td><td>Recipe-Namen kompakt ausgeben</td></tr>
+                    <tr><td><code>--fmt</code></td><td>justfile formatieren</td></tr>
+                    <tr><td><code>--check</code></td><td>Syntax prüfen, ohne Recipes auszuführen</td></tr>
+                    <tr><td><code>-n, --dry-run</code></td><td>Befehle anzeigen, aber nicht ausführen</td></tr>
+                    <tr><td><code>-q, --quiet</code></td><td>Anzeige der ausgeführten Befehlszeilen unterdrücken</td></tr>
+                    <tr><td><code>--set NAME WERT</code></td><td>Eine Variable für diesen Aufruf überschreiben</td></tr>
+                    <tr><td><code>--shell SHELL</code></td><td>Shell für diesen Aufruf überschreiben</td></tr>
+                    <tr><td><code>--completions SHELL</code></td><td>Autovervollständigung für eine Shell erzeugen</td></tr>
+                    <tr><td><code>-g, --global-justfile</code></td><td>Recipes aus einem globalen justfile verwenden</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Variablen beim Aufruf überschreiben</h3>
+            <pre><code>just --set port 9000 serve</code></pre>
+
+            <h3>Ausführung vorab kontrollieren</h3>
+            <pre><code>just --check
+just --dry-run deploy</code></pre>
+
+            <hr>
+
+            <h2>Shell-Autovervollständigung</h2>
+
+            <h3>PowerShell</h3>
+            <p>Folgende Zeile kann in das PowerShell-Profil <code>$PROFILE</code> aufgenommen werden:</p>
+            <pre><code>just --completions powershell | Out-String | Invoke-Expression</code></pre>
+
+            <h3>Bash</h3>
+            <pre><code>mkdir -p ~/.local/share/bash-completion/completions
+just --completions bash &gt; ~/.local/share/bash-completion/completions/just</code></pre>
+
+            <h3>Zsh</h3>
+            <pre><code>mkdir -p ~/.zsh/completions
+just --completions zsh &gt; ~/.zsh/completions/_just</code></pre>
+
+            <hr>
+
+            <h2>Globale persönliche Recipes</h2>
+            <p>Mit <code>just -g</code> wird ein globales justfile gesucht. Geeignete Speicherorte sind unter anderem <code>~/.config/just/justfile</code> und <code>~/justfile</code>:</p>
+
+            <pre><code># ~/.config/just/justfile
+
+public-ip:
+    curl https://ifconfig.me
+
+git-clean-branches:
+    git branch --merged | grep -vE "main|master"</code></pre>
+
+            <pre><code>just -g --list
+just -g public-ip</code></pre>
+
+            <p>Projektbezogene Recipes gehören weiterhin in das Repository. Das globale justfile eignet sich für persönliche, projektunabhängige Werkzeuge.</p>
+
+            <hr>
+
+            <h2>Fehlersuche</h2>
+
+            <h3>„No justfile found“</h3>
+            <p>Im aktuellen Verzeichnis oder in dessen Elternordnern wurde kein justfile gefunden. In das Projekt wechseln oder die Datei ausdrücklich angeben:</p>
+            <pre><code>just --justfile path/to/justfile --list</code></pre>
+
+            <h3>„Unknown recipe“</h3>
+            <p>Recipe-Namen und verfügbare Module prüfen:</p>
+            <pre><code>just --list
+just --summary</code></pre>
+
+            <h3>Ein Befehl aus der vorherigen Zeile wirkt nicht weiter</h3>
+            <p>Normale Recipe-Zeilen laufen in separaten Shell-Prozessen. Befehle mit <code>&amp;&amp;</code> verbinden, <code>[working-directory]</code> verwenden oder eine Script-Recipe anlegen.</p>
+
+            <h3>Ein Unix-Befehl funktioniert unter Windows nicht</h3>
+            <p>Prüfen, welche Shell verwendet wird. Entweder Git Bash bereitstellen oder <code>windows-shell</code> beziehungsweise <code>shell</code> auf PowerShell setzen und die Befehle entsprechend schreiben.</p>
+
+            <h3>Variablen werden falsch zerlegt</h3>
+            <p>Interpolierte Werte mit Leerzeichen innerhalb der Recipe passend zitieren:</p>
+            <pre><code>greet name:
+    echo "Hallo {{ name }}"</code></pre>
+
+            <h3>Syntax prüfen</h3>
+            <pre><code>just --check
+just --fmt --check</code></pre>
+
+            <hr>
+
+            <h2>Empfohlene Konventionen</h2>
+            <ul>
+                <li>Eine hilfreiche <code>default</code>-Recipe an die erste Stelle setzen.</li>
+                <li>Öffentliche Recipes mit kurzen Kommentaren dokumentieren.</li>
+                <li>Namen wie <code>dev</code>, <code>test</code>, <code>lint</code>, <code>build</code> und <code>check</code> konsistent verwenden.</li>
+                <li>Destruktive Recipes durch klare Namen und <code>[confirm]</code> absichern.</li>
+                <li>Secrets über Umgebung oder Secret Stores statt über das justfile verteilen.</li>
+                <li>Plattformabhängige Shells ausdrücklich konfigurieren.</li>
+                <li>Mit <code>just --check</code> und <code>just --fmt --check</code> auch das justfile in CI prüfen.</li>
+                <li>Komplexe Logik in echte Scripts auslagern; Recipes bleiben der übersichtliche Einstiegspunkt.</li>
+            </ul>
+
+            <hr>
+
+            <h2>Hilfe und offizielle Dokumentation</h2>
+            <pre><code>just --help
+just --man
+just --help --verbose</code></pre>
+
+            <p>Die vollständige und jeweils aktuelle Referenz befindet sich im <a href="https://just.systems/man/en/" target="_blank" rel="noopener">offiziellen just-Handbuch</a>. Quellcode, Releases und weitere Beispiele sind im <a href="https://github.com/casey/just" target="_blank" rel="noopener">GitHub-Repository von just</a> verfügbar.</p>
+
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">© 2026 Felix Staacke</div>
+    </footer>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>

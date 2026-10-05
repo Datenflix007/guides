@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../../media/favicon.png">
+    <title>Git &amp; GitHub – Komplettkurs</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --sidebar-w: 264px;
+      --accent:    #63e6b5;
+      --accent2:   #58b5ff;
+      --accent3:   #f97316;
+      --bg:        #0d0f14;
+      --sidebar-bg:#090b0f;
+      --surface:   #13161f;
+      --border:    rgba(255,255,255,.07);
+      --muted:     #7d8598;
+      --text:      #dde3f0;
+      --mono:      'JetBrains Mono', monospace;
+      --radius:    12px;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+    }
+
+    a  { color: inherit; text-decoration: none; }
+    h1, h2, h3 { margin: 0; }
+    button, select { font: inherit; cursor: pointer; }
+    code { font-family: var(--mono); }
+
+    /* ─── LAYOUT ─────────────────────────────────────────── */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ─── SIDEBAR ────────────────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-logo {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #0a0c10;
+      font-weight: 800;
+      font-size: .85rem;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .brand-name { font-weight: 700; font-size: .92rem; line-height: 1.2; }
+    .brand-sub  { color: var(--muted); font-size: .74rem; margin-top: 2px; }
+
+    .nav-section { padding: 4px 0 8px; border-bottom: 1px solid var(--border); }
+    .nav-section:last-child { border-bottom: none; }
+
+    .nav-group-label {
+      padding: 14px 16px 5px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-link {
+      display: block;
+      padding: 8px 16px;
+      font-size: .9rem;
+      color: #9aa5be;
+      border-left: 3px solid transparent;
+      transition: background .13s, color .13s, border-color .13s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+    }
+
+    .nav-link.active {
+      background: rgba(99,230,181,.09);
+      border-left-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-link.nav-sub {
+      padding-left: 28px;
+      font-size: .86rem;
+    }
+
+    /* ─── MAIN AREA ──────────────────────────────────────── */
+    #main { flex: 1; min-width: 0; }
+
+    .chapter {
+      display: none;
+      padding: 52px 60px 72px;
+      max-width: 860px;
+      animation: fadein .18s ease;
+    }
+
+    .chapter.active { display: block; }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── CHAPTER TYPOGRAPHY ─────────────────────────────── */
+    .chapter > h1 {
+      font-size: clamp(1.9rem, 3vw, 2.9rem);
+      letter-spacing: -.04em;
+      color: #edf1ff;
+      margin-bottom: 6px;
+    }
+
+    .chapter-meta {
+      color: var(--muted);
+      font-size: .87rem;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chapter-body   { display: grid; gap: 22px; margin-bottom: 40px; }
+
+    .chapter-body p { margin: 0; line-height: 1.9; color: #bec8de; font-size: .97rem; }
+
+    .chapter-body h2 {
+      font-size: 1.2rem;
+      color: #dde3f0;
+      margin-bottom: 6px;
+    }
+
+    .chapter-body h3 {
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .chapter-body ul, .chapter-body ol {
+      margin: 0;
+      padding-left: 1.4em;
+      line-height: 1.95;
+      color: #bec8de;
+      font-size: .97rem;
+    }
+
+    .chapter-body li { margin-bottom: 4px; }
+
+    .info-box {
+      background: rgba(99,230,181,.05);
+      border: 1px solid rgba(99,230,181,.18);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+    }
+
+    .info-box p { color: #c2cfdf; }
+
+    .warn-box {
+      background: rgba(249,115,22,.05);
+      border: 1px solid rgba(249,115,22,.25);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+    }
+
+    .warn-box p { color: #e2c8a8; margin: 0; line-height: 1.85; font-size: .97rem; }
+
+    .tip-box {
+      background: rgba(88,181,255,.05);
+      border: 1px solid rgba(88,181,255,.2);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+    }
+
+    .tip-box p { color: #b5d4f7; margin: 0; line-height: 1.85; font-size: .97rem; }
+
+    /* ─── COMPARISON TABLE ───────────────────────────────── */
+    .complexity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+    }
+
+    .complexity-table th {
+      padding: 8px 14px;
+      text-align: left;
+      color: var(--muted);
+      font-size: .7rem;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .complexity-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      color: #bec8de;
+      vertical-align: top;
+    }
+
+    .complexity-table td:first-child {
+      font-family: var(--mono);
+      font-size: .84rem;
+      color: var(--accent2);
+    }
+
+    /* ─── STEP LIST ──────────────────────────────────────── */
+    .step-list { display: grid; gap: 14px; }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(99,230,181,.12);
+      border: 1px solid rgba(99,230,181,.3);
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-body { flex: 1; }
+
+    .step-body strong { color: #dde3f0; display: block; margin-bottom: 3px; font-size: .97rem; }
+
+    .step-body p { color: #9aa5be; margin: 0; font-size: .9rem; line-height: 1.75; }
+
+    /* ─── BADGE ROW ──────────────────────────────────────── */
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+
+    .badge-green  { background: rgba(99,230,181,.1);  border: 1px solid rgba(99,230,181,.25); color: var(--accent); }
+    .badge-blue   { background: rgba(88,181,255,.1);  border: 1px solid rgba(88,181,255,.25); color: var(--accent2); }
+    .badge-orange { background: rgba(249,115,22,.1);  border: 1px solid rgba(249,115,22,.3);  color: #fb923c; }
+
+    /* ─── CODE VIEWER COMPONENT ──────────────────────────── */
+    .code-viewer-label {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .code-viewer {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .code-viewer-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #161a24;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot   { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #26c281; }
+
+    .viewer-title {
+      font-family: var(--mono);
+      font-size: .8rem;
+      color: var(--muted);
+      margin-left: 6px;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lang-select {
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(20,24,34,.96);
+      color: #e2e6f0;
+      padding: 4px 10px;
+      border-radius: 7px;
+      font-size: .8rem;
+    }
+
+    .copy-btn {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      color: #b5c0d8;
+      padding: 4px 12px;
+      border-radius: 7px;
+      font-size: .78rem;
+      transition: border-color .18s, color .18s;
+    }
+
+    .copy-btn:hover  { border-color: var(--accent); color: var(--accent); }
+    .copy-btn.copied { border-color: var(--accent); color: var(--accent); }
+
+    .download-btn {
+      border: 1px solid rgba(88,181,255,.2);
+      background: rgba(88,181,255,.05);
+      color: var(--accent2);
+      padding: 4px 12px;
+      border-radius: 7px;
+      font-size: .78rem;
+      text-decoration: none;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      transition: border-color .18s, background .18s;
+    }
+    .download-btn:hover { border-color: var(--accent2); background: rgba(88,181,255,.1); }
+
+    .code-wrap { position: relative; background: #11151f; }
+
+    .code-wrap pre {
+      margin: 0;
+      padding: 20px 24px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: .87rem;
+      line-height: 1.65;
+      min-height: 100px;
+    }
+
+    .code-wrap code.hljs { display: block; }
+    .code-source { display: none; }
+
+    /* ─── GITHUB PAGES BANNER ────────────────────────────── */
+    .pages-banner {
+      background: linear-gradient(135deg, rgba(99,230,181,.08), rgba(88,181,255,.06));
+      border: 1px solid rgba(99,230,181,.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .pages-banner h2 { color: var(--accent); font-size: 1.05rem; margin-bottom: 4px; }
+    .pages-banner p  { color: #bec8de; margin: 0; font-size: .95rem; line-height: 1.8; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 800px) {
+      #sidebar { display: none; }
+      .chapter { padding: 28px 20px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ═══════════════════════════════════════════════════════
+       SIDEBAR NAVIGATION
+  ═══════════════════════════════════════════════════════ -->
+  <nav id="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-logo">GH</div>
+      <div>
+        <div class="brand-name">Git &amp; GitHub</div>
+        <div class="brand-sub">Komplettkurs</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-label">Einführung</div>
+      <a class="nav-link active" data-chapter="vorwort">Vorwort</a>
+      <a class="nav-link" data-chapter="was-ist-git">Was ist Git?</a>
+      <a class="nav-link" data-chapter="was-ist-github">Was ist GitHub?</a>
+      <a class="nav-link" data-chapter="gitlab-vergleich">GitLab im Vergleich</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-label">Terminal</div>
+      <a class="nav-link" data-chapter="installation">Installation &amp; Konfiguration</a>
+      <a class="nav-link" data-chapter="grundbefehle">Grundbefehle</a>
+      <a class="nav-link" data-chapter="branching">Branching &amp; Merging</a>
+      <a class="nav-link" data-chapter="remote">Remote &amp; GitHub CLI</a>
+      <a class="nav-link" data-chapter="konflikte">Konflikte lösen</a>
+      <a class="nav-link" data-chapter="fortgeschritten">Fortgeschrittene Befehle</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-label">GitHub Desktop</div>
+      <a class="nav-link" data-chapter="desktop-intro">Einführung &amp; Setup</a>
+      <a class="nav-link" data-chapter="desktop-workflow">Workflow mit Desktop</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-label">VS Code Integration</div>
+      <a class="nav-link" data-chapter="vsc-extensions">Extensions installieren</a>
+      <a class="nav-link" data-chapter="vsc-workflow">Git-Workflow in VSC</a>
+      <a class="nav-link" data-chapter="vsc-copilot">GitHub Copilot</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-label">GitHub Pages</div>
+      <a class="nav-link" data-chapter="pages-intro">Was sind GitHub Pages?</a>
+      <a class="nav-link" data-chapter="pages-deploy">Deployment Schritt für Schritt</a>
+      <a class="nav-link" data-chapter="pages-actions">Automatisierung mit Actions</a>
+    </div>
+
+  </nav><!-- /sidebar -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════ -->
+  <main id="main">
+
+
+    <!-- ─── VORWORT ──────────────────────────────────────── -->
+    <section id="ch-vorwort" class="chapter active">
+      <h1>Git &amp; GitHub – Komplettkurs</h1>
+      <p class="chapter-meta">Einführung · Von den Grundlagen bis zu GitHub Pages</p>
+
+      <div class="chapter-body">
+        <p>
+          Dieser Kurs vermittelt alle wesentlichen Kenntnisse rund um das Versionskontrollsystem
+          <strong>Git</strong> und die Plattform <strong>GitHub</strong>. Er richtet sich an
+          Einsteiger, die strukturiert arbeiten möchten, sowie an Fortgeschrittene, die ihren
+          Workflow professionalisieren wollen – vom Terminal über GitHub Desktop bis zur
+          VS Code Integration.
+        </p>
+
+        <div>
+          <h2>Themenübersicht</h2>
+          <ul>
+            <li><strong>Grundlagen</strong> – Was ist Git, GitHub und GitLab? Wo liegen die Unterschiede?</li>
+            <li><strong>Terminal</strong> – Alle wichtigen <code>git</code>-Befehle mit Erklärung und Beispiel</li>
+            <li><strong>GitHub Desktop</strong> – Grafische Oberfläche für den täglichen Workflow</li>
+            <li><strong>VS Code Extensions</strong> – GitLens, GitHub Pull Requests, Copilot und mehr</li>
+            <li><strong>GitHub Pages</strong> – Statische Websites kostenlos hosten und automatisch deployen</li>
+          </ul>
+        </div>
+
+        <div class="info-box">
+          <p>
+            Jedes Kapitel enthält ausführliche Erklärungen, Tabellen und Code-Beispiele,
+            die du direkt in deiner eigenen Umgebung ausprobieren kannst. Nutze die Sidebar,
+            um zwischen den Kapiteln zu wechseln.
+          </p>
+        </div>
+
+        <div>
+          <h2>Voraussetzungen</h2>
+          <ul>
+            <li>Grundlegende Computerkenntnisse (Dateisystem, Texteditor)</li>
+            <li>Zugang zu einem Terminal (macOS/Linux: Terminal, Windows: PowerShell oder Git Bash)</li>
+            <li>Ein <a href="https://github.com" style="color:var(--accent2);">github.com</a>-Konto (kostenlos)</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Kurzüberblick: Häufig verwendete Befehle</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># Die wichtigsten Git-Befehle auf einen Blick
+
+git init                        # Neues lokales Repository erstellen
+git clone <url>                 # Repository von GitHub herunterladen
+git status                      # Aktuellen Zustand anzeigen
+git add .                       # Alle Änderungen zur Staging Area hinzufügen
+git commit -m "Nachricht"       # Commit erstellen
+git push origin main            # Änderungen zu GitHub hochladen
+git pull origin main            # Neueste Änderungen herunterladen
+git branch feature/mein-feature # Neuen Branch erstellen
+git checkout feature/mein-feature # Zu Branch wechseln
+git merge feature/mein-feature  # Branch in aktuellen mergen</div>
+      </div>
+    </section>
+
+
+    <!-- ─── WAS IST GIT ──────────────────────────────────── -->
+    <section id="ch-was-ist-git" class="chapter">
+      <h1>Was ist Git?</h1>
+      <p class="chapter-meta">Einführung · Versionskontrolle · Kernkonzepte</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>Git</strong> ist ein <em>dezentrales Versionskontrollsystem</em> (DVCS –
+          Distributed Version Control System), das 2005 von <strong>Linus Torvalds</strong>
+          entwickelt wurde – demselben Entwickler, der auch den Linux-Kernel geschrieben hat.
+          Ziel war ein System, das schnell, sicher und vollständig verteilt arbeitet.
+        </p>
+
+        <div>
+          <h2>Was bedeutet Versionskontrolle?</h2>
+          <p>
+            Versionskontrolle bedeutet, dass jede Änderung an einer Datei protokolliert wird.
+            Du kannst jederzeit zu einem früheren Zustand zurückkehren, verschiedene
+            Entwicklungsstränge parallel führen und Änderungen mehrerer Personen
+            zusammenführen – ohne dass sich Änderungen gegenseitig überschreiben.
+          </p>
+        </div>
+
+        <div>
+          <h3>Die drei Bereiche von Git</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Bereich</th><th>Bezeichnung</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Working Directory</td><td>Arbeitsbereich</td><td>Deine Dateien auf der Festplatte – hier arbeitest du</td></tr>
+              <tr><td>Staging Area</td><td>Index</td><td>Vorbereitungszone: du wählst, welche Änderungen in den nächsten Commit kommen</td></tr>
+              <tr><td>Repository</td><td><code>.git</code>-Ordner</td><td>Die Datenbank aller Commits und Branches – liegt lokal auf deiner Maschine</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Dezentral vs. zentral</h2>
+          <p>
+            Bei <em>zentralisierten</em> Systemen wie SVN existiert die Historie nur auf einem
+            Server. Bei Git dagegen hat <strong>jeder Entwickler eine vollständige Kopie</strong>
+            des gesamten Repositories – inklusive aller Commits, Branches und der kompletten
+            Historie. Das ermöglicht Offline-Arbeit und erhöht die Ausfallsicherheit erheblich.
+          </p>
+        </div>
+
+        <div>
+          <h3>Kernkonzepte</h3>
+          <ul>
+            <li><strong>Commit</strong> – Ein Schnappschuss des Projekts zu einem bestimmten Zeitpunkt. Unveränderlich, durch einen SHA-1-Hash eindeutig identifizierbar.</li>
+            <li><strong>Branch</strong> – Ein leichtgewichtiger Zeiger auf einen Commit. Branches ermöglichen parallele Entwicklungslinien (Features, Bugfixes, Experimente).</li>
+            <li><strong>HEAD</strong> – Ein spezieller Zeiger, der anzeigt, welcher Commit oder Branch aktuell aktiv ist.</li>
+            <li><strong>Merge</strong> – Das Zusammenführen zweier Branches. Git versucht Änderungen automatisch zu kombinieren.</li>
+            <li><strong>Rebase</strong> – Alternative zu Merge: schreibt die Commit-Geschichte um, um eine lineare Historie zu erzeugen.</li>
+            <li><strong>Tag</strong> – Ein fester Zeiger auf einen bestimmten Commit, typischerweise für Releases (z.B. <code>v1.0.0</code>).</li>
+          </ul>
+        </div>
+
+        <div class="info-box">
+          <p>
+            Git ist das mit Abstand meistgenutzte Versionskontrollsystem der Welt.
+            Laut Stack Overflow Developer Survey 2024 verwenden über 93 % aller
+            Entwicklerinnen und Entwickler Git in ihrem Arbeitsalltag.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Git Datenmodell</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># Git speichert Objekte in einer einfachen Schlüssel-Wert-Datenbank.
+# Es gibt vier Objekttypen:
+
+# 1. blob – der Inhalt einer einzelnen Datei
+# 2. tree – ein Verzeichnis (enthält blobs und weitere trees)
+# 3. commit – ein Schnappschuss + Metadaten (Autor, Zeit, Eltern-Commit)
+# 4. tag – annotierter Zeiger auf einen Commit
+
+# Jeder Commit zeigt auf genau einen tree (das Root-Verzeichnis)
+# und einen oder mehrere Eltern-Commits.
+
+#  (commit A) ──► (commit B) ──► (commit C)   ◄── HEAD, main
+#                               └──► (commit D)  ◄── feature/login
+
+# SHA-1 Hash eines beliebigen Commits anzeigen:
+git log --oneline
+
+# Internen Typ eines Objekts inspizieren:
+git cat-file -t <hash>
+
+# Inhalt eines Objekts anzeigen:
+git cat-file -p <hash></div>
+      </div>
+    </section>
+
+
+    <!-- ─── WAS IST GITHUB ───────────────────────────────── -->
+    <section id="ch-was-ist-github" class="chapter">
+      <h1>Was ist GitHub?</h1>
+      <p class="chapter-meta">Einführung · Plattform · Features</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>GitHub</strong> ist eine webbasierte Hosting-Plattform für Git-Repositories.
+          Gegründet 2008, seit 2018 Teil von Microsoft, ist GitHub heute die weltweit größte
+          Entwicklungsplattform mit über <strong>100 Millionen Entwicklerinnen und Entwicklern</strong>
+          und mehr als 420 Millionen öffentlichen Repositories.
+        </p>
+
+        <div>
+          <h2>GitHub ≠ Git</h2>
+          <p>
+            Ein häufiges Missverständnis: Git und GitHub sind <em>nicht dasselbe</em>.
+            <strong>Git</strong> ist das Werkzeug (lokal, Open Source, kostenlos).
+            <strong>GitHub</strong> ist ein Dienst, der Git-Repositories in der Cloud hostet
+            und mit zusätzlichen Kollaborationsfunktionen anreichert. Du könntest Git auch
+            vollständig ohne GitHub nutzen – und umgekehrt gibt es andere Hosting-Angebote
+            für Git-Repositories (GitLab, Bitbucket, Gitea, etc.).
+          </p>
+        </div>
+
+        <div>
+          <h3>Kernfunktionen von GitHub</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Feature</th><th>Beschreibung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Repositories</td><td>Öffentliche und private Git-Repositories hosten und teilen</td></tr>
+              <tr><td>Pull Requests</td><td>Code-Reviews und Diskussionen vor dem Merge in den Hauptbranch</td></tr>
+              <tr><td>Issues</td><td>Aufgaben, Bugberichte und Feature-Requests verwalten</td></tr>
+              <tr><td>GitHub Actions</td><td>CI/CD-Pipelines: Tests, Builds und Deployments automatisieren</td></tr>
+              <tr><td>GitHub Pages</td><td>Statische Websites direkt aus einem Repository hosten</td></tr>
+              <tr><td>GitHub Copilot</td><td>KI-gestützte Code-Vervollständigung in VS Code und anderen IDEs</td></tr>
+              <tr><td>Discussions</td><td>Forum-ähnliche Diskussionen innerhalb eines Repositories</td></tr>
+              <tr><td>Projects</td><td>Kanban-Boards zur Aufgabenverwaltung (ähnlich Trello/Jira)</td></tr>
+              <tr><td>Wiki</td><td>Dokumentation direkt im Repository verwalten</td></tr>
+              <tr><td>Security</td><td>Dependabot, Secret Scanning, Code-Scanning und mehr</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Der Pull Request Workflow</h2>
+          <p>
+            Das zentrale Kollaborationsmodell auf GitHub basiert auf <strong>Pull Requests (PRs)</strong>.
+            Statt direkt auf den Hauptbranch zu pushen, entwickelst du auf einem Feature-Branch,
+            öffnest dann einen PR und bittest Teammitglieder um ein Code-Review. Erst nach
+            Freigabe wird der Branch gemergt. Dieser Workflow ist heute Industriestandard.
+          </p>
+        </div>
+
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>Fork oder Branch erstellen</strong>
+              <p>Bei eigenen Repos: neuen Branch. Bei fremden Repos: Fork des Repositories erstellen.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>Änderungen committen und pushen</strong>
+              <p>Entwickle dein Feature lokal, committe und pushe den Branch zu GitHub.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>Pull Request öffnen</strong>
+              <p>Auf GitHub einen PR erstellen: Beschreibung hinzufügen, Reviewer zuweisen.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <strong>Code Review</strong>
+              <p>Teammitglieder kommentieren, fordern Änderungen an oder genehmigen.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <strong>Merge</strong>
+              <p>Nach Genehmigung wird der Branch in <code>main</code> gemergt. Branch kann danach gelöscht werden.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <p>
+            GitHub-Konten sind für Open-Source-Projekte und persönliche Repositories kostenlos.
+            Für Teams ab einer bestimmten Größe und mit erweiterten CI/CD-Minuten gibt es
+            kostenpflichtige Pläne (Team, Enterprise).
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Erstes Repository auf GitHub</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># Szenario: Du hast ein lokales Projekt und willst es auf GitHub hochladen.
+
+# 1. Lokales Repo initialisieren (falls noch nicht geschehen)
+git init
+git add .
+git commit -m "Initial commit"
+
+# 2. Auf GitHub: Neues Repository anlegen (ohne README, ohne .gitignore)
+#    Danach erhältst du eine URL wie: https://github.com/deinname/mein-projekt.git
+
+# 3. Remote hinzufügen und pushen
+git remote add origin https://github.com/deinname/mein-projekt.git
+git branch -M main
+git push -u origin main
+
+# -u setzt origin/main als Upstream-Tracking-Branch.
+# Danach reicht einfach: git push  und  git pull</div>
+      </div>
+    </section>
+
+
+    <!-- ─── GITLAB VERGLEICH ─────────────────────────────── -->
+    <section id="ch-gitlab-vergleich" class="chapter">
+      <h1>GitLab im Vergleich</h1>
+      <p class="chapter-meta">Einführung · GitHub vs. GitLab vs. Bitbucket</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>GitLab</strong> ist eine vollständige DevOps-Plattform, die neben
+          Git-Hosting auch CI/CD, Container Registry, Security-Scanning und vieles mehr
+          in einem einzigen Produkt vereint. Im Gegensatz zu GitHub kann GitLab auch
+          <em>selbst gehostet</em> (on-premise) betrieben werden – ein entscheidender
+          Vorteil in datenschutzsensiblen Umgebungen wie Forschung oder Behörden.
+        </p>
+
+        <div>
+          <h3>Plattformen im Vergleich</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Kriterium</th><th>GitHub</th><th>GitLab</th><th>Bitbucket</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Eigentümer</td><td>Microsoft</td><td>GitLab Inc.</td><td>Atlassian</td></tr>
+              <tr><td>Open Source</td><td>Nein (proprietär)</td><td>Community Edition: Ja</td><td>Nein</td></tr>
+              <tr><td>Self-Hosting</td><td>GitHub Enterprise Server</td><td>Ja, kostenlos (CE)</td><td>Ja (kostenpflichtig)</td></tr>
+              <tr><td>CI/CD</td><td>GitHub Actions</td><td>GitLab CI/CD (integriert)</td><td>Bitbucket Pipelines</td></tr>
+              <tr><td>Pull Requests</td><td>Pull Requests</td><td>Merge Requests</td><td>Pull Requests</td></tr>
+              <tr><td>Kostenlos für</td><td>Öffentliche + private Repos</td><td>Öffentliche + private Repos</td><td>Bis 5 Nutzer</td></tr>
+              <tr><td>Stärke</td><td>Community, Open Source, Copilot</td><td>DevOps-Plattform, Self-Hosting</td><td>Jira-Integration</td></tr>
+              <tr><td>Verbreitung</td><td>Sehr hoch (dominierend)</td><td>Hoch (besonders Enterprise)</td><td>Mittel</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Wann welche Plattform?</h2>
+          <ul>
+            <li><strong>GitHub</strong> – Standardwahl für Open-Source-Projekte, persönliche Portfolios, Community-Beiträge. Größtes Ecosystem, beste Sichtbarkeit.</li>
+            <li><strong>GitLab</strong> – Empfehlenswert wenn du alles in einer Plattform haben möchtest, Self-Hosting benötigst (z.B. Universität, Behörde) oder tiefe CI/CD-Integration brauchst.</li>
+            <li><strong>Bitbucket</strong> – Sinnvoll wenn du bereits im Atlassian-Ökosystem arbeitest (Jira, Confluence) und enge Integration brauchst.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>Terminologische Unterschiede</h2>
+          <p>
+            Das Grundprinzip ist auf allen Plattformen identisch – Git bleibt Git.
+            Die Terminologie unterscheidet sich jedoch geringfügig: was GitHub
+            einen <em>Pull Request</em> nennt, heißt bei GitLab <em>Merge Request</em>.
+            Was GitHub <em>GitHub Actions</em> nennt, heißt bei GitLab <em>GitLab CI/CD Pipelines</em>.
+            Die Konzepte dahinter sind dieselben.
+          </p>
+        </div>
+
+        <div class="tip-box">
+          <p>
+            <strong>Tipp für Einsteiger:</strong> Starte mit GitHub. Es hat die größte Community,
+            die meisten Tutorials und die beste Integration mit Tools wie VS Code.
+            Du kannst dasselbe lokale Git-Repository jederzeit auf eine andere Plattform
+            spiegeln – die Umstiegskosten sind niedrig.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Repository zu beiden Plattformen spiegeln</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># Ein Repository gleichzeitig auf GitHub und GitLab pushen
+
+# Schritt 1: Zwei Remotes konfigurieren
+git remote add github  https://github.com/deinname/mein-projekt.git
+git remote add gitlab  https://gitlab.com/deinname/mein-projekt.git
+
+# Schritt 2: Zu beiden gleichzeitig pushen (via push-all Alias)
+git remote add all https://github.com/deinname/mein-projekt.git
+git remote set-url --add --push all https://github.com/deinname/mein-projekt.git
+git remote set-url --add --push all https://gitlab.com/deinname/mein-projekt.git
+
+git push all main   # Pusht zu beiden gleichzeitig
+
+# Alle konfigurierten Remotes anzeigen:
+git remote -v</div>
+      </div>
+    </section>
+
+
+    <!-- ─── INSTALLATION ─────────────────────────────────── -->
+    <section id="ch-installation" class="chapter">
+      <h1>Installation &amp; Konfiguration</h1>
+      <p class="chapter-meta">Terminal · Erste Schritte · SSH-Keys</p>
+
+      <div class="chapter-body">
+        <p>
+          Bevor du Git nutzen kannst, muss es auf deinem System installiert und mit
+          deiner Identität konfiguriert werden. Diese Einstellungen werden in jeder
+          Commit-Nachricht eingebettet und sind für die Zusammenarbeit auf GitHub wichtig.
+        </p>
+
+        <div>
+          <h2>Installation</h2>
+          <ul>
+            <li><strong>macOS:</strong> <code>brew install git</code> (Homebrew) oder Xcode Command Line Tools</li>
+            <li><strong>Ubuntu/Debian:</strong> <code>sudo apt install git</code></li>
+            <li><strong>Fedora/RHEL:</strong> <code>sudo dnf install git</code></li>
+            <li><strong>Windows:</strong> <a href="https://git-scm.com/download/win" style="color:var(--accent2);">git-scm.com/download/win</a> – Git Bash inklusive</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Pflichtschritte nach der Installation</h3>
+          <p>
+            Diese zwei Befehle müssen <strong>einmalig</strong> nach der Installation ausgeführt
+            werden. Git speichert sie global in <code>~/.gitconfig</code>.
+          </p>
+        </div>
+
+        <div>
+          <h2>SSH-Keys einrichten</h2>
+          <p>
+            Statt bei jedem Push dein Passwort einzugeben, empfiehlt sich SSH-Authentifizierung.
+            Du erzeugst ein Schlüsselpaar: der <em>private Key</em> bleibt lokal, der
+            <em>öffentliche Key</em> wird auf GitHub hinterlegt. Ab dann authentifiziert sich
+            Git automatisch.
+          </p>
+        </div>
+
+        <div class="warn-box">
+          <p>
+            <strong>Sicherheitshinweis:</strong> Teile deinen privaten SSH-Key (<code>id_ed25519</code>)
+            niemals mit jemandem und committe ihn unter keinen Umständen in ein Repository.
+            Füge <code>*.pem</code>, <code>id_rsa*</code> und <code>id_ed25519</code> zur
+            <code>.gitignore</code> hinzu.
+          </p>
+        </div>
+
+        <div>
+          <h2>Die .gitignore Datei</h2>
+          <p>
+            Eine <code>.gitignore</code>-Datei im Wurzelverzeichnis deines Projekts legt fest,
+            welche Dateien und Ordner Git ignorieren soll. Typische Kandidaten: Build-Artefakte,
+            Abhängigkeitsordner (<code>node_modules/</code>), Umgebungsvariablen (<code>.env</code>),
+            IDE-Konfigurationen (<code>.idea/</code>, <code>.vscode/</code>) und Betriebssystem-Dateien
+            (<code>.DS_Store</code>, <code>Thumbs.db</code>).
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Installation &amp; Konfiguration</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── PFLICHT: Identität konfigurieren ───────────────────────────────
+git config --global user.name  "Dein Name"
+git config --global user.email "deine@email.de"
+
+# Bevorzugten Editor setzen (z.B. VS Code)
+git config --global core.editor "code --wait"
+
+# Standardbranch auf 'main' setzen (moderner Standard)
+git config --global init.defaultBranch main
+
+# Alle globalen Einstellungen anzeigen
+git config --global --list
+
+
+# ─── SSH-KEY ERSTELLEN ──────────────────────────────────────────────
+# Ed25519-Algorithmus empfohlen (sicherer und schneller als RSA)
+ssh-keygen -t ed25519 -C "deine@email.de"
+# Pfad bestätigen (Enter), Passphrase optional (empfohlen)
+
+# Öffentlichen Key ausgeben – diesen auf GitHub einfügen:
+# github.com → Settings → SSH and GPG keys → New SSH key
+cat ~/.ssh/id_ed25519.pub
+
+# SSH-Verbindung zu GitHub testen:
+ssh -T git@github.com
+# Erwartete Ausgabe: Hi username! You've successfully authenticated...
+
+
+# ─── BEISPIEL .gitignore ────────────────────────────────────────────
+cat > .gitignore << 'EOF'
+# Abhängigkeiten
+node_modules/
+vendor/
+
+# Build-Artefakte
+dist/
+build/
+*.class
+*.pyc
+__pycache__/
+
+# Umgebungsvariablen (NIEMALS committen!)
+.env
+.env.local
+.env.*.local
+
+# IDE-Konfigurationen
+.vscode/
+.idea/
+*.suo
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+EOF</div>
+      </div>
+    </section>
+
+
+    <!-- ─── GRUNDBEFEHLE ─────────────────────────────────── -->
+    <section id="ch-grundbefehle" class="chapter">
+      <h1>Grundbefehle</h1>
+      <p class="chapter-meta">Terminal · Täglicher Workflow · Stage · Commit · Log</p>
+
+      <div class="chapter-body">
+        <p>
+          Der tägliche Git-Workflow dreht sich um einen Kernzyklus: Änderungen vornehmen,
+          ausgewählte Änderungen zur Staging Area hinzufügen (<code>git add</code>),
+          einen Commit erstellen (<code>git commit</code>) und zum Remote hochladen
+          (<code>git push</code>). Die folgenden Befehle werden dabei ständig gebraucht.
+        </p>
+
+        <div>
+          <h3>Repository-Verwaltung</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git init</td><td>Neues leeres Repository im aktuellen Verzeichnis initialisieren</td></tr>
+              <tr><td>git clone &lt;url&gt;</td><td>Komplettes Repository (inkl. gesamter Historie) herunterladen</td></tr>
+              <tr><td>git clone &lt;url&gt; &lt;ordner&gt;</td><td>In einen bestimmten Zielordner klonen</td></tr>
+              <tr><td>git clone --depth 1 &lt;url&gt;</td><td>Shallow Clone: nur letzten Commit herunterladen (schnell)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3>Status &amp; Staging</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git status</td><td>Zeigt geänderte, neue und staged Dateien</td></tr>
+              <tr><td>git diff</td><td>Unstaged Änderungen anzeigen (Zeilenunterschiede)</td></tr>
+              <tr><td>git diff --staged</td><td>Staged Änderungen anzeigen (was kommt in nächsten Commit)</td></tr>
+              <tr><td>git add &lt;datei&gt;</td><td>Einzelne Datei zur Staging Area hinzufügen</td></tr>
+              <tr><td>git add .</td><td>Alle Änderungen im aktuellen Verzeichnis stagen</td></tr>
+              <tr><td>git add -p</td><td>Interaktiv: Änderungen abschnittweise (hunks) stagen</td></tr>
+              <tr><td>git restore &lt;datei&gt;</td><td>Unstaged Änderungen einer Datei verwerfen</td></tr>
+              <tr><td>git restore --staged &lt;datei&gt;</td><td>Datei aus Staging Area zurückziehen (ohne Änderungen zu verlieren)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3>Commits</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git commit -m "text"</td><td>Commit mit einzeiliger Nachricht erstellen</td></tr>
+              <tr><td>git commit</td><td>Commit erstellen, Editor öffnet sich für mehrzeilige Nachricht</td></tr>
+              <tr><td>git commit --amend</td><td>Letzten Commit nachträglich bearbeiten (Nachricht oder Dateien)</td></tr>
+              <tr><td>git commit -am "text"</td><td>Add + Commit für bereits getrackte Dateien in einem Schritt</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3>Historie &amp; Log</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git log</td><td>Vollständige Commit-Historie anzeigen</td></tr>
+              <tr><td>git log --oneline</td><td>Kompakte Ansicht: ein Commit pro Zeile</td></tr>
+              <tr><td>git log --oneline --graph --all</td><td>Grafische Darstellung aller Branches im Terminal</td></tr>
+              <tr><td>git log --author="Name"</td><td>Commits eines bestimmten Autors filtern</td></tr>
+              <tr><td>git show &lt;hash&gt;</td><td>Details und Diff eines bestimmten Commits anzeigen</td></tr>
+              <tr><td>git blame &lt;datei&gt;</td><td>Zeilenweise anzeigen, wer was wann geändert hat</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Gute Commit-Nachrichten</h2>
+          <p>
+            Eine gute Commit-Nachricht beschreibt <em>warum</em> eine Änderung vorgenommen wurde,
+            nicht nur was. Weit verbreitet ist der <strong>Conventional Commits</strong>-Standard:
+            <code>feat: Anmeldeformular hinzugefügt</code>, <code>fix: Null-Pointer in UserService behoben</code>,
+            <code>docs: README aktualisiert</code>, <code>refactor: Datenbankabfrage optimiert</code>.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Typischer Arbeitstag mit Git</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── MORGENS: Neueste Änderungen holen ──────────────────────────────
+git pull origin main
+
+# ─── ARBEITEN: Dateien bearbeiten ───────────────────────────────────
+# ... Code schreiben in VS Code ...
+
+# Status prüfen
+git status
+
+# Nur bestimmte Dateien stagen
+git add src/components/Header.jsx
+git add src/styles/header.css
+
+# Oder alles stagen
+git add .
+
+# Diff der gestagten Änderungen nochmal kontrollieren
+git diff --staged
+
+# Commit erstellen
+git commit -m "feat: Navigation responsiv gestaltet"
+
+# Mehrere kleine Commits im Laufe des Tages...
+
+# ─── ABENDS: Zum Remote pushen ──────────────────────────────────────
+git push origin main
+
+# ─── ÜBERSICHT: Letzte 10 Commits kompakt anzeigen ──────────────────
+git log --oneline -10
+
+# ─── EXTRAS: Stash – Änderungen zwischenspeichern ───────────────────
+git stash                   # Aktuelle Änderungen beiseitelegen
+git stash list              # Alle Stashes anzeigen
+git stash pop               # Letzten Stash wiederherstellen
+git stash apply stash@{2}   # Bestimmten Stash anwenden</div>
+      </div>
+    </section>
+
+
+    <!-- ─── BRANCHING ────────────────────────────────────── -->
+    <section id="ch-branching" class="chapter">
+      <h1>Branching &amp; Merging</h1>
+      <p class="chapter-meta">Terminal · Parallele Entwicklung · Merge-Strategien</p>
+
+      <div class="chapter-body">
+        <p>
+          Branches sind das mächtigste Konzept von Git. Ein Branch ist technisch gesehen
+          nur ein 41-Byte großer Zeiger auf einen Commit – das Erstellen und Wechseln von
+          Branches kostet daher nahezu keine Zeit. Branches ermöglichen es, Features,
+          Bugfixes und Experimente vollständig voneinander isoliert zu entwickeln.
+        </p>
+
+        <div>
+          <h3>Branch-Befehle</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git branch</td><td>Alle lokalen Branches auflisten</td></tr>
+              <tr><td>git branch -a</td><td>Alle Branches (lokal + remote) auflisten</td></tr>
+              <tr><td>git branch &lt;name&gt;</td><td>Neuen Branch erstellen (aber nicht wechseln)</td></tr>
+              <tr><td>git checkout &lt;name&gt;</td><td>Zu einem Branch wechseln</td></tr>
+              <tr><td>git checkout -b &lt;name&gt;</td><td>Branch erstellen und sofort wechseln</td></tr>
+              <tr><td>git switch &lt;name&gt;</td><td>Modernere Alternative zu checkout (Git 2.23+)</td></tr>
+              <tr><td>git switch -c &lt;name&gt;</td><td>Branch erstellen und wechseln (Switch-Variante)</td></tr>
+              <tr><td>git branch -d &lt;name&gt;</td><td>Branch löschen (nur wenn gemergt)</td></tr>
+              <tr><td>git branch -D &lt;name&gt;</td><td>Branch löschen erzwingen</td></tr>
+              <tr><td>git push origin --delete &lt;name&gt;</td><td>Remote-Branch löschen</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3>Merge-Strategien</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Strategie</th><th>Befehl</th><th>Wann verwenden</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Fast-Forward</td><td>git merge &lt;branch&gt;</td><td>Kein Divergenz – Zeiger wird einfach vorgerückt. Sauberste Option.</td></tr>
+              <tr><td>Merge Commit</td><td>git merge --no-ff &lt;branch&gt;</td><td>Erzwingt einen Merge-Commit auch bei Fast-Forward. Bewahrt Branch-Struktur.</td></tr>
+              <tr><td>Squash Merge</td><td>git merge --squash</td><td>Alle Commits des Feature-Branches zu einem einzigen zusammenfassen.</td></tr>
+              <tr><td>Rebase</td><td>git rebase main</td><td>Feature-Branch-Commits auf die Spitze von main verschieben. Lineare Historie.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Branch-Namenskonventionen</h2>
+          <ul>
+            <li><code>main</code> oder <code>master</code> – Hauptbranch (stabiler, produktiver Code)</li>
+            <li><code>develop</code> – Integrationsbranch für Features (bei Git-Flow)</li>
+            <li><code>feature/login-seite</code> – Neue Funktionalität</li>
+            <li><code>bugfix/null-pointer-userservice</code> – Fehlerbehebung</li>
+            <li><code>hotfix/kritischer-sicherheitsfehler</code> – Dringender Fix auf Produktion</li>
+            <li><code>release/v1.2.0</code> – Release-Vorbereitung</li>
+          </ul>
+        </div>
+
+        <div class="tip-box">
+          <p>
+            <strong>Rebase vs. Merge:</strong> Rebase schreibt Commits-Hashes um und ist
+            daher nur für <em>lokale, noch nicht geteilte</em> Branches geeignet. Regel:
+            Niemals einen Branch rebasen, der bereits auf einem Remote liegt und von
+            anderen genutzt wird.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Feature-Branch Workflow</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── FEATURE-BRANCH WORKFLOW ────────────────────────────────────────
+
+# 1. Auf main aktualisieren
+git checkout main
+git pull origin main
+
+# 2. Neuen Feature-Branch erstellen
+git switch -c feature/benutzer-profil
+
+# 3. Entwickeln und committen
+git add .
+git commit -m "feat: Profilbild-Upload implementiert"
+git add .
+git commit -m "feat: Biografie-Feld hinzugefügt"
+
+# 4. Branch zu GitHub pushen (für Pull Request)
+git push -u origin feature/benutzer-profil
+
+# 5. Nach dem Merge auf GitHub: Remote-Branch aufräumen
+git checkout main
+git pull origin main           # Enthält jetzt den gemergten Feature-Branch
+git branch -d feature/benutzer-profil        # Lokalen Branch löschen
+git remote prune origin        # Gelöschte Remote-Branches aus lokalem Cache entfernen
+
+
+# ─── REBASE: Lineale Historie ───────────────────────────────────────
+
+# Szenario: main hat neue Commits, dein Feature-Branch hinkt hinterher
+git checkout feature/benutzer-profil
+git rebase main
+# Git hebt deine Commits auf, aktualisiert die Basis auf main,
+# und wendet deine Commits danach erneut an.
+
+# Falls Konflikte auftreten:
+# 1. Konflikte manuell lösen
+git add <gelöste-datei>
+git rebase --continue
+
+# Rebase abbrechen (zum ursprünglichen Zustand zurück)
+git rebase --abort</div>
+      </div>
+    </section>
+
+
+    <!-- ─── REMOTE ───────────────────────────────────────── -->
+    <section id="ch-remote" class="chapter">
+      <h1>Remote &amp; GitHub CLI</h1>
+      <p class="chapter-meta">Terminal · Remote-Verwaltung · gh CLI · Forks</p>
+
+      <div class="chapter-body">
+        <p>
+          Ein <strong>Remote</strong> ist eine Referenz auf ein Repository an einem anderen Ort
+          (typischerweise auf GitHub). Wenn du ein Repository klonst, wird automatisch ein
+          Remote namens <code>origin</code> angelegt. Du kannst mehrere Remotes haben –
+          sinnvoll z.B. beim Arbeiten mit Forks.
+        </p>
+
+        <div>
+          <h3>Remote-Befehle</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git remote -v</td><td>Alle konfigurierten Remotes mit URLs anzeigen</td></tr>
+              <tr><td>git remote add &lt;name&gt; &lt;url&gt;</td><td>Neuen Remote hinzufügen</td></tr>
+              <tr><td>git remote rename &lt;alt&gt; &lt;neu&gt;</td><td>Remote umbenennen</td></tr>
+              <tr><td>git remote remove &lt;name&gt;</td><td>Remote entfernen</td></tr>
+              <tr><td>git fetch &lt;remote&gt;</td><td>Alle Änderungen vom Remote laden, OHNE den lokalen Branch zu aktualisieren</td></tr>
+              <tr><td>git fetch --all</td><td>Von allen Remotes gleichzeitig fetchen</td></tr>
+              <tr><td>git pull</td><td>fetch + merge in einem Schritt</td></tr>
+              <tr><td>git pull --rebase</td><td>fetch + rebase statt merge</td></tr>
+              <tr><td>git push &lt;remote&gt; &lt;branch&gt;</td><td>Branch zum Remote pushen</td></tr>
+              <tr><td>git push -f</td><td>Force-Push (Vorsicht! Überschreibt Remote-Histoire)</td></tr>
+              <tr><td>git push --force-with-lease</td><td>Sichererer Force-Push: schlägt fehl, wenn jemand anderes gepusht hat</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>GitHub CLI (gh)</h2>
+          <p>
+            Die <strong>GitHub CLI</strong> (<code>gh</code>) erlaubt es, GitHub-Funktionen
+            direkt vom Terminal aus zu nutzen: Pull Requests erstellen, Issues anlegen,
+            Repositories forken – ohne den Browser öffnen zu müssen. Installation via
+            <code>brew install gh</code> (macOS), <code>sudo apt install gh</code> (Linux)
+            oder dem Windows-Installer.
+          </p>
+        </div>
+
+        <div>
+          <h2>Fork-Workflow</h2>
+          <p>
+            Ein Fork ist eine persönliche Kopie eines fremden Repositories auf deinem
+            GitHub-Account. Du forkt, um zu einem Projekt beizutragen, zu dem du keine
+            direkten Push-Rechte hast. Änderungen werden via Pull Request an das
+            Original-Repository zurückgeschickt.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Remote-Verwaltung &amp; GitHub CLI</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── GITHUB CLI EINRICHTEN ──────────────────────────────────────────
+gh auth login          # Interaktiver Login (Browser oder Token)
+gh auth status         # Anmeldestatus prüfen
+
+# ─── REPOSITORIES ───────────────────────────────────────────────────
+gh repo create mein-projekt --public --clone    # Repo erstellen und klonen
+gh repo list                                    # Eigene Repos auflisten
+gh repo view                                    # Aktuelles Repo im Browser öffnen
+
+# ─── PULL REQUESTS ──────────────────────────────────────────────────
+gh pr create --title "Feature: Login" --body "Beschreibung..."
+gh pr list                                      # Offene PRs anzeigen
+gh pr checkout 42                               # PR #42 lokal auschecken
+gh pr merge 42 --squash                         # PR squash-mergen
+gh pr review 42 --approve                       # PR genehmigen
+
+# ─── ISSUES ─────────────────────────────────────────────────────────
+gh issue create --title "Bug: Crash on startup" --label "bug"
+gh issue list --label "bug"
+gh issue close 17
+
+# ─── FORK-WORKFLOW ──────────────────────────────────────────────────
+# 1. Repository forken (erstellt Kopie unter deinem Account)
+gh repo fork original-autor/projekt --clone
+
+# 2. Upstream (Original) als Remote hinzufügen
+git remote add upstream https://github.com/original-autor/projekt.git
+
+# 3. Vom Original aktuell bleiben
+git fetch upstream
+git checkout main
+git merge upstream/main
+
+# 4. Feature-Branch pushen und PR erstellen
+git push origin feature/mein-beitrag
+gh pr create --base original-autor/projekt:main</div>
+      </div>
+    </section>
+
+
+    <!-- ─── KONFLIKTE ────────────────────────────────────── -->
+    <section id="ch-konflikte" class="chapter">
+      <h1>Konflikte lösen</h1>
+      <p class="chapter-meta">Terminal · Merge-Konflikte · Strategien · Tools</p>
+
+      <div class="chapter-body">
+        <p>
+          Ein <strong>Merge-Konflikt</strong> entsteht, wenn zwei Branches dieselbe Stelle
+          in derselben Datei unterschiedlich geändert haben und Git nicht automatisch
+          entscheiden kann, welche Version die richtige ist. Konflikte sind normal – kein
+          Grund zur Panik. Git markiert die betroffenen Stellen, du löst sie manuell,
+          und der Merge wird abgeschlossen.
+        </p>
+
+        <div>
+          <h2>Wie sieht ein Konflikt aus?</h2>
+          <p>
+            Git fügt Konfliktmarker direkt in die Datei ein. Der Abschnitt zwischen
+            <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> und <code>=======</code> zeigt
+            die Version des aktuellen Branches. Der Abschnitt zwischen <code>=======</code>
+            und <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> zeigt die Version des eingehenden Branches.
+          </p>
+        </div>
+
+        <div>
+          <h2>Konflikte Schritt für Schritt lösen</h2>
+          <div class="step-list">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <strong>Konflikte identifizieren</strong>
+                <p><code>git status</code> zeigt alle Dateien mit dem Status "both modified"</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <strong>Datei öffnen und Marker verstehen</strong>
+                <p>Suche nach <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>. Lies beide Versionen.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <strong>Entscheidung treffen</strong>
+                <p>Behalte eine Version, die andere, oder kombiniere beide. Entferne alle Konfliktmarker.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <strong>Datei als gelöst markieren</strong>
+                <p><code>git add &lt;datei&gt;</code> – teilt Git mit, dass der Konflikt gelöst ist</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <strong>Merge abschließen</strong>
+                <p><code>git commit</code> – Git erstellt den Merge-Commit automatisch</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>Merge-Tools</h2>
+          <ul>
+            <li><strong>VS Code</strong> – Beste Wahl: zeigt Konflikte grafisch mit "Accept Current/Incoming/Both" Buttons</li>
+            <li><strong>git mergetool</strong> – Öffnet konfiguriertes Diff-Tool (vimdiff, meld, kdiff3)</li>
+            <li><strong>GitHub Web-Editor</strong> – Für einfache Konflikte direkt im Browser lösbar</li>
+          </ul>
+        </div>
+
+        <div class="tip-box">
+          <p>
+            <strong>Konflikte vermeiden:</strong> Regelmäßig pullen (<code>git pull --rebase</code>),
+            kurze Feature-Branches, klare Aufgabenteilung im Team. Wenige große Commits
+            führen zu mehr Konflikten als viele kleine, atomare Commits.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Konflikte lösen</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── KONFLIKTDATEI (wie sie aussieht) ───────────────────────────────
+# <<<<<<< HEAD             ← aktueller Branch (deine Änderungen)
+# const greeting = "Hallo Welt";
+# =======                  ← Trennlinie
+# const greeting = "Hello World";
+# >>>>>>> feature/i18n     ← eingehender Branch
+
+# ─── SCHRITT 1: Alle konflikthaften Dateien anzeigen ────────────────
+git status
+# Ausgabe zeigt: "both modified: src/app.js"
+
+# ─── SCHRITT 2: Datei manuell in VS Code öffnen und lösen ───────────
+code src/app.js
+# VS Code zeigt: [Accept Current Change] [Accept Incoming Change]
+#               [Accept Both Changes] [Compare Changes]
+
+# ─── SCHRITT 3: Nach dem Lösen stagen ───────────────────────────────
+git add src/app.js
+
+# ─── SCHRITT 4: Merge abschließen ───────────────────────────────────
+git commit
+# Git öffnet Editor mit vorausgefüllter Merge-Commit-Nachricht
+
+# ─── ABBRECHEN: Falls du aufgeben willst ────────────────────────────
+git merge --abort        # Merge abbrechen (zurück zum Zustand vorher)
+git rebase --abort       # Rebase abbrechen
+
+# ─── OURS/THEIRS: Automatisch eine Seite bevorzugen ─────────────────
+# Beim Merge: unsere Version für eine Datei nehmen
+git checkout --ours   src/app.js
+# Beim Merge: ihre Version nehmen
+git checkout --theirs src/app.js
+git add src/app.js</div>
+      </div>
+    </section>
+
+
+    <!-- ─── FORTGESCHRITTENE BEFEHLE ────────────────────── -->
+    <section id="ch-fortgeschritten" class="chapter">
+      <h1>Fortgeschrittene Befehle</h1>
+      <p class="chapter-meta">Terminal · Reset · Revert · Cherry-pick · Bisect · Worktree</p>
+
+      <div class="chapter-body">
+        <p>
+          Mit zunehmender Erfahrung werden Situationen auftreten, die über den
+          Standardworkflow hinausgehen: ein falscher Commit wurde gemacht, ein Fehler
+          soll aus der History entfernt werden, oder nur ein einzelner Commit aus einem
+          anderen Branch wird benötigt. Die folgenden Befehle geben dir die volle Kontrolle.
+        </p>
+
+        <div>
+          <h3>Änderungen rückgängig machen</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Was passiert</th><th>Historie</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git revert &lt;hash&gt;</td><td>Erstellt einen neuen Commit, der den alten rückgängig macht</td><td>Bleibt erhalten ✓</td></tr>
+              <tr><td>git reset --soft HEAD~1</td><td>Letzten Commit rückgängig, Änderungen bleiben gestagt</td><td>Wird geändert</td></tr>
+              <tr><td>git reset --mixed HEAD~1</td><td>Letzten Commit rückgängig, Änderungen bleiben unstaged</td><td>Wird geändert</td></tr>
+              <tr><td>git reset --hard HEAD~1</td><td>Letzten Commit + alle Änderungen unwiderruflich löschen</td><td>Wird gelöscht ⚠</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h3>Nützliche Befehle</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Befehl</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>git cherry-pick &lt;hash&gt;</td><td>Einen einzelnen Commit aus einem anderen Branch übernehmen</td></tr>
+              <tr><td>git bisect start</td><td>Binäre Suche nach dem Commit, der einen Bug eingeführt hat</td></tr>
+              <tr><td>git reflog</td><td>Alle Bewegungen von HEAD anzeigen – Rettungsanker wenn Commits "verloren" scheinen</td></tr>
+              <tr><td>git tag v1.0.0</td><td>Lightweight Tag für aktuellen Commit</td></tr>
+              <tr><td>git tag -a v1.0.0 -m "Release"</td><td>Annotierter Tag mit Nachricht</td></tr>
+              <tr><td>git push --tags</td><td>Alle Tags zum Remote pushen</td></tr>
+              <tr><td>git worktree add ../hotfix hotfix/xyz</td><td>Zweites Working Directory für anderen Branch – kein stash nötig</td></tr>
+              <tr><td>git shortlog -sn</td><td>Commits pro Autor (für Beitragsstatistiken)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="warn-box">
+          <p>
+            <strong>Vorsicht mit <code>git reset --hard</code> und <code>git push --force</code>:</strong>
+            Beide Befehle können Daten dauerhaft verlieren lassen. <code>git reset --hard</code>
+            niemals auf Commits anwenden, die bereits gepusht wurden. Stattdessen
+            <code>git revert</code> verwenden – das ist die sichere, kollaborationsfreundliche Alternative.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Fortgeschrittene Szenarien</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── REVERT: Sicher rückgängig machen ───────────────────────────────
+git log --oneline -5
+# a3f2c1b feat: Login-Formular
+# 8d4e9a2 feat: Registrierung       ← diesen rückgängig machen
+# 1c7b3d8 fix: Header-Bug
+
+git revert 8d4e9a2
+# Erstellt neuen Commit: "Revert feat: Registrierung"
+# Original-Commit bleibt in der Historie erhalten
+
+
+# ─── REFLOG: Verlorene Commits retten ───────────────────────────────
+git reflog
+# 03e4f1c HEAD@{0}: reset: moving to HEAD~3   ← nach falschem Reset
+# a3f2c1b HEAD@{1}: commit: mein wichtiger commit
+
+git reset --hard a3f2c1b  # Zum gewünschten Zustand zurückspringen
+
+
+# ─── CHERRY-PICK: Einzelnen Commit übernehmen ───────────────────────
+git checkout main
+git cherry-pick a3f2c1b   # Nur diesen einen Commit auf main anwenden
+
+
+# ─── BISECT: Bug-Commit finden ──────────────────────────────────────
+git bisect start
+git bisect bad             # Aktueller Commit hat den Bug
+git bisect good v1.0.0     # Dieser Tag war noch gut
+# Git checkt automatisch einen Commit in der Mitte aus
+# Testen, dann:
+git bisect good            # oder: git bisect bad
+# Wiederholen bis Git den Bug-Commit gefunden hat
+git bisect reset           # Beenden
+
+
+# ─── INTERAKTIVER REBASE: Commits aufräumen ─────────────────────────
+git rebase -i HEAD~4       # Letzte 4 Commits interaktiv bearbeiten
+# Im Editor: pick → squash (zusammenfassen), reword (umbenennen),
+#            drop (löschen), edit (Commit bearbeiten)</div>
+      </div>
+    </section>
+
+
+    <!-- ─── GITHUB DESKTOP INTRO ─────────────────────────── -->
+    <section id="ch-desktop-intro" class="chapter">
+      <h1>GitHub Desktop – Einführung</h1>
+      <p class="chapter-meta">GitHub Desktop · Installation · Oberfläche · Für wen?</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>GitHub Desktop</strong> ist eine kostenlose, von GitHub entwickelte
+          grafische Oberfläche (GUI) für Git. Sie richtet sich an Entwicklerinnen und
+          Entwickler, die eine visuelle Alternative zum Terminal bevorzugen – ohne dabei
+          auf professionellen Workflow verzichten zu müssen. GitHub Desktop ist auf
+          macOS und Windows verfügbar.
+        </p>
+
+        <div>
+          <h2>Für wen ist GitHub Desktop geeignet?</h2>
+          <ul>
+            <li>Einsteiger, die Git-Konzepte visuell verstehen wollen</li>
+            <li>Entwickler, die häufig zwischen vielen Branches wechseln</li>
+            <li>Teams, die Pull Requests schnell erstellen und reviewen</li>
+            <li>Alle, die Diffs und den Staging-Prozess visuell bevorzugen</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>Installation</h2>
+          <p>
+            Download unter <strong>desktop.github.com</strong>. Nach der Installation
+            meldet man sich mit dem GitHub-Konto an – SSH-Keys und Konfiguration werden
+            automatisch eingerichtet. Kein manuelles <code>git config</code> nötig.
+          </p>
+        </div>
+
+        <div>
+          <h3>Wichtige Bereiche der Oberfläche</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Bereich</th><th>Funktion</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Current Repository</td><td>Dropdown-Menü zum schnellen Wechsel zwischen Repositories</td></tr>
+              <tr><td>Current Branch</td><td>Aktueller Branch, Branch wechseln oder neu erstellen</td></tr>
+              <tr><td>Fetch / Pull / Push</td><td>Synchronisation mit GitHub – zeigt Anzahl ausstehender Commits</td></tr>
+              <tr><td>Changes Tab</td><td>Alle geänderten Dateien – Checkboxen zum Stagen, Diff-Ansicht rechts</td></tr>
+              <tr><td>History Tab</td><td>Vollständige Commit-Liste mit Diff für jeden Commit</td></tr>
+              <tr><td>Commit-Box</td><td>Summary (Pflicht) und Description (optional) eingeben, dann Commit</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Terminal oder Desktop?</h2>
+          <p>
+            GitHub Desktop und das Terminal schließen sich nicht aus – viele Entwickler
+            nutzen beide parallel. GitHub Desktop ist schnell für den Standardworkflow
+            (add, commit, push, PR erstellen). Das Terminal ist unverzichtbar für
+            fortgeschrittene Operationen (rebase, bisect, reflog, cherry-pick). Es empfiehlt
+            sich, beide zu kennen.
+          </p>
+        </div>
+
+        <div class="info-box">
+          <p>
+            GitHub Desktop speichert alle Repositories in einer Liste und ermöglicht es,
+            per Tastenkürzel <strong>Strg/Cmd+K</strong> schnell zwischen ihnen zu wechseln.
+            Über <em>Repository → Open in Terminal</em> wechselst du jederzeit ins Terminal
+            mit bereits gesetztem Repository-Pfad.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">GitHub Desktop – häufige Aktionen (Tastenkürzel)</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># GitHub Desktop Tastenkürzel (macOS / Windows)
+
+# Navigation
+Cmd/Ctrl + 1           # Changes-Tab
+Cmd/Ctrl + 2           # History-Tab
+Cmd/Ctrl + B           # Branch-Auswahl öffnen
+Cmd/Ctrl + K           # Repository-Auswahl öffnen (schneller Wechsel)
+Cmd/Ctrl + Shift + G   # Im Terminal öffnen
+Cmd/Ctrl + Shift + F   # Im Finder/Explorer öffnen
+
+# Git-Aktionen
+Cmd/Ctrl + Enter       # Commit erstellen (wenn Summary ausgefüllt)
+Cmd/Ctrl + P           # Push / Fetch / Pull
+Cmd/Ctrl + Shift + N   # Neues Repository erstellen
+Cmd/Ctrl + O           # Lokales Repository öffnen
+Cmd/Ctrl + Shift + O   # Repository von GitHub klonen
+
+# Tipp: In den Preferences (Cmd/Ctrl + ,) kannst du den
+# externen Editor (VS Code) und die Shell (Terminal, Git Bash)
+# konfigurieren, die Desktop beim Öffnen verwendet.      </div>
+    </section>
+
+
+    <!-- ─── DESKTOP WORKFLOW ─────────────────────────────── -->
+    <section id="ch-desktop-workflow" class="chapter">
+      <h1>Workflow mit GitHub Desktop</h1>
+      <p class="chapter-meta">GitHub Desktop · Branch · Commit · Pull Request · Konflikte</p>
+
+      <div class="chapter-body">
+        <p>
+          GitHub Desktop deckt den kompletten täglichen Workflow visuell ab.
+          Folgend ist der empfohlene Ablauf für ein Feature von Anfang bis zum
+          gemergten Pull Request – ohne eine einzige Zeile Terminal.
+        </p>
+
+        <div>
+          <h2>Feature-Workflow komplett in GitHub Desktop</h2>
+          <div class="step-list">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <strong>Repository aktualisieren</strong>
+                <p>Oben rechts auf <em>Fetch origin</em> klicken. Falls neue Commits vorliegen: <em>Pull origin</em>.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <strong>Neuen Branch erstellen</strong>
+                <p><em>Current Branch → New Branch</em>. Name nach Konvention: <code>feature/mein-feature</code>.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <strong>Änderungen vornehmen</strong>
+                <p>In VS Code oder einem anderen Editor arbeiten. Geänderte Dateien erscheinen automatisch im Changes-Tab.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <strong>Dateien selektiv stagen</strong>
+                <p>Checkboxen neben den Dateien: aktiviert = wird gestagt. Per Rechtsklick auf einzelne Zeilen im Diff können sogar einzelne Zeilen gestagt werden.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <strong>Commit erstellen</strong>
+                <p>Summary (Pflicht, max. 72 Zeichen) und optionale Description eingeben. <em>Commit to feature/...</em> klicken.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">6</div>
+              <div class="step-body">
+                <strong>Branch pushen &amp; Pull Request erstellen</strong>
+                <p><em>Publish branch</em> (erster Push) → danach erscheint <em>Create Pull Request</em>, das direkt zu GitHub führt.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">7</div>
+              <div class="step-body">
+                <strong>Konflikte in Desktop lösen</strong>
+                <p>Bei Konflikten zeigt Desktop welche Dateien betroffen sind und bietet an, sie in VS Code oder dem integrierten Editor zu öffnen.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>Diff-Ansicht verstehen</h2>
+          <p>
+            Im Changes-Tab zeigt GitHub Desktop den Diff jeder geänderten Datei. Rote Zeilen
+            wurden entfernt, grüne Zeilen wurden hinzugefügt. Mit der <em>Split</em>-Ansicht
+            (Schalter rechts oben im Diff) können alte und neue Version nebeneinander
+            verglichen werden.
+          </p>
+        </div>
+
+        <div class="tip-box">
+          <p>
+            <strong>Undone:</strong> Mit <em>Cmd/Ctrl+Z</em> kann der letzte Commit
+            direkt rückgängig gemacht werden – solange er noch nicht gepusht wurde.
+            GitHub Desktop hält alle letzten Commits als undoable bereit.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Typischer Desktop-Workflow</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># GitHub Desktop: Workflow-Äquivalente als Terminal-Befehle
+
+# Desktop: "Fetch origin" / "Pull origin"
+git fetch origin
+git pull origin main
+
+# Desktop: "New Branch" → feature/mein-feature
+git switch -c feature/mein-feature
+
+# Desktop: Checkboxen in Changes Tab = git add
+git add src/index.html
+git add src/style.css
+# (oder git add -p für zeilenweises Stagen)
+
+# Desktop: Summary + "Commit to branch"
+git commit -m "feat: Startseite gestaltet"
+
+# Desktop: "Publish Branch"
+git push -u origin feature/mein-feature
+
+# Desktop: "Create Pull Request" → öffnet github.com/repo/compare/feature/...
+gh pr create --title "feat: Startseite" --body "Erster Entwurf der Startseite"
+
+# Desktop: Branch nach Merge aufräumen
+git checkout main
+git pull origin main
+git branch -d feature/mein-feature</div>
+      </div>
+    </section>
+
+
+    <!-- ─── VSC EXTENSIONS ───────────────────────────────── -->
+    <section id="ch-vsc-extensions" class="chapter">
+      <h1>VS Code Extensions</h1>
+      <p class="chapter-meta">VS Code · Git-Integration · Empfohlene Extensions</p>
+
+      <div class="chapter-body">
+        <p>
+          Visual Studio Code hat eine eingebaute Git-Integration (<em>Source Control</em>-Tab,
+          Tastenkürzel <strong>Strg/Cmd+Shift+G</strong>), die für den Basisbedarf bereits
+          ausreicht. Durch Extensions wird VSC zu einer vollwertigen GitHub-Arbeitsumgebung.
+        </p>
+
+        <div>
+          <h3>Essentielle Git-Extensions</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Extension</th><th>ID</th><th>Beschreibung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>GitLens</td><td>eamodio.gitlens</td><td>Die mächtigste Git-Extension: Inline Blame, History Explorer, interaktiver Rebase, Code-Flow-Visualisierung. Unverzichtbar.</td></tr>
+              <tr><td>GitHub Pull Requests</td><td>github.vscode-pull-request-github</td><td>Pull Requests direkt in VSC erstellen, reviewen und mergen. Kommentare inline im Code.</td></tr>
+              <tr><td>Git Graph</td><td>mhutchie.git-graph</td><td>Visuelle, interaktive Darstellung des Branch-Graphen. Branch erstellen, mergen, rebasen per Klick.</td></tr>
+              <tr><td>Git History</td><td>donjayamanne.githistory</td><td>Commit-Historie, Dateihistorie, Diff zwischen Commits.</td></tr>
+              <tr><td>GitHub Copilot</td><td>github.copilot</td><td>KI-Codevervollständigung. Schlägt ganze Zeilen und Funktionen vor (kostenpflichtig).</td></tr>
+              <tr><td>GitHub Copilot Chat</td><td>github.copilot-chat</td><td>Chat-Interface für Copilot: Code erklären, refactoren, debuggen lassen.</td></tr>
+              <tr><td>GitHub Actions</td><td>github.vscode-github-actions</td><td>YAML-Workflows mit Syntax-Highlighting, Validierung und direktem Trigger.</td></tr>
+              <tr><td>Remote Repositories</td><td>github.remotehub</td><td>GitHub-Repositories direkt in VSC öffnen – ohne lokales Klonen.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>GitLens im Detail</h2>
+          <p>
+            GitLens erweitert VSC's eingebaute Git-Funktionen erheblich. Direkt im Editor
+            werden Blame-Informationen inline angezeigt: wer hat diese Zeile wann und in
+            welchem Commit geändert? Mit einem Klick öffnet sich der vollständige Commit.
+            Im GitLens Sidebar-Panel gibt es Repository-Übersichten, Stash-Management,
+            interaktive Rebase-Ansichten und einen umfangreichen History-Explorer.
+          </p>
+        </div>
+
+        <div>
+          <h2>Extensions installieren</h2>
+          <p>
+            Extensions lassen sich über den <em>Extensions Marketplace</em> (Strg/Cmd+Shift+X)
+            oder per Kommandozeile mit dem <code>code --install-extension</code>-Befehl
+            installieren. Für Team-Projekte empfiehlt sich eine
+            <code>.vscode/extensions.json</code>-Datei im Repository, die allen Teammitgliedern
+            die gleichen Extensions empfiehlt.
+          </p>
+        </div>
+
+        <div class="info-box">
+          <p>
+            Mit <em>Settings Sync</em> (in VSC eingebaut) werden alle Extensions, Einstellungen
+            und Tastenkürzel über mehrere Geräte hinweg synchronisiert –
+            angemeldet mit dem GitHub-Konto.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Extensions per CLI installieren &amp; Projekt-Empfehlungen</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── EXTENSIONS PER BEFEHLSZEILE INSTALLIEREN ──────────────────────
+code --install-extension eamodio.gitlens
+code --install-extension github.vscode-pull-request-github
+code --install-extension mhutchie.git-graph
+code --install-extension donjayamanne.githistory
+code --install-extension github.copilot
+code --install-extension github.copilot-chat
+code --install-extension github.vscode-github-actions
+
+# ─── ALLE INSTALLIERTEN EXTENSIONS AUFLISTEN ────────────────────────
+code --list-extensions
+
+# ─── .vscode/extensions.json (Empfehlungen für das Team) ────────────
+# Diese Datei im Repository ablegen → VSC fragt andere Nutzer,
+# ob sie die empfohlenen Extensions installieren möchten.
+
+cat > .vscode/extensions.json << 'EOF'
+{
+  "recommendations": [
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    "mhutchie.git-graph",
+    "github.copilot",
+    "github.copilot-chat",
+    "github.vscode-github-actions"
+  ]
+}
+EOF</div>
+      </div>
+    </section>
+
+
+    <!-- ─── VSC WORKFLOW ─────────────────────────────────── -->
+    <section id="ch-vsc-workflow" class="chapter">
+      <h1>Git-Workflow in VS Code</h1>
+      <p class="chapter-meta">VS Code · Source Control · Inline Diff · Merge Editor</p>
+
+      <div class="chapter-body">
+        <p>
+          VS Code's eingebauter Source Control-Tab bietet alle Grundfunktionen von Git
+          ohne zusätzliche Extensions: Staging, Commit, Push, Pull, Branch-Wechsel und
+          Merge-Konfliktlösung. Der Workflow ist vollständig in die IDE integriert –
+          kein Kontextwechsel zum Terminal notwendig.
+        </p>
+
+        <div>
+          <h3>Tastenkürzel im Source Control Tab</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Tastenkürzel</th><th>Aktion</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Strg/Cmd+Shift+G</td><td>Source Control Tab öffnen</td></tr>
+              <tr><td>Strg/Cmd+Enter</td><td>Commit erstellen (im Source Control Tab)</td></tr>
+              <tr><td>Strg/Cmd+Shift+P → "Git: "  </td><td>Alle Git-Befehle über Command Palette</td></tr>
+              <tr><td>Klick auf Datei im Diff</td><td>Inline-Diff der Änderungen öffnen</td></tr>
+              <tr><td>+ neben Datei</td><td>Einzelne Datei stagen</td></tr>
+              <tr><td>+ neben "Changes"</td><td>Alle Änderungen stagen</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Merge-Konflikte in VS Code lösen</h2>
+          <p>
+            VS Code bietet seit Version 1.69 einen dedizierten <strong>3-Wege-Merge-Editor</strong>.
+            Er zeigt die aktuelle Version (oben links), die eingehende Version (oben rechts)
+            und das Ergebnis (unten). Per Klick auf <em>Accept Current</em>,
+            <em>Accept Incoming</em> oder <em>Accept Both</em> werden Konflikte interaktiv gelöst.
+          </p>
+        </div>
+
+        <div>
+          <h2>Pull Requests in VSC (GitHub Extension)</h2>
+          <p>
+            Mit der <em>GitHub Pull Requests</em>-Extension erscheint ein neues Panel in der
+            Sidebar. Dort können Pull Requests durchsucht, geöffnet, kommentiert und gemergt
+            werden – alles ohne Browser. Review-Kommentare werden direkt im Code als
+            Inline-Notizen angezeigt.
+          </p>
+        </div>
+
+        <div>
+          <h2>Nützliche VSC-Einstellungen für Git</h2>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">VS Code settings.json für Git optimieren</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── settings.json: Git-relevante Einstellungen ─────────────────────
+# Datei öffnen: Cmd/Ctrl+Shift+P → "Open User Settings (JSON)"
+
+{
+  // Auto-Fetch alle 3 Minuten
+  "git.autofetch": true,
+  "git.autofetchPeriod": 180,
+
+  // Bestätigung vor Sync (push/pull) anzeigen
+  "git.confirmSync": false,
+
+  // Branch-Konfiguration beim ersten Push automatisch setzen
+  "git.publishBranch": "always",
+
+  // Eingebauten Merge-Editor aktivieren
+  "git.mergeEditor": true,
+
+  // Staged Änderungen immer zuerst anzeigen
+  "scm.defaultViewMode": "tree",
+
+  // Terminal-Integration: git im integrierten Terminal
+  "terminal.integrated.defaultProfile.osx": "zsh",
+
+  // VS Code als Standard-Diff-Tool für git difftool
+  // → git config --global diff.tool vscode
+  // → git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+
+  // GitLens: Inline-Blame immer aktiviert
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.blame.dateFormat": "DD.MM.YYYY"
+}      </div>
+    </section>
+
+
+    <!-- ─── VSC COPILOT ──────────────────────────────────── -->
+    <section id="ch-vsc-copilot" class="chapter">
+      <h1>GitHub Copilot in VS Code</h1>
+      <p class="chapter-meta">VS Code · KI-Assistenz · Copilot Chat · Produktivität</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>GitHub Copilot</strong> ist ein KI-gestützter Coding-Assistent, der
+          auf Basis von OpenAIs Codex-Modell trainiert wurde. Er schlägt dir in Echtzeit
+          ganze Zeilen, Funktionen oder Klassen vor – du nimmst einen Vorschlag mit
+          <code>Tab</code> an oder ignorierst ihn einfach. <strong>Copilot Chat</strong>
+          erlaubt darüber hinaus natürlichsprachige Konversationen direkt in VSC.
+        </p>
+
+        <div>
+          <h2>Voraussetzungen</h2>
+          <ul>
+            <li>GitHub-Konto mit aktivem Copilot-Abo (Individual ab $10/Monat, kostenlos für Studenten via GitHub Education)</li>
+            <li>VS Code mit den Extensions <code>github.copilot</code> und <code>github.copilot-chat</code></li>
+            <li>In VSC anmelden: Strg/Cmd+Shift+P → <em>GitHub Copilot: Sign in</em></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Copilot Tastenkürzel</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Tastenkürzel</th><th>Aktion</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Tab</td><td>Vorschlag annehmen</td></tr>
+              <tr><td>Esc</td><td>Vorschlag ablehnen</td></tr>
+              <tr><td>Alt+]  /  Alt+[</td><td>Nächsten / vorherigen Vorschlag anzeigen</td></tr>
+              <tr><td>Strg/Cmd+Enter</td><td>Copilot-Panel öffnen (mehrere Vorschläge gleichzeitig)</td></tr>
+              <tr><td>Strg/Cmd+I</td><td>Copilot inline Chat öffnen (im Editor)</td></tr>
+              <tr><td>Strg/Cmd+Shift+I</td><td>Copilot Chat Sidebar öffnen</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Copilot Chat – nützliche Prompts</h2>
+          <ul>
+            <li><code>/explain</code> – Markierten Code erklären lassen</li>
+            <li><code>/fix</code> – Fehler im markierten Code automatisch beheben</li>
+            <li><code>/tests</code> – Unit-Tests für markierten Code generieren</li>
+            <li><code>/doc</code> – Dokumentation (JSDoc, Docstring) hinzufügen</li>
+            <li><code>@workspace</code> – Fragen über das gesamte Projekt stellen</li>
+            <li><code>@terminal</code> – Terminal-Befehle vorschlagen lassen</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>GitHub Copilot für Git-Workflows</h2>
+          <p>
+            Copilot hilft auch direkt beim Git-Workflow: Im integrierten Terminal
+            schlägt er passende <code>git</code>-Befehle vor. In der Commit-Message-Eingabe
+            kann Copilot automatisch eine sinnvolle Commit-Nachricht basierend auf den
+            gestagten Änderungen generieren (via Source Control Panel → Sternchen-Icon).
+          </p>
+        </div>
+
+        <div class="info-box">
+          <p>
+            <strong>Studenten:</strong> GitHub bietet über das <em>GitHub Student Developer Pack</em>
+            kostenlosen Zugang zu Copilot, GitHub Pro und vielen weiteren Tools. Registrierung
+            unter education.github.com mit einer verifizierten Hochschul-E-Mail-Adresse.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Copilot – Beispiel-Interaktionen</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── COPILOT IN DER PRAXIS ──────────────────────────────────────────
+
+# 1. Copilot schlägt Commit-Message vor:
+#    Source Control Tab → Stift-Icon neben "Message"-Feld → Copilot-Icon
+#    Generiert z.B.: "feat: add user authentication with JWT tokens"
+
+# 2. Copilot Chat im Terminal (Strg+Shift+I):
+#    "Wie setze ich upstream für meinen Branch?"
+#    → git push --set-upstream origin feature/mein-branch
+
+# 3. Copilot Inline (Strg+I) auf markiertem Code:
+#    "Refaktoriere diese Funktion mit async/await"
+#    Copilot zeigt Vorschau, du akzeptierst oder lehnst ab
+
+# 4. @workspace-Kontext:
+#    "@workspace Erkläre mir die Ordnerstruktur dieses Projekts"
+#    "@workspace Wo wird die Datenbankverbindung konfiguriert?"
+
+# 5. /tests für markierten Code:
+#    Markiere eine Funktion → Strg+I → /tests
+#    Copilot generiert Jest/Pytest/JUnit-Tests automatisch</div>
+      </div>
+    </section>
+
+
+    <!-- ─── GITHUB PAGES INTRO ───────────────────────────── -->
+    <section id="ch-pages-intro" class="chapter">
+      <h1>Was sind GitHub Pages?</h1>
+      <p class="chapter-meta">GitHub Pages · Statische Websites · Hosting</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>GitHub Pages</strong> ist ein kostenloses Hosting-Angebot von GitHub
+          für <em>statische Websites</em> – also Seiten, die aus HTML, CSS und JavaScript
+          bestehen, ohne serverseitige Verarbeitung. Du committed deine Website-Dateien
+          in ein GitHub-Repository und GitHub stellt sie automatisch unter einer öffentlichen
+          URL bereit.
+        </p>
+
+        <div>
+          <h2>Anwendungsfälle</h2>
+          <ul>
+            <li><strong>Persönliches Portfolio</strong> – Projekte, Lebenslauf und Kontakt</li>
+            <li><strong>Projektdokumentation</strong> – README erweitern zu einer vollständigen Doku-Site</li>
+            <li><strong>Kurs-Webseiten</strong> – Genau wie diese Seite hier</li>
+            <li><strong>Blogs</strong> – Mit Jekyll oder Hugo als Static Site Generator</li>
+            <li><strong>Prototypen &amp; Demos</strong> – Frontend-Projekte schnell veröffentlichen</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>GitHub Pages Eckdaten</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Eigenschaft</th><th>Details</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Preis</td><td>Kostenlos für öffentliche Repositories (auch in privaten Repos mit GitHub Pro/Team)</td></tr>
+              <tr><td>URL (Nutzerpages)</td><td><code>https://nutzername.github.io</code></td></tr>
+              <tr><td>URL (Projektpages)</td><td><code>https://nutzername.github.io/repo-name</code></td></tr>
+              <tr><td>Custom Domain</td><td>Eigene Domain konfigurierbar (CNAME-Datei + DNS-Eintrag)</td></tr>
+              <tr><td>HTTPS</td><td>Automatisch via Let's Encrypt</td></tr>
+              <tr><td>Speicherlimit</td><td>1 GB pro Repository empfohlen</td></tr>
+              <tr><td>Bandbreite</td><td>100 GB/Monat (Soft Limit)</td></tr>
+              <tr><td>Build-System</td><td>Jekyll (eingebaut) oder beliebig via GitHub Actions</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Typen von GitHub Pages</h2>
+          <ul>
+            <li><strong>User/Organization Pages</strong> – Repository muss <code>nutzername.github.io</code> heißen. Wird unter <code>https://nutzername.github.io</code> erreichbar.</li>
+            <li><strong>Project Pages</strong> – Beliebiger Repository-Name. Wird unter <code>https://nutzername.github.io/repo-name</code> erreichbar. Das ist der häufigste Fall.</li>
+          </ul>
+        </div>
+
+        <div class="pages-banner">
+          <h2>Diese Seite auf GitHub Pages</h2>
+          <p>
+            Diese Kurseite ist eine vollständige statische HTML-Datei – ein ideales
+            Beispiel für GitHub Pages. Einfach <code>index.html</code> in ein Repository
+            einchecken, Pages aktivieren, und sie ist öffentlich erreichbar.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">GitHub Pages – Überblick</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── GITHUB PAGES STRUKTUR ──────────────────────────────────────────
+
+# Option 1: Root (/) → index.html liegt im Wurzelverzeichnis des Branches
+mein-projekt/
+├── index.html        ← Wird als Startseite ausgeliefert
+├── style.css
+├── script.js
+└── assets/
+    └── bild.png
+
+# Option 2: /docs Ordner → nützlich für Dokumentation neben Code
+mein-projekt/
+├── src/              ← Quellcode
+├── docs/
+│   ├── index.html    ← GitHub Pages Wurzel
+│   └── ...
+└── README.md
+
+# Option 3: Dedizierter gh-pages Branch (klassisch, heute weniger nötig)
+# GitHub Actions baut und pusht automatisch in diesen Branch
+
+# ─── CUSTOM DOMAIN EINRICHTEN ───────────────────────────────────────
+# 1. CNAME-Datei im Wurzelverzeichnis erstellen:
+echo "www.meinedomain.de" > CNAME
+git add CNAME
+git commit -m "chore: custom domain hinzugefügt"
+git push
+
+# 2. Bei deinem DNS-Anbieter:
+#    CNAME www → nutzername.github.io
+#    A-Records für Apex-Domain:
+#    185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153</div>
+      </div>
+    </section>
+
+
+    <!-- ─── GITHUB PAGES DEPLOY ──────────────────────────── -->
+    <section id="ch-pages-deploy" class="chapter">
+      <h1>Deployment – Schritt für Schritt</h1>
+      <p class="chapter-meta">GitHub Pages · Manuell aktivieren · Diese Seite deployen</p>
+
+      <div class="chapter-body">
+        <p>
+          Das Deployment auf GitHub Pages ist in wenigen Schritten abgeschlossen.
+          Sobald Pages aktiviert ist, veröffentlicht GitHub jede Änderung am
+          konfigurierten Branch automatisch – ohne weiteres Zutun.
+        </p>
+
+        <div>
+          <h2>Schritt-für-Schritt: Diese Seite deployen</h2>
+          <div class="step-list">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <strong>Repository erstellen</strong>
+                <p>Auf github.com: <em>New Repository</em>. Name wählen (z.B. <code>github-kurs</code>). Öffentlich setzen.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <strong>HTML-Datei hinzufügen</strong>
+                <p>Die <code>index.html</code> dieser Kurseite ins Wurzelverzeichnis des Repositories legen und pushen.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <strong>GitHub Pages aktivieren</strong>
+                <p>Repository → <em>Settings</em> → <em>Pages</em> → Source: <em>Deploy from a branch</em> → Branch: <code>main</code>, Ordner: <code>/ (root)</code> → <em>Save</em>.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <strong>Warten und URL aufrufen</strong>
+                <p>GitHub deployt innerhalb von ca. 30–60 Sekunden. Die URL erscheint unter Settings → Pages: <code>https://nutzername.github.io/github-kurs</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <strong>Zukünftige Updates</strong>
+                <p>Jeder Push zu <code>main</code> löst automatisch ein Re-Deployment aus. Keine weitere Konfiguration nötig.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>Deployment-Status prüfen</h2>
+          <p>
+            Den Status des laufenden Deployments siehst du unter
+            <em>Repository → Actions → pages build and deployment</em>.
+            Grüner Haken: erfolgreich. Rotes X: Fehler (Klick auf den Job für Details).
+          </p>
+        </div>
+
+        <div class="warn-box">
+          <p>
+            <strong>Wichtig:</strong> GitHub Pages ist für <em>öffentlich zugängliche</em>,
+            statische Inhalte gedacht. Keine Passwörter, API-Keys, private Daten oder
+            serverseitige Logik. Sensible Daten gehören in Umgebungsvariablen auf einem
+            echten Server, nicht in ein öffentliches Repository.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">Terminal-Deployment: Von Null zur veröffentlichten Seite</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="bash"># ─── KOMPLETTER DEPLOYMENT-PROZESS VOM TERMINAL ─────────────────────
+
+# 1. Lokales Verzeichnis erstellen und initialisieren
+mkdir github-kurs && cd github-kurs
+git init
+git branch -M main
+
+# 2. index.html hinzufügen (oder kopieren)
+cp /pfad/zur/github-kurs.html index.html
+
+# 3. Committen
+git add index.html
+git commit -m "feat: GitHub-Kurs Webseite initial"
+
+# 4. Repository auf GitHub erstellen und verknüpfen
+gh repo create github-kurs --public --source=. --push
+# Alternativ ohne gh CLI:
+# git remote add origin https://github.com/DEINNAME/github-kurs.git
+# git push -u origin main
+
+# 5. GitHub Pages über API aktivieren (via gh CLI)
+gh api \
+  --method POST \
+  -H "Accept: application/vnd.github+json" \
+  /repos/DEINNAME/github-kurs/pages \
+  -f "source[branch]=main" \
+  -f "source[path]=/"
+
+# 6. Deployment-Status prüfen
+gh run list --repo DEINNAME/github-kurs
+
+# 7. URL aufrufen
+# https://DEINNAME.github.io/github-kurs
+
+# ─── UPDATES DEPLOYEN ───────────────────────────────────────────────
+# Einfach ändern, committen und pushen – Pages aktualisiert automatisch
+git add index.html
+git commit -m "docs: Kapitel zu Konflikten ergänzt"
+git push
+# Deployment läuft automatisch an (~30-60 Sek.)</div>
+      </div>
+    </section>
+
+
+    <!-- ─── GITHUB ACTIONS ───────────────────────────────── -->
+    <section id="ch-pages-actions" class="chapter">
+      <h1>Automatisierung mit GitHub Actions</h1>
+      <p class="chapter-meta">GitHub Actions · CI/CD · YAML Workflows · Pages automatisch bauen</p>
+
+      <div class="chapter-body">
+        <p>
+          <strong>GitHub Actions</strong> ist Githubs integriertes CI/CD-System.
+          Workflows werden als YAML-Dateien im Verzeichnis <code>.github/workflows/</code>
+          definiert und durch Events ausgelöst: ein Push, ein Pull Request, ein Schedule
+          (Cronjob) oder manuell. Actions können Tests ausführen, Builds erstellen,
+          Code linten und Websites auf GitHub Pages deployen.
+        </p>
+
+        <div>
+          <h3>Aufbau eines Workflows</h3>
+          <table class="complexity-table">
+            <thead>
+              <tr><th>Element</th><th>Bedeutung</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>name</td><td>Anzeigename des Workflows in der Actions-UI</td></tr>
+              <tr><td>on</td><td>Trigger-Events: push, pull_request, schedule, workflow_dispatch</td></tr>
+              <tr><td>jobs</td><td>Parallele oder sequentielle Ausführungseinheiten</td></tr>
+              <tr><td>runs-on</td><td>Laufzeitumgebung: ubuntu-latest, macos-latest, windows-latest</td></tr>
+              <tr><td>steps</td><td>Einzelne Befehle oder Actions innerhalb eines Jobs</td></tr>
+              <tr><td>uses</td><td>Vorgefertigte Action aus dem Marketplace verwenden</td></tr>
+              <tr><td>run</td><td>Shell-Befehl direkt ausführen</td></tr>
+              <tr><td>env</td><td>Umgebungsvariablen für einen Step oder Job</td></tr>
+              <tr><td>secrets</td><td>Verschlüsselte Werte (API-Keys etc.) aus Repository-Einstellungen</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2>Nützliche Actions aus dem Marketplace</h2>
+          <ul>
+            <li><code>actions/checkout@v4</code> – Repository auschecken (fast immer erster Step)</li>
+            <li><code>actions/setup-node@v4</code> – Node.js-Version installieren</li>
+            <li><code>actions/setup-python@v5</code> – Python-Version installieren</li>
+            <li><code>actions/upload-pages-artifact@v3</code> – Build-Ergebnis für Pages vorbereiten</li>
+            <li><code>actions/deploy-pages@v4</code> – Auf GitHub Pages deployen</li>
+            <li><code>actions/cache@v4</code> – Dependencies cachen (schnellere Builds)</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>Workflows für diese Kursseite</h2>
+          <p>
+            Da diese Kursseite eine einzelne, eigenständige HTML-Datei ist, braucht sie
+            keinen Build-Schritt. Der einfachste Ansatz ist das direkte Deployment aus
+            dem <code>main</code>-Branch. Für komplexere Projekte (z.B. mit einem
+            Build-Tool wie Vite oder einem Static Site Generator) wird stattdessen ein
+            zweistufiger Workflow genutzt: erst bauen, dann deployen.
+          </p>
+        </div>
+
+        <div class="info-box">
+          <p>
+            GitHub stellt pro Monat <strong>2000 kostenlose Actions-Minuten</strong> für
+            private Repositories zur Verfügung (Stand 2025). Für öffentliche Repositories
+            sind Actions vollständig kostenlos und unbegrenzt.
+          </p>
+        </div>
+      </div>
+
+      <p class="code-viewer-label">GitHub Actions Workflows</p>
+      <div class="code-viewer">
+        <div class="code-source" data-lang="YAML"># ─── .github/workflows/deploy.yml ───────────────────────────────────
+# Einfaches Deployment: HTML-Datei direkt von main auf GitHub Pages
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]         # Trigger: jeder Push auf main
+  workflow_dispatch:            # Manueller Trigger möglich
+
+# Berechtigungen für Pages-Deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Nur einen gleichzeitigen Deployment-Prozess erlauben
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Repository auschecken
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. GitHub Pages konfigurieren
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3. Artefakt hochladen (gesamtes Verzeichnis)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'              # Ganzes Repo deployen; oder: './docs'
+
+      # 4. Auf GitHub Pages deployen
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4</div>
+        <div class="code-source" data-lang="bash"># ─── .github/workflows/deploy-vite.yml ─────────────────────────────
+# Für Projekte mit Build-Tool (Vite, React, Vue, etc.)
+
+# name: Build & Deploy
+# on:
+#   push:
+#     branches: [ main ]
+#
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
+#
+#       - name: Install dependencies
+#         run: npm ci
+#
+#       - name: Build
+#         run: npm run build          # Erzeugt ./dist Ordner
+#
+#       - name: Upload artifact
+#         uses: actions/upload-pages-artifact@v3
+#         with:
+#           path: './dist'            # Nur Build-Ergebnis deployen
+#
+#       - name: Deploy
+#         uses: actions/deploy-pages@v4
+
+# ─── WORKFLOW MANUELL AUSLÖSEN ───────────────────────────────────────
+gh workflow run deploy.yml
+
+# ─── ALLE RUNS ANZEIGEN ─────────────────────────────────────────────
+gh run list --workflow=deploy.yml
+
+# ─── LOGS EINES RUNS LESEN ──────────────────────────────────────────
+gh run view --log</div>
+      </div>
+    </section>
+
+
+  </main><!-- /main -->
+</div><!-- /layout -->
+
+
+<script>
+  const LANG_TO_HLJS = {
+    bash:       'bash',
+    yaml:       'yaml',
+    json:       'json',
+    plaintext:  'plaintext',
+  };
+
+  async function fetchText(path) {
+    try {
+      const r = await fetch(path);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.text();
+    } catch {
+      return null;
+    }
+  }
+
+  function buildCodeViewer(viewerEl, chapterTitle) {
+    const sources = [...viewerEl.querySelectorAll('.code-source')];
+    if (!sources.length) return;
+
+    const langs = sources.map(s => s.dataset.lang);
+
+    const bar = document.createElement('div');
+    bar.className = 'code-viewer-bar';
+
+    const dotsHtml   = `<span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>`;
+    const titleHtml  = `<span class="viewer-title">${chapterTitle}</span>`;
+    const selectHtml = langs.length > 1
+      ? `<select class="lang-select">${langs.map(l => `<option value="${l}">${l}</option>`).join('')}</select>`
+      : `<span style="font-family:var(--mono);font-size:.78rem;color:var(--muted);padding:4px 0">${langs[0]}</span>`;
+    const copyHtml   = `<button class="copy-btn">kopieren</button>`;
+
+    bar.innerHTML = dotsHtml + titleHtml + selectHtml + copyHtml;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    const pre  = document.createElement('pre');
+    const code = document.createElement('code');
+    code.className = 'hljs';
+    pre.appendChild(code);
+    wrap.appendChild(pre);
+
+    viewerEl.innerHTML = '';
+    viewerEl.appendChild(bar);
+    viewerEl.appendChild(wrap);
+    sources.forEach(s => viewerEl.appendChild(s));
+
+    const selectEl = bar.querySelector('.lang-select');
+    const titleEl  = bar.querySelector('.viewer-title');
+    const copyBtn  = bar.querySelector('.copy-btn');
+
+    async function loadLang(lang) {
+      const src = sources.find(s => s.dataset.lang === lang);
+      if (!src) return;
+
+      let text = src.dataset.file ? await fetchText(src.dataset.file) : null;
+      if (text === null) {
+        text = src.textContent.trim() || `// Kein Inhalt für ${lang} verfügbar.`;
+      }
+
+      const hljsLang = LANG_TO_HLJS[lang.toLowerCase()] ?? 'plaintext';
+      code.textContent = text;
+      code.className   = `hljs language-${hljsLang}`;
+      hljs.highlightElement(code);
+      if (titleEl) titleEl.textContent = `${chapterTitle} – ${lang}`;
+    }
+
+    if (selectEl) {
+      selectEl.addEventListener('change', () => loadLang(selectEl.value));
+    }
+
+    copyBtn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(code.innerText).catch(() => {});
+      copyBtn.textContent = '✓ kopiert';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'kopieren';
+        copyBtn.classList.remove('copied');
+      }, 1800);
+    });
+
+    viewerEl._loadLang  = loadLang;
+    viewerEl._firstLang = langs[0];
+    viewerEl._loaded    = false;
+  }
+
+  function activateViewers(chapterEl) {
+    chapterEl.querySelectorAll('.code-viewer').forEach(v => {
+      if (!v._loaded && v._loadLang) {
+        v._loaded = true;
+        v._loadLang(v._firstLang);
+      }
+    });
+  }
+
+  /* ── NAVIGATION ─────────────────────────────────────────────────── */
+  const navLinks = document.querySelectorAll('.nav-link[data-chapter]');
+  const chapters = document.querySelectorAll('.chapter');
+
+  function showChapter(id) {
+    chapters.forEach(ch => {
+      const active = ch.id === `ch-${id}`;
+      ch.classList.toggle('active', active);
+      if (active) activateViewers(ch);
+    });
+    navLinks.forEach(a => a.classList.toggle('active', a.dataset.chapter === id));
+    window.scrollTo(0, 0);
+  }
+
+  navLinks.forEach(a => a.addEventListener('click', () => showChapter(a.dataset.chapter)));
+
+  /* ── INIT ────────────────────────────────────────────────────────── */
+  document.querySelectorAll('.code-viewer').forEach(v => {
+    const ch    = v.closest('.chapter');
+    const title = ch ? ch.querySelector('h1').textContent : 'Code';
+    buildCodeViewer(v, title);
+  });
+
+  const activeChapter = document.querySelector('.chapter.active');
+  if (activeChapter) activateViewers(activeChapter);
+</script>
+    <script src="../../../feedback-widget.js" defer></script>
+</body>
+</html>

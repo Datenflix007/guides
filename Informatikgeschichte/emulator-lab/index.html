@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../../../media/favicon.png">
+    <title>Emulator-Lab - Informatikgeschichte</title>
+    <meta name="description" content="Interaktive Emulator-Sammlung fuer weitere Meilensteine der Informatikgeschichte." />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/history-lab-ui.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="../../../informatikgeschichte.html">Informatikgeschichte</a>
+        <nav>
+            <a href="../../../informatikgeschichte.html#zeitstrahl">Zeitstrahl</a>
+            <a href="../z3-emulator/index.html">Z3</a>
+            <a href="../eniac-emulator/index.html">ENIAC</a>
+            <a href="../../../projekte.html">Projekte</a>
+        </nav>
+    </header>
+
+    <main class="app-shell">
+        <section class="intro-panel" aria-label="Emulator-Lab">
+            <div>
+                <p class="eyebrow" id="periodLabel">Informatikgeschichte</p>
+                <h1 id="pageTitle">Emulator-Lab</h1>
+                <p id="introText">
+                    Weitere Meilensteine des Zeitstrahls sind hier als echte, kleine Emulatoren umgesetzt:
+                    Schrittmodus, Zustand, Ausgabe und historisch vorsichtige Modellierung.
+                </p>
+                <div class="intro-links">
+                    <a href="../../../informatikgeschichte.html#zeitstrahl">Zurueck zum Zeitstrahl</a>
+                    <a href="#quellenarbeit">Einordnung lesen</a>
+                </div>
+            </div>
+            <div class="machine-visual" aria-hidden="true">
+                <div class="mini-node">INPUT</div>
+                <div class="mini-node active">STEP</div>
+                <div class="mini-node">STATE</div>
+                <div class="mini-node">OUTPUT</div>
+            </div>
+        </section>
+
+        <section class="workspace" aria-label="Emulator Arbeitsbereich">
+            <section class="panel editor-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Emulator</p>
+                        <h2>Programm oder Eingabe</h2>
+                    </div>
+                    <select id="emulatorSelect" aria-label="Emulator auswaehlen">
+                        <option value="hollerith">Hollerith-Tabulator</option>
+                        <option value="turing">Turingmaschinen-Band</option>
+                        <option value="relay">Relais-Schaltkreis</option>
+                        <option value="fortran">FORTRAN-Formeluebersetzer</option>
+                        <option value="lisp">LISP-Listen-Evaluator</option>
+                        <option value="basic">BASIC-Interpreter</option>
+                        <option value="eliza">ELIZA-Dialogsystem</option>
+                        <option value="cpu4004">4-Bit-CPU</option>
+                        <option value="cstack">Pointer- und Stack-Maschine</option>
+                        <option value="rsa">RSA-Schluesseltausch</option>
+                        <option value="dns">Paketweg und DNS-Aufloesung</option>
+                        <option value="mapreduce">Map-Reduce-Job</option>
+                    </select>
+                </div>
+                <textarea id="sourceEditor" spellcheck="false" aria-label="Emulator Eingabe"></textarea>
+                <div class="button-row">
+                    <button type="button" id="sampleBtn">Beispiel laden</button>
+                    <button type="button" class="primary" id="compileBtn">Vorbereiten</button>
+                    <button type="button" id="stepBtn">Schritt</button>
+                    <button type="button" id="runBtn">Durchlauf</button>
+                    <button type="button" id="resetBtn">Reset</button>
+                </div>
+                <div id="syntaxNote" class="syntax-note"></div>
+            </section>
+
+            <section class="panel state-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Zustand</p>
+                        <h2 id="stateTitle">Maschinenzustand</h2>
+                    </div>
+                    <span id="statusPill" class="status-pill">bereit</span>
+                </div>
+                <div id="machineState" class="machine-state"></div>
+            </section>
+
+            <section class="panel output-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Ausgabe</p>
+                        <h2>Ergebnis</h2>
+                    </div>
+                </div>
+                <pre id="machineOutput" class="machine-output"></pre>
+            </section>
+
+            <section class="panel trace-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Schritte</p>
+                        <h2>Ablaufprotokoll</h2>
+                    </div>
+                    <span id="stepCounter" class="status-pill">0 Schritte</span>
+                </div>
+                <ol id="traceLog" class="trace-log"></ol>
+            </section>
+        </section>
+
+        <section class="source-panel" id="quellenarbeit" aria-label="Historische Einordnung">
+            <div>
+                <h2>Historische Einordnung</h2>
+                <p>
+                    Diese Emulatoren sind bewusst kleine Arbeitsmodelle. Sie zeigen die zentrale Operation eines
+                    Meilensteins, ohne die jeweilige historische Maschine, Sprache oder Infrastruktur vollstaendig
+                    nachzubauen.
+                </p>
+                <p>
+                    Entscheidend ist die Quellenhaltung: Ein ELIZA-Emulator ist hier ein Pattern-Matching-Modell,
+                    keine moderne KI; ein 4-Bit-CPU-Emulator zeigt Register und Speicher, keinen exakten Intel-4004;
+                    ein RSA-Lab nutzt kleine Zahlen, damit der Rechenweg sichtbar bleibt.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="../shared/history-lab-ui.js" defer></script>
+    <script src="../../../../feedback-widget.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="../../media/favicon.png">
+    <title>Scheme Guide - Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        .guide-article pre {
+            border: 1px solid rgba(167, 139, 250, .18);
+            border-radius: 8px;
+            padding: 14px;
+            background: rgba(2, 6, 23, .72);
+            overflow-x: auto;
+        }
+
+        .guide-article code {
+            font-family: "Cascadia Code", Consolas, monospace;
+        }
+
+        .guide-card {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .62);
+            padding: 16px;
+            margin: 20px 0;
+        }
+
+        .guide-card h3 {
+            margin-top: 0;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .mini-table code {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <a class="guide-back" href="../informatikstudium.html">&larr; Zur&uuml;ck zum Informatikstudium</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 22% 74%, #a78bfa 0%, transparent 50%),
+                radial-gradient(ellipse at 78% 18%, #22d3ee 0%, transparent 48%),
+                linear-gradient(160deg, #12091f 0%, #102033 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Funktionale Programmierung</span>
+                <span class="chip" style="margin-left: 6px;">Scheme</span>
+                <h1>Scheme Guide f&uuml;r Dummies</h1>
+                <p class="sub">Von den ersten Klammern bis zu Listen, Rekursion und den wichtigsten Pr&auml;dikaten.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+            <p><strong>Scheme</strong> ist ein Lisp-Dialekt. Die Sprache wirkt am Anfang ungewohnt, weil fast alles in Klammern steht. Wenn man aber die Grundregel verstanden hat, wird Scheme sehr regelm&auml;&szlig;ig: Ein Ausdruck wird ausgewertet, Funktionen stehen vorne, Argumente stehen dahinter, und Listen sind die zentrale Datenstruktur.</p>
+
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <h3>Einheitliche Syntax</h3>
+                    <p>Fast jeder Aufruf hat die Form <code>(funktion argument1 argument2)</code>.</p>
+                </div>
+                <div class="guide-card">
+                    <h3>Listen im Zentrum</h3>
+                    <p>Listen bestehen aus einem ersten Element und einer Restliste. Darauf baut sehr viel Scheme-Code auf.</p>
+                </div>
+                <div class="guide-card">
+                    <h3>Pr&auml;dikate</h3>
+                    <p>Funktionen mit <code>?</code> am Ende stellen Fragen und liefern meistens <code>#t</code> oder <code>#f</code>.</p>
+                </div>
+            </div>
+
+            <h2>1. Vorbereitung: DrRacket und Sprache</h2>
+            <p>Der einfachste Einstieg ist <strong>DrRacket</strong>. Lade Racket von <a href="https://racket-lang.org/" target="_blank" rel="noopener">racket-lang.org</a>, installiere es und &ouml;ffne DrRacket. F&uuml;r diesen Guide kannst du oben in die erste Zeile schreiben:</p>
+
+            <pre><code>#lang racket</code></pre>
+
+            <p>Racket ist nicht exakt dasselbe wie der Scheme-Standard, aber f&uuml;r den Einstieg sehr gut geeignet. Die Grundideen zu Klammern, Listen, Pr&auml;dikaten, Rekursion, <code>define</code>, <code>lambda</code>, <code>if</code>, <code>cond</code>, <code>car</code>, <code>cdr</code> und <code>cons</code> sind dieselben.</p>
+
+            <pre><code>#lang racket
+
+(+ 2 3)</code></pre>
+
+            <pre><code>5</code></pre>
+
+            <hr>
+
+            <h2>2. Die wichtigste Regel: Klammer bedeutet Aufruf</h2>
+            <p>In Scheme steht die Funktion immer als erstes Element in der Klammer. Danach folgen die Argumente.</p>
+
+            <pre><code>(+ 2 3)
+(* 4 5)
+(- 10 3)
+(/ 12 4)</code></pre>
+
+            <p>Das entspricht in anderen Sprachen ungef&auml;hr:</p>
+
+            <pre><code>2 + 3
+4 * 5
+10 - 3
+12 / 4</code></pre>
+
+            <p>Scheme verwendet also <strong>Prefix-Notation</strong>. Der Operator steht vorne. Das ist am Anfang ungewohnt, hat aber einen gro&szlig;en Vorteil: Dieselbe Form funktioniert f&uuml;r zwei, drei oder sehr viele Argumente.</p>
+
+            <pre><code>(+ 1 2 3 4 5)
+(* 2 3 4)</code></pre>
+
+            <pre><code>15
+24</code></pre>
+
+            <div class="guide-card">
+                <h3>Grundform</h3>
+                <pre><code>(name-des-aufrufs argument argument argument)</code></pre>
+                <p>Wenn du eine &ouml;ffnende Klammer siehst, frage zuerst: Was steht direkt nach der Klammer? Das ist normalerweise die Funktion oder Spezialform, die ausgewertet wird.</p>
+            </div>
+
+            <hr>
+
+            <h2>3. Tiefe Klammern lesen</h2>
+            <p>Scheme wertet geschachtelte Ausdr&uuml;cke von innen nach au&szlig;en aus. Der innere Ausdruck liefert einen Wert, und dieser Wert wird im &auml;u&szlig;eren Ausdruck weiterverwendet.</p>
+
+            <pre><code>(* (+ 2 3) (- 10 4))</code></pre>
+
+            <p>Schritt f&uuml;r Schritt:</p>
+            <ol>
+                <li><code>(+ 2 3)</code> ergibt <code>5</code>.</li>
+                <li><code>(- 10 4)</code> ergibt <code>6</code>.</li>
+                <li><code>(* 5 6)</code> ergibt <code>30</code>.</li>
+            </ol>
+
+            <pre><code>(* (+ 2 3) (- 10 4))
+(* 5 6)
+30</code></pre>
+
+            <p>Ein guter Trick: Formatiere tiefere Ausdr&uuml;cke so, dass jede Ebene sichtbar wird.</p>
+
+            <pre><code>(*
+  (+ 2 3)
+  (- 10 4))</code></pre>
+
+            <p>Noch ein Beispiel:</p>
+
+            <pre><code>(+ (* 2 3)
+   (/ 20 5)
+   (- 9 1))</code></pre>
+
+            <p>Das liest man als: Addiere das Ergebnis von <code>(* 2 3)</code>, das Ergebnis von <code>(/ 20 5)</code> und das Ergebnis von <code>(- 9 1)</code>.</p>
+
+            <div class="guide-card">
+                <h3>Klammern debuggen</h3>
+                <p>Wenn du dich verirrst, markiere immer zusammengeh&ouml;rige Klammerpaare. In DrRacket hilft dir der Editor dabei: Wenn der Cursor an einer Klammer steht, wird die passende Gegenklammer markiert.</p>
+            </div>
+
+            <hr>
+
+            <h2>4. Werte: Zahlen, Strings, Symbole und Booleans</h2>
+            <p>Scheme kennt verschiedene Arten von Werten. Einige werden direkt als sie selbst ausgewertet, andere brauchen Anf&uuml;hrungszeichen oder ein Quote.</p>
+
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Wert</th><th>Beispiel</th><th>Bedeutung</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Zahl</td><td><code>42</code></td><td>Eine Zahl</td></tr>
+                    <tr><td>String</td><td><code>"Hallo"</code></td><td>Text</td></tr>
+                    <tr><td>Boolean</td><td><code>#t</code>, <code>#f</code></td><td>wahr und falsch</td></tr>
+                    <tr><td>Symbol</td><td><code>'apfel</code></td><td>Ein Name als Datenwert</td></tr>
+                    <tr><td>Leere Liste</td><td><code>'()</code></td><td>Liste ohne Elemente</td></tr>
+                </tbody>
+            </table>
+
+            <pre><code>42
+"Hallo"
+#t
+'apfel
+'()</code></pre>
+
+            <p>Ein Symbol wie <code>'apfel</code> ist nicht dasselbe wie ein String <code>"apfel"</code>. Ein String ist Text. Ein Symbol ist eher ein benannter Wert, der oft f&uuml;r Kategorien, Zust&auml;nde oder einfache Datenmarken verwendet wird.</p>
+
+            <hr>
+
+            <h2>5. Namen definieren</h2>
+            <p>Mit <code>define</code> bindest du einen Namen an einen Wert.</p>
+
+            <pre><code>(define alter 21)
+(define name "Ada")
+(define bestanden? #t)</code></pre>
+
+            <p>Danach kann der Name in weiteren Ausdr&uuml;cken verwendet werden:</p>
+
+            <pre><code>(+ alter 1)
+(string-append "Hallo " name)</code></pre>
+
+            <pre><code>22
+"Hallo Ada"</code></pre>
+
+            <p>Namen mit <code>?</code> am Ende sind in Scheme eine Konvention f&uuml;r Pr&auml;dikate. Technisch ist <code>bestanden?</code> einfach ein normaler Name, aber er signalisiert: Dieser Wert oder diese Funktion beantwortet eine Ja-Nein-Frage.</p>
+
+            <hr>
+
+            <h2>6. Funktionen definieren</h2>
+            <p>Eine Funktion wird ebenfalls mit <code>define</code> definiert. Die erste Form in der Klammer enth&auml;lt Funktionsname und Parameter.</p>
+
+            <pre><code>(define (quadrat x)
+  (* x x))
+
+(quadrat 6)</code></pre>
+
+            <pre><code>36</code></pre>
+
+            <p>Das liest man so: Definiere eine Funktion <code>quadrat</code>. Sie bekommt einen Parameter <code>x</code>. Ihr Ergebnis ist <code>(* x x)</code>.</p>
+
+            <h3>Mehrere Parameter</h3>
+            <pre><code>(define (rechteck-flaeche breite hoehe)
+  (* breite hoehe))
+
+(rechteck-flaeche 8 5)</code></pre>
+
+            <pre><code>40</code></pre>
+
+            <h3>Funktionen sind Werte</h3>
+            <p>Mit <code>lambda</code> kann man eine anonyme Funktion erzeugen. Diese Funktion kann direkt benutzt oder in einem Namen gespeichert werden.</p>
+
+            <pre><code>((lambda (x) (* x x)) 7)
+
+(define quadrat2
+  (lambda (x) (* x x)))</code></pre>
+
+            <hr>
+
+            <h2>7. Bedingungen: if und cond</h2>
+            <p>Mit <code>if</code> entscheidest du zwischen zwei M&ouml;glichkeiten.</p>
+
+            <pre><code>(define (volljaehrig? alter)
+  (if (&gt;= alter 18)
+      #t
+      #f))</code></pre>
+
+            <p>Weil <code>(&gt;= alter 18)</code> selbst schon <code>#t</code> oder <code>#f</code> ergibt, kann man das k&uuml;rzer schreiben:</p>
+
+            <pre><code>(define (volljaehrig? alter)
+  (&gt;= alter 18))</code></pre>
+
+            <p>Wenn es mehr als zwei F&auml;lle gibt, ist <code>cond</code> meistens lesbarer.</p>
+
+            <pre><code>(define (bewerte-note punkte)
+  (cond
+    [(&gt;= punkte 90) "sehr gut"]
+    [(&gt;= punkte 80) "gut"]
+    [(&gt;= punkte 70) "befriedigend"]
+    [else "nicht bestanden"]))</code></pre>
+
+            <p><code>cond</code> pr&uuml;ft die F&auml;lle von oben nach unten. Der erste passende Fall gewinnt.</p>
+
+            <hr>
+
+            <h2>8. Der Unterschied zwischen Code und Daten: quote</h2>
+            <p>Eine Klammer wird normalerweise als Aufruf gelesen. Deshalb ist <code>(1 2 3)</code> kein normaler Listenwert. Scheme w&uuml;rde versuchen, <code>1</code> als Funktion aufzurufen, was keinen Sinn ergibt.</p>
+
+            <pre><code>(1 2 3) ; Fehler: 1 ist keine Funktion</code></pre>
+
+            <p>Wenn du eine Liste als Datenwert meinst, musst du sie quoten:</p>
+
+            <pre><code>'(1 2 3)
+(quote (1 2 3))</code></pre>
+
+            <p>Beide Formen bedeuten dasselbe. Das Apostroph ist die Kurzform f&uuml;r <code>quote</code>. Es sagt: Werte diesen Ausdruck nicht als Funktionsaufruf aus, sondern behandle ihn als Daten.</p>
+
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Ausdruck</th><th>Wird ausgewertet als</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>(+ 2 3)</code></td><td>Funktionsaufruf, Ergebnis <code>5</code></td></tr>
+                    <tr><td><code>'(+ 2 3)</code></td><td>Datenliste mit den Elementen <code>+</code>, <code>2</code>, <code>3</code></td></tr>
+                    <tr><td><code>(list + 2 3)</code></td><td>Liste, bei der <code>+</code> als Funktionwert enthalten ist</td></tr>
+                    <tr><td><code>(list '+ 2 3)</code></td><td>Liste, bei der <code>+</code> als Symbol enthalten ist</td></tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h2>9. Listenlogik: Eine Liste ist leer oder ein Paar</h2>
+            <p>Die wichtigste Datenstruktur in Scheme ist die Liste. Eine Liste ist entweder:</p>
+
+            <ul>
+                <li>die leere Liste <code>'()</code>, oder</li>
+                <li>ein Paar aus erstem Element und Restliste.</li>
+            </ul>
+
+            <p>Dieses Paar baut man mit <code>cons</code>. Das erste Element erh&auml;lt man mit <code>car</code>. Die Restliste erh&auml;lt man mit <code>cdr</code>.</p>
+
+            <pre><code>(define zahlen '(10 20 30))
+
+(car zahlen)
+(cdr zahlen)</code></pre>
+
+            <pre><code>10
+(20 30)</code></pre>
+
+            <p>Man kann dieselbe Liste mit <code>cons</code> von Hand zusammensetzen:</p>
+
+            <pre><code>(cons 10 (cons 20 (cons 30 '())))</code></pre>
+
+            <pre><code>(10 20 30)</code></pre>
+
+            <div class="guide-card">
+                <h3>Merksatz</h3>
+                <p><code>car</code> nimmt den Kopf der Liste. <code>cdr</code> nimmt den Rest der Liste. <code>cons</code> setzt vorne ein neues Element an eine Liste.</p>
+            </div>
+
+            <h3>Visuelle Vorstellung</h3>
+            <pre><code>'(10 20 30)
+
+cons
+├─ car: 10
+└─ cdr: (20 30)
+        ├─ car: 20
+        └─ cdr: (30)
+                ├─ car: 30
+                └─ cdr: ()</code></pre>
+
+            <p>Deshalb passt Rekursion so gut zu Listen: Man verarbeitet das erste Element und ruft dieselbe Funktion f&uuml;r den Rest der Liste auf.</p>
+
+            <hr>
+
+            <h2>10. Wichtige Listenfunktionen</h2>
+
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Funktion</th><th>Beispiel</th><th>Ergebnis</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>list</code></td><td><code>(list 1 2 3)</code></td><td><code>(1 2 3)</code></td></tr>
+                    <tr><td><code>cons</code></td><td><code>(cons 0 '(1 2))</code></td><td><code>(0 1 2)</code></td></tr>
+                    <tr><td><code>car</code></td><td><code>(car '(1 2 3))</code></td><td><code>1</code></td></tr>
+                    <tr><td><code>cdr</code></td><td><code>(cdr '(1 2 3))</code></td><td><code>(2 3)</code></td></tr>
+                    <tr><td><code>length</code></td><td><code>(length '(1 2 3))</code></td><td><code>3</code></td></tr>
+                    <tr><td><code>append</code></td><td><code>(append '(1 2) '(3 4))</code></td><td><code>(1 2 3 4)</code></td></tr>
+                    <tr><td><code>reverse</code></td><td><code>(reverse '(1 2 3))</code></td><td><code>(3 2 1)</code></td></tr>
+                    <tr><td><code>member</code></td><td><code>(member 2 '(1 2 3))</code></td><td><code>(2 3)</code></td></tr>
+                </tbody>
+            </table>
+
+            <p><code>member</code> liefert nicht einfach <code>#t</code>, sondern den Rest der Liste ab dem gefundenen Element. Wenn nichts gefunden wird, liefert es <code>#f</code>.</p>
+
+            <pre><code>(member 2 '(1 2 3))
+(member 9 '(1 2 3))</code></pre>
+
+            <pre><code>(2 3)
+#f</code></pre>
+
+            <h3>Verschachtelte Listen</h3>
+            <p>Listen k&ouml;nnen wiederum Listen enthalten. Dadurch entstehen Baumstrukturen.</p>
+
+            <pre><code>(define daten '((name "Ada") (alter 36) (sprache Scheme)))
+
+(car daten)
+(cdr daten)
+(car (car daten))</code></pre>
+
+            <pre><code>(name "Ada")
+((alter 36) (sprache Scheme))
+name</code></pre>
+
+            <p>Bei verschachtelten Listen erkl&auml;ren sich die tiefen Klammern aus der Struktur: Jede innere Liste ist wieder ein eigener Datenblock.</p>
+
+            <hr>
+
+            <h2>11. Rekursion auf Listen</h2>
+            <p>Eine Listenfunktion hat fast immer dieselbe Grundform:</p>
+
+            <pre><code>(define (funktion lst)
+  (cond
+    [(null? lst) basiswert]
+    [else
+     (verarbeite (car lst)
+                 (funktion (cdr lst)))]))</code></pre>
+
+            <p>Der Basisfall ist die leere Liste. Der rekursive Fall zerlegt die Liste in erstes Element und Rest.</p>
+
+            <h3>L&auml;nge selbst berechnen</h3>
+            <pre><code>(define (meine-laenge lst)
+  (cond
+    [(null? lst) 0]
+    [else (+ 1 (meine-laenge (cdr lst)))]))
+
+(meine-laenge '(a b c d))</code></pre>
+
+            <pre><code>4</code></pre>
+
+            <h3>Summe berechnen</h3>
+            <pre><code>(define (summe lst)
+  (cond
+    [(null? lst) 0]
+    [else (+ (car lst) (summe (cdr lst)))]))
+
+(summe '(2 4 6))</code></pre>
+
+            <pre><code>12</code></pre>
+
+            <h3>Alle Elemente verdoppeln</h3>
+            <pre><code>(define (verdoppeln lst)
+  (cond
+    [(null? lst) '()]
+    [else (cons (* 2 (car lst))
+                (verdoppeln (cdr lst)))]))
+
+(verdoppeln '(1 2 3))</code></pre>
+
+            <pre><code>(2 4 6)</code></pre>
+
+            <h3>Nur gerade Zahlen behalten</h3>
+            <pre><code>(define (nur-gerade lst)
+  (cond
+    [(null? lst) '()]
+    [(even? (car lst))
+     (cons (car lst) (nur-gerade (cdr lst)))]
+    [else
+     (nur-gerade (cdr lst))]))
+
+(nur-gerade '(1 2 3 4 5 6))</code></pre>
+
+            <pre><code>(2 4 6)</code></pre>
+
+            <hr>
+
+            <h2>12. map, filter und fold</h2>
+            <p>Viele rekursive Listenmuster sind so h&auml;ufig, dass Scheme fertige Funktionen daf&uuml;r bietet.</p>
+
+            <h3>map: jedes Element transformieren</h3>
+            <pre><code>(map (lambda (x) (* x 2)) '(1 2 3 4))</code></pre>
+
+            <pre><code>(2 4 6 8)</code></pre>
+
+            <h3>filter: Elemente ausw&auml;hlen</h3>
+            <pre><code>(filter even? '(1 2 3 4 5 6))</code></pre>
+
+            <pre><code>(2 4 6)</code></pre>
+
+            <h3>foldl: Liste zu einem Wert zusammenfassen</h3>
+            <pre><code>(foldl + 0 '(2 4 6))</code></pre>
+
+            <pre><code>12</code></pre>
+
+            <p><code>map</code>, <code>filter</code> und <code>foldl</code> sind Funktionen h&ouml;herer Ordnung: Sie bekommen andere Funktionen als Argument.</p>
+
+            <hr>
+
+            <h2>13. Was genau ist ein Pr&auml;dikat?</h2>
+            <p>Ein <strong>Pr&auml;dikat</strong> ist eine Funktion, die eine Frage beantwortet. In Scheme enden solche Funktionen per Konvention mit <code>?</code>. Das Ergebnis ist meistens <code>#t</code> f&uuml;r wahr oder <code>#f</code> f&uuml;r falsch.</p>
+
+            <pre><code>(number? 42)
+(string? "Hallo")
+(list? '(1 2 3))
+(null? '())</code></pre>
+
+            <pre><code>#t
+#t
+#t
+#t</code></pre>
+
+            <p>Wichtig: In Bedingungen gilt nur <code>#f</code> als falsch. Viele andere Werte gelten als wahr, auch <code>'()</code> in Racket.</p>
+
+            <pre><code>(if "Text"
+    'wahr
+    'falsch)</code></pre>
+
+            <pre><code>wahr</code></pre>
+
+            <hr>
+
+            <h2>14. Pr&auml;dikate f&uuml;r Zahlen</h2>
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Pr&auml;dikat</th><th>Frage</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>number?</code></td><td>Ist es eine Zahl?</td><td><code>(number? 3.14)</code></td></tr>
+                    <tr><td><code>integer?</code></td><td>Ist es eine ganze Zahl?</td><td><code>(integer? 5)</code></td></tr>
+                    <tr><td><code>real?</code></td><td>Ist es eine reelle Zahl?</td><td><code>(real? 2)</code></td></tr>
+                    <tr><td><code>rational?</code></td><td>Ist es eine rationale Zahl?</td><td><code>(rational? 1/3)</code></td></tr>
+                    <tr><td><code>complex?</code></td><td>Ist es eine komplexe Zahl?</td><td><code>(complex? 2+3i)</code></td></tr>
+                    <tr><td><code>exact?</code></td><td>Ist die Zahl exakt?</td><td><code>(exact? 1/3)</code></td></tr>
+                    <tr><td><code>inexact?</code></td><td>Ist die Zahl ungenau/flie&szlig;kommaartig?</td><td><code>(inexact? 0.333)</code></td></tr>
+                    <tr><td><code>zero?</code></td><td>Ist die Zahl null?</td><td><code>(zero? 0)</code></td></tr>
+                    <tr><td><code>positive?</code></td><td>Ist die Zahl positiv?</td><td><code>(positive? 7)</code></td></tr>
+                    <tr><td><code>negative?</code></td><td>Ist die Zahl negativ?</td><td><code>(negative? -2)</code></td></tr>
+                    <tr><td><code>even?</code></td><td>Ist die ganze Zahl gerade?</td><td><code>(even? 8)</code></td></tr>
+                    <tr><td><code>odd?</code></td><td>Ist die ganze Zahl ungerade?</td><td><code>(odd? 9)</code></td></tr>
+                </tbody>
+            </table>
+
+            <pre><code>(define (gueltige-punktzahl? x)
+  (and (integer? x)
+       (&gt;= x 0)
+       (&lt;= x 100)))</code></pre>
+
+            <hr>
+
+            <h2>15. Vergleichspr&auml;dikate</h2>
+            <p>Vergleiche sind ebenfalls Pr&auml;dikate, auch wenn sie nicht mit <code>?</code> enden.</p>
+
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Pr&auml;dikat</th><th>Bedeutung</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>=</code></td><td>Zahlen gleich?</td><td><code>(= 3 3)</code></td></tr>
+                    <tr><td><code>&lt;</code></td><td>streng kleiner?</td><td><code>(&lt; 2 5)</code></td></tr>
+                    <tr><td><code>&gt;</code></td><td>streng gr&ouml;&szlig;er?</td><td><code>(&gt; 7 4)</code></td></tr>
+                    <tr><td><code>&lt;=</code></td><td>kleiner oder gleich?</td><td><code>(&lt;= 4 4)</code></td></tr>
+                    <tr><td><code>&gt;=</code></td><td>gr&ouml;&szlig;er oder gleich?</td><td><code>(&gt;= 9 1)</code></td></tr>
+                    <tr><td><code>eq?</code></td><td>Sehr einfache Identit&auml;t, oft f&uuml;r Symbole</td><td><code>(eq? 'a 'a)</code></td></tr>
+                    <tr><td><code>eqv?</code></td><td>&Auml;hnlich wie <code>eq?</code>, besser f&uuml;r einfache Werte</td><td><code>(eqv? 3 3)</code></td></tr>
+                    <tr><td><code>equal?</code></td><td>Strukturelle Gleichheit</td><td><code>(equal? '(1 2) '(1 2))</code></td></tr>
+                </tbody>
+            </table>
+
+            <div class="guide-card">
+                <h3>Welche Gleichheit soll ich nehmen?</h3>
+                <p>F&uuml;r Zahlen nimm <code>=</code>. F&uuml;r Strings nimm <code>string=?</code>. F&uuml;r Zeichen nimm <code>char=?</code>. F&uuml;r Listen und allgemeine Daten nimm meistens <code>equal?</code>. <code>eq?</code> ist vor allem f&uuml;r Symbole und Identit&auml;tsfragen gedacht.</p>
+            </div>
+
+            <hr>
+
+            <h2>16. Pr&auml;dikate f&uuml;r Listen und Paare</h2>
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Pr&auml;dikat</th><th>Frage</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>null?</code></td><td>Ist es die leere Liste?</td><td><code>(null? '())</code></td></tr>
+                    <tr><td><code>pair?</code></td><td>Ist es ein Paar?</td><td><code>(pair? '(1 . 2))</code></td></tr>
+                    <tr><td><code>list?</code></td><td>Ist es eine echte Liste?</td><td><code>(list? '(1 2 3))</code></td></tr>
+                    <tr><td><code>empty?</code></td><td>Racket-Name f&uuml;r leere Liste?</td><td><code>(empty? '())</code></td></tr>
+                    <tr><td><code>cons?</code></td><td>Racket: Ist es ein nicht-leeres Paar?</td><td><code>(cons? '(1 2))</code></td></tr>
+                </tbody>
+            </table>
+
+            <p>Der Unterschied zwischen Paar und Liste ist wichtig. Jede nicht-leere Liste besteht aus Paaren, aber nicht jedes Paar ist eine saubere Liste.</p>
+
+            <pre><code>(pair? '(1 2 3))
+(list? '(1 2 3))
+
+(pair? '(1 . 2))
+(list? '(1 . 2))</code></pre>
+
+            <pre><code>#t
+#t
+#t
+#f</code></pre>
+
+            <p><code>'(1 . 2)</code> ist ein sogenanntes <strong>improper pair</strong>. Es hat vorne <code>1</code> und hinten <code>2</code>, aber hinten keine Restliste. F&uuml;r den Anfang solltest du meistens echte Listen verwenden.</p>
+
+            <hr>
+
+            <h2>17. Pr&auml;dikate f&uuml;r Datentypen</h2>
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Pr&auml;dikat</th><th>Frage</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>boolean?</code></td><td>Ist es <code>#t</code> oder <code>#f</code>?</td><td><code>(boolean? #t)</code></td></tr>
+                    <tr><td><code>symbol?</code></td><td>Ist es ein Symbol?</td><td><code>(symbol? 'rot)</code></td></tr>
+                    <tr><td><code>string?</code></td><td>Ist es ein String?</td><td><code>(string? "rot")</code></td></tr>
+                    <tr><td><code>char?</code></td><td>Ist es ein Zeichen?</td><td><code>(char? #\a)</code></td></tr>
+                    <tr><td><code>keyword?</code></td><td>Ist es ein Keyword?</td><td><code>(keyword? '#:farbe)</code></td></tr>
+                    <tr><td><code>vector?</code></td><td>Ist es ein Vektor?</td><td><code>(vector? #(1 2 3))</code></td></tr>
+                    <tr><td><code>hash?</code></td><td>Ist es eine Hash-Tabelle?</td><td><code>(hash? (hash 'a 1))</code></td></tr>
+                    <tr><td><code>procedure?</code></td><td>Ist es eine Funktion/Prozedur?</td><td><code>(procedure? +)</code></td></tr>
+                    <tr><td><code>void?</code></td><td>Ist es der Void-Wert?</td><td><code>(void? (void))</code></td></tr>
+                </tbody>
+            </table>
+
+            <pre><code>(define (beschreibe x)
+  (cond
+    [(number? x) "Zahl"]
+    [(string? x) "String"]
+    [(symbol? x) "Symbol"]
+    [(list? x) "Liste"]
+    [(procedure? x) "Funktion"]
+    [else "etwas anderes"]))</code></pre>
+
+            <hr>
+
+            <h2>18. Pr&auml;dikate f&uuml;r Strings und Zeichen</h2>
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Pr&auml;dikat</th><th>Bedeutung</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>string=?</code></td><td>Strings gleich?</td><td><code>(string=? "a" "a")</code></td></tr>
+                    <tr><td><code>string&lt;?</code></td><td>String alphabetisch kleiner?</td><td><code>(string&lt;? "a" "b")</code></td></tr>
+                    <tr><td><code>string-ci=?</code></td><td>Strings gleich ohne Gro&szlig;-/Kleinschreibung?</td><td><code>(string-ci=? "Ada" "ada")</code></td></tr>
+                    <tr><td><code>char=?</code></td><td>Zeichen gleich?</td><td><code>(char=? #\a #\a)</code></td></tr>
+                    <tr><td><code>char-alphabetic?</code></td><td>Ist das Zeichen ein Buchstabe?</td><td><code>(char-alphabetic? #\A)</code></td></tr>
+                    <tr><td><code>char-numeric?</code></td><td>Ist das Zeichen eine Ziffer?</td><td><code>(char-numeric? #\7)</code></td></tr>
+                    <tr><td><code>char-whitespace?</code></td><td>Ist das Zeichen Leerraum?</td><td><code>(char-whitespace? #\space)</code></td></tr>
+                    <tr><td><code>char-upper-case?</code></td><td>Ist das Zeichen gro&szlig;?</td><td><code>(char-upper-case? #\A)</code></td></tr>
+                    <tr><td><code>char-lower-case?</code></td><td>Ist das Zeichen klein?</td><td><code>(char-lower-case? #\a)</code></td></tr>
+                </tbody>
+            </table>
+
+            <pre><code>(define (startet-mit-a? wort)
+  (and (&gt; (string-length wort) 0)
+       (char-ci=? (string-ref wort 0) #\a)))</code></pre>
+
+            <hr>
+
+            <h2>19. Logische Verkn&uuml;pfung von Pr&auml;dikaten</h2>
+            <p>Mit <code>and</code>, <code>or</code> und <code>not</code> kombinierst du mehrere Bedingungen.</p>
+
+            <pre><code>(and (integer? 12) (positive? 12))
+(or (string? 12) (number? 12))
+(not (null? '(1 2 3)))</code></pre>
+
+            <pre><code>#t
+#t
+#t</code></pre>
+
+            <p><code>and</code> bricht ab, sobald ein Ausdruck falsch ist. <code>or</code> bricht ab, sobald ein Ausdruck wahr ist. Das nennt man Kurzschlussauswertung.</p>
+
+            <pre><code>(define (nicht-leere-zahlenliste? x)
+  (and (list? x)
+       (not (null? x))
+       (andmap number? x)))</code></pre>
+
+            <p><code>andmap</code> pr&uuml;ft, ob ein Pr&auml;dikat f&uuml;r alle Elemente einer Liste wahr ist. Das Gegenst&uuml;ck <code>ormap</code> pr&uuml;ft, ob es mindestens ein passendes Element gibt.</p>
+
+            <pre><code>(andmap even? '(2 4 6))
+(ormap negative? '(3 5 -1 8))</code></pre>
+
+            <pre><code>#t
+#t</code></pre>
+
+            <hr>
+
+            <h2>20. Eigene Pr&auml;dikate schreiben</h2>
+            <p>Eigene Pr&auml;dikate sind normale Funktionen. Gib ihnen einen Namen mit <code>?</code>, damit sofort erkennbar ist, dass sie eine Frage beantworten.</p>
+
+            <pre><code>(define (note-bestanden? punkte)
+  (&gt;= punkte 50))
+
+(define (kurzer-string? text)
+  (and (string? text)
+       (&lt;= (string-length text) 10)))
+
+(define (liste-aus-symbolen? lst)
+  (and (list? lst)
+       (andmap symbol? lst)))</code></pre>
+
+            <p>Diese Funktionen lassen sich direkt in <code>if</code>, <code>cond</code>, <code>filter</code> oder <code>andmap</code> verwenden.</p>
+
+            <pre><code>(filter note-bestanden? '(20 51 80 49 100))
+(filter kurzer-string? '("Ada" "Programmiersprache" "Lisp"))</code></pre>
+
+            <hr>
+
+            <h2>21. Mini-Projekt: Datenliste auswerten</h2>
+            <p>Jetzt verbinden wir Listenlogik, tiefe Klammern und Pr&auml;dikate. Eine Person wird als kleine Liste gespeichert:</p>
+
+            <pre><code>(define personen
+  '((ada 36 programmierung)
+    (alan 41 mathematik)
+    (grace 85 programmierung)
+    (linus 54 betriebssysteme)))</code></pre>
+
+            <p>Eine Person besteht aus <code>(name alter bereich)</code>. Wir schreiben Selektoren, damit der restliche Code lesbarer wird.</p>
+
+            <pre><code>(define (person-name person)
+  (car person))
+
+(define (person-alter person)
+  (car (cdr person)))
+
+(define (person-bereich person)
+  (car (cdr (cdr person))))</code></pre>
+
+            <p>Die tiefen Klammern bei <code>(car (cdr person))</code> bedeuten: Nimm zuerst den Rest der Person, dann davon das erste Element. Bei <code>(ada 36 programmierung)</code> ist der Rest <code>(36 programmierung)</code>, und dessen erstes Element ist <code>36</code>.</p>
+
+            <pre><code>(define (programmiert? person)
+  (eq? (person-bereich person) 'programmierung))
+
+(define (senior? person)
+  (&gt;= (person-alter person) 60))
+
+(filter programmiert? personen)
+(filter senior? personen)</code></pre>
+
+            <pre><code>((ada 36 programmierung) (grace 85 programmierung))
+((grace 85 programmierung))</code></pre>
+
+            <p>Das Projekt zeigt die typische Denkweise: Daten als Listen modellieren, kleine Selektoren schreiben, Pr&auml;dikate formulieren und dann mit <code>filter</code>, <code>map</code> oder Rekursion arbeiten.</p>
+
+            <hr>
+
+            <h2>22. H&auml;ufige Fehler</h2>
+
+            <h3>Eine Datenliste nicht gequotet</h3>
+            <pre><code>(1 2 3)   ; falsch
+'(1 2 3)  ; richtig</code></pre>
+
+            <h3>Zu viele oder zu wenige Klammern</h3>
+            <pre><code>(+ 1 2))  ; eine schlie&szlig;ende Klammer zu viel
+(+ 1 2   ; eine schlie&szlig;ende Klammer fehlt</code></pre>
+
+            <h3>car oder cdr auf leerer Liste</h3>
+            <pre><code>(car '()) ; Fehler</code></pre>
+
+            <p>Vor <code>car</code> und <code>cdr</code> pr&uuml;fst du bei rekursiven Funktionen normalerweise zuerst <code>null?</code>.</p>
+
+            <h3><code>=</code> f&uuml;r Nicht-Zahlen verwendet</h3>
+            <pre><code>(= "a" "a")        ; falsch
+(string=? "a" "a") ; richtig
+(equal? '(1 2) '(1 2)) ; richtig f&uuml;r Listen</code></pre>
+
+            <hr>
+
+            <h2>23. Spickzettel</h2>
+            <pre><code>; Werte
+42
+"Text"
+#t
+#f
+'symbol
+'(1 2 3)
+
+; Aufruf
+(funktion argument1 argument2)
+
+; Definitionen
+(define x 10)
+(define (quadrat x) (* x x))
+
+; Bedingungen
+(if (&gt; x 0) 'positiv 'nicht-positiv)
+(cond
+  [bedingung ergebnis]
+  [else fallback])
+
+; Listen
+'()
+(list 1 2 3)
+(cons 1 '(2 3))
+(car '(1 2 3))
+(cdr '(1 2 3))
+
+; Typische Pr&auml;dikate
+(number? 42)
+(string? "Hallo")
+(symbol? 'hallo)
+(list? '(1 2 3))
+(null? '())
+(even? 4)
+(equal? '(1 2) '(1 2))</code></pre>
+
+            <p>Wenn du Scheme lernst, lohnt sich diese Reihenfolge: erst Ausdr&uuml;cke lesen, dann Klammern sicher verstehen, dann Listen zerlegen, dann rekursive Funktionen schreiben, dann fertige Funktionen wie <code>map</code>, <code>filter</code> und <code>foldl</code> nutzen.</p>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">&copy; 2026 Felix Staacke</div>
+    </footer>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>
