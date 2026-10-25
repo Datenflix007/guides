@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Docker auf Windows verständlich einrichten: Container, Images, Volumes, Compose und ein sicheres SecretsLab-Beispiel." />
+    <link rel="icon" type="image/png" href="../../media/favicon.png" />
+    <title>Docker Guide – Felix Staacke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <style>
+        .guide-article pre {
+            position: relative;
+            border: 1px solid rgba(125, 211, 252, .16);
+            box-shadow: 0 10px 24px rgba(2, 6, 23, .22);
+        }
+
+        .copy-code-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: 1px solid rgba(148, 163, 184, .42);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, .88);
+            color: #e5e7eb;
+            padding: 6px 9px;
+            font: 600 .78rem Inter, system-ui, sans-serif;
+            cursor: pointer;
+        }
+
+        .copy-code-button:hover {
+            background: rgba(30, 41, 59, .95);
+        }
+
+        .code-language-label {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            border: 1px solid rgba(125, 211, 252, .28);
+            border-radius: 999px;
+            color: #7dd3fc;
+            background: rgba(8, 13, 20, .86);
+            padding: 5px 9px;
+            font: 700 .72rem Inter, system-ui, sans-serif;
+        }
+
+        .guide-article pre code {
+            display: block;
+            padding-top: 24px;
+        }
+
+        .docker-grid,
+        .docker-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .docker-card,
+        .docker-note {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 9px;
+            background: rgba(15, 23, 42, .62);
+            padding: 16px;
+        }
+
+        .docker-card strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .docker-card p,
+        .docker-note p {
+            margin: 0;
+            font-size: .95rem;
+        }
+
+        .docker-card::before {
+            content: "";
+            display: block;
+            width: 28px;
+            height: 2px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+            background: #38bdf8;
+        }
+
+        .docker-note {
+            border-left: 4px solid #22c55e;
+            margin: 20px 0;
+        }
+
+        .docker-note--warning {
+            border-left-color: #f59e0b;
+        }
+
+        .docker-note--danger {
+            border-left-color: #fb7185;
+        }
+
+        .docker-toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 24px 0 10px;
+        }
+
+        .docker-toc a {
+            border: 1px solid rgba(148, 163, 184, .28);
+            border-radius: 999px;
+            padding: 8px 11px;
+            text-decoration: none;
+            color: #dbeafe;
+            background: rgba(15, 23, 42, .62);
+            font-size: .92rem;
+        }
+
+        .docker-toc a:hover {
+            border-color: rgba(56, 189, 248, .7);
+            color: #7dd3fc;
+        }
+
+        .docker-flow {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0 24px;
+        }
+
+        .docker-flow div {
+            border: 1px solid rgba(148, 163, 184, .24);
+            border-radius: 9px;
+            padding: 13px;
+            min-height: 90px;
+            background: rgba(15, 23, 42, .68);
+            font-size: .92rem;
+        }
+
+        .docker-flow span {
+            display: block;
+            color: #7dd3fc;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .docker-architecture {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr);
+            align-items: stretch;
+            gap: 8px;
+            margin: 22px 0;
+        }
+
+        .docker-architecture .node {
+            border: 1px solid rgba(56, 189, 248, .35);
+            border-radius: 10px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(8, 47, 73, .72), rgba(15, 23, 42, .86));
+        }
+
+        .docker-architecture .node strong {
+            display: block;
+            color: #bae6fd;
+            margin-bottom: 5px;
+        }
+
+        .docker-architecture .arrow {
+            display: grid;
+            place-items: center;
+            color: #7dd3fc;
+            font-size: 1.5rem;
+        }
+
+        .docker-architecture p {
+            margin: 0;
+            font-size: .94rem;
+        }
+
+        .docker-table td:first-child {
+            white-space: nowrap;
+        }
+
+        .source-list a {
+            color: #7dd3fc;
+        }
+
+        @media (max-width: 760px) {
+            .docker-flow {
+                grid-template-columns: 1fr;
+            }
+
+            .docker-architecture {
+                grid-template-columns: 1fr;
+            }
+
+            .docker-architecture .arrow {
+                transform: rotate(90deg);
+                min-height: 22px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://datenflix007.github.io/shared/site-shell.css" />
+    <script src="https://datenflix007.github.io/shared/site-header.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand" onclick="location.href='../../index.html'" style="cursor:pointer;">
+                <div class="logo"></div><span>Felix Staacke</span>
+            </div>
+            <nav>
+                <a class="btn" href="../Referenzen.html">Referenzen</a>
+                <a class="btn" href="../projekte.html">Projekte</a>
+                <a class="btn" href="../kontakt.html">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <a class="guide-back" href="https://datenflix007.github.io/guides/">← Zurück zu den Guides</a>
+
+        <section class="page-hero" style="margin-bottom: 0;">
+            <div class="page-hero-bg" style="background:
+                radial-gradient(ellipse at 22% 76%, #0ea5e9 0%, transparent 52%),
+                radial-gradient(ellipse at 81% 18%, #2563eb 0%, transparent 48%),
+                linear-gradient(160deg, #06192a 0%, #101827 100%);"></div>
+            <div class="page-hero-content">
+                <span class="chip">Container</span>
+                <span class="chip" style="margin-left: 6px;">Docker Compose</span>
+                <span class="chip" style="margin-left: 6px;">Secrets</span>
+                <h1>Docker Guide</h1>
+                <p class="sub">Docker Desktop unter Windows einrichten, Container verstehen und Anwendungen samt Daten und Secrets nachvollziehbar betreiben.</p>
+            </div>
+        </section>
+
+        <article class="guide-article">
+            <p><strong>Docker</strong> verpackt eine Anwendung mit ihren benötigten Bibliotheken und Einstellungen in eine einheitliche Laufzeitumgebung. Damit kann dieselbe Anwendung auf dem eigenen Rechner, im Team und später auf einem Server möglichst gleich laufen. Auf Windows nutzt Docker Desktop für Linux-Container in der Regel <strong>WSL&nbsp;2</strong> im Hintergrund.</p>
+
+            <p>Das macht Docker besonders praktisch für lokale Datenbanken, Testumgebungen, Web-Apps und mehrere zusammengehörige Dienste. Ein Container ist aber kein magischer Sicherheitskasten: Rechte, Updates, Backups und ein gutes Secrets-Konzept bleiben weiterhin nötig.</p>
+
+            <div class="docker-architecture" aria-label="Vom Dockerfile zum laufenden Container">
+                <div class="node"><strong>Dockerfile</strong><p>Rezept: Welche Grundlage, Dateien und Startbefehle braucht eine eigene Anwendung?</p></div>
+                <div class="arrow" aria-hidden="true">→</div>
+                <div class="node"><strong>Image</strong><p>Unveränderliche Vorlage, zum Beispiel <code>mongo:8</code> oder ein selbst gebautes App-Image.</p></div>
+                <div class="arrow" aria-hidden="true">→</div>
+                <div class="node"><strong>Container</strong><p>Laufende Instanz eines Images – mit Konfiguration, Netzwerk und optionalem Speicher.</p></div>
+            </div>
+
+            <nav class="docker-toc" aria-label="Docker Guide Inhaltsnavigation">
+                <a href="#grundlagen">Grundlagen</a>
+                <a href="#manuell">Manuell einrichten</a>
+                <a href="#skript">Setup per Skript</a>
+                <a href="#erste-befehle">Erste Befehle</a>
+                <a href="#compose">Compose, Volumes &amp; Netzwerk</a>
+                <a href="#secrets">Secrets</a>
+                <a href="#secretslab">SecretsLab</a>
+                <a href="#fehler">Fehlersuche</a>
+            </nav>
+
+            <hr />
+
+            <h2 id="grundlagen">Was sind Container – und wofür sind sie nützlich?</h2>
+            <p>Ein Container ist eine <strong>laufende Instanz eines Images</strong>. Das Image ist die Vorlage; der Container ist die tatsächlich gestartete Anwendung. Container teilen sich nicht einfach wahllos den eigenen Rechner: Prozesse, Netzwerk und Dateisystem werden weitgehend getrennt. Sie sind trotzdem keine vollständigen virtuellen Maschinen und keine absolute Sicherheitsgrenze.</p>
+
+            <div class="docker-grid">
+                <div class="docker-card"><strong>Einheitliche Umgebung</strong><p>Alle im Team starten dieselbe Node-, Python-, Datenbank- oder Webserver-Version statt „bei mir geht es doch“.</p></div>
+                <div class="docker-card"><strong>Lokale Dienste</strong><p>PostgreSQL, MongoDB, Redis oder Meilisearch lassen sich ausprobieren, ohne sie dauerhaft in Windows zu installieren.</p></div>
+                <div class="docker-card"><strong>Tests &amp; CI</strong><p>Tests laufen gegen eine vorhersehbare Umgebung und können später in einer Pipeline nachgebaut werden.</p></div>
+                <div class="docker-card"><strong>Aufräumen</strong><p>Ein Versuch ist mit Container und Netzwerk schnell entfernt. Dauerhafte Daten gehören bewusst in ein Volume.</p></div>
+            </div>
+
+            <table class="docker-table">
+                <thead>
+                    <tr><th>Begriff</th><th>Bedeutung</th><th>Beispiel</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Image</strong></td><td>Schreibgeschützte Vorlage für einen Container.</td><td><code>mongo:8</code></td></tr>
+                    <tr><td><strong>Container</strong></td><td>Ausführbare Instanz eines Images.</td><td>eine gestartete MongoDB</td></tr>
+                    <tr><td><strong>Volume</strong></td><td>Von Docker verwalteter, dauerhafter Speicher außerhalb des flüchtigen Container-Dateisystems.</td><td>Datenbankdaten</td></tr>
+                    <tr><td><strong>Netzwerk</strong></td><td>Verbindung zwischen Containern und – nur wenn veröffentlicht – zum Host.</td><td>Web-App → Datenbank</td></tr>
+                    <tr><td><strong>Compose</strong></td><td>Eine <code>compose.yaml</code> beschreibt mehrere Dienste, Volumes und Netzwerke gemeinsam.</td><td>App + DB + Cache</td></tr>
+                </tbody>
+            </table>
+
+            <div class="docker-note docker-note--warning">
+                <p><strong>Wichtige Grenze:</strong> Ohne Volume verschwinden Änderungen im Container-Dateisystem beim Entfernen des Containers. Volumes machen Daten haltbar, verschlüsseln sie aber nicht automatisch.</p>
+            </div>
+
+            <hr />
+
+            <h2 id="manuell">Docker Desktop unter Windows per Hand einrichten</h2>
+            <p>Für die meisten Einzelpersonen ist Docker Desktop mit Linux-Containern und WSL&nbsp;2 der unkomplizierteste Weg. Aktuelle Anforderungen und den offiziellen Installer beschreibt die <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener">Docker-Dokumentation für Windows</a>.</p>
+
+            <ol>
+                <li><strong>Voraussetzungen prüfen:</strong> Windows aktuell halten; bei Bedarf Hardware-Virtualisierung im BIOS/UEFI aktivieren. Für Linux-Container ist WSL&nbsp;2 der normale Weg.</li>
+                <li><strong>PowerShell als Administrator öffnen</strong> und WSL installieren bzw. aktualisieren.</li>
+                <li><strong>Neu starten, falls Windows dazu auffordert.</strong> Das ist nach einer ersten WSL-Installation normal.</li>
+                <li><strong>Docker Desktop von docker.com laden</strong>, installieren und den WSL-2-Backend verwenden. Die Installation pro Benutzer ist für die meisten privaten Geräte ausreichend.</li>
+                <li><strong>Docker Desktop über das Startmenü öffnen</strong> und warten, bis die Engine läuft. Bei der ersten Ausführung Lizenzbedingungen bewusst prüfen.</li>
+                <li><strong>In einer neuen PowerShell testen.</strong></li>
+            </ol>
+
+            <pre><code># Diese Befehle in einer als Administrator gestarteten PowerShell ausführen.
+wsl --version
+wsl --install
+wsl --update</code></pre>
+
+            <pre><code># Nach der Docker-Desktop-Installation in einer neuen PowerShell testen.
+docker version
+docker compose version
+docker run --rm hello-world</code></pre>
+
+            <div class="docker-note">
+                <p><strong>Erwartetes Ergebnis:</strong> <code>hello-world</code> lädt bei Bedarf ein kleines Test-Image, startet es und entfernt den Test-Container danach wieder. Erst wenn dieser Test funktioniert, lohnt es sich, ein eigenes Compose-Projekt zu starten.</p>
+            </div>
+
+            <hr />
+
+            <h2 id="skript">Einrichtung per PowerShell-Skript</h2>
+            <p>Ein Skript kann die wiederholbaren Schritte vorbereiten. Es kann jedoch weder Hardware-Virtualisierung im BIOS sicher einschalten noch einen erforderlichen Neustart überspringen. Die folgende Variante nutzt bewusst den <strong>offiziell heruntergeladenen</strong> Docker-Desktop-Installer statt einen Installer aus einer unbekannten Quelle.</p>
+
+            <ol>
+                <li>Docker Desktop von der offiziellen Docker-Seite herunterladen und die Datei im Downloads-Ordner belassen.</li>
+                <li>Die folgende Datei als <code>install-docker.ps1</code> speichern.</li>
+                <li>PowerShell <strong>als Administrator</strong> öffnen und das Skript ausführen. Falls <code>wsl --install</code> einen Neustart verlangt: neu starten und das Skript danach erneut ausführen.</li>
+            </ol>
+
+            <pre><code># install-docker.ps1
+# Als Administrator ausführen. Der Docker-Installer wurde vorher bewusst
+# von https://www.docker.com/products/docker-desktop/ heruntergeladen.
+$ErrorActionPreference = "Stop"
+
+$principal = [Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    throw "Bitte PowerShell als Administrator starten."
+}
+
+# Richtet WSL beim ersten Mal ein. Windows kann danach einen Neustart verlangen.
+wsl --install
+wsl --update
+
+$installer = Join-Path $env:USERPROFILE "Downloads\Docker Desktop Installer.exe"
+if (-not (Test-Path -LiteralPath $installer)) {
+    throw "Docker Desktop Installer.exe wurde im Downloads-Ordner nicht gefunden."
+}
+
+Start-Process -FilePath $installer -Wait -ArgumentList @(
+    "install",
+    "--user",
+    "--backend=wsl-2"
+)
+
+Write-Host "Docker Desktop über das Startmenü öffnen und danach testen: docker run --rm hello-world"</code></pre>
+
+            <p>Die Option <code>--user</code> installiert Docker Desktop für das aktuelle Benutzerkonto. Wer Software zentral für mehrere Windows-Konten verwaltet, sollte stattdessen die Installationsmodi und Rechteanforderungen in der offiziellen Docker-Dokumentation prüfen. Eine Lizenzannahme gehört nicht unsichtbar in ein Beispielskript.</p>
+
+            <hr />
+
+            <h2 id="erste-befehle">Die ersten Docker-Befehle</h2>
+            <p>Mit dem folgenden kleinen Webserver lässt sich der Lebenszyklus eines Containers gefahrlos üben. Das Image wird beim ersten Start automatisch geladen.</p>
+
+            <pre><code># Einen nginx-Webserver im Hintergrund starten.
+docker run --name demo-web --detach --publish 8080:80 nginx:alpine
+
+# Im Browser öffnen: http://localhost:8080
+docker ps
+docker logs demo-web
+
+# Sauber beenden und den Container entfernen.
+docker stop demo-web
+docker rm demo-web</code></pre>
+
+            <table class="docker-table">
+                <thead>
+                    <tr><th>Befehl</th><th>Wofür?</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>docker ps</code></td><td>Laufende Container anzeigen.</td></tr>
+                    <tr><td><code>docker ps -a</code></td><td>Auch gestoppte Container anzeigen.</td></tr>
+                    <tr><td><code>docker image ls</code></td><td>Lokale Images anzeigen.</td></tr>
+                    <tr><td><code>docker volume ls</code></td><td>Vorhandene Docker-Volumes anzeigen.</td></tr>
+                    <tr><td><code>docker network ls</code></td><td>Docker-Netzwerke anzeigen.</td></tr>
+                    <tr><td><code>docker compose up -d</code></td><td>Alle Dienste der aktuellen <code>compose.yaml</code> im Hintergrund starten.</td></tr>
+                    <tr><td><code>docker compose logs -f</code></td><td>Logs der Compose-Dienste fortlaufend ansehen.</td></tr>
+                    <tr><td><code>docker compose down</code></td><td>Container und das Standardnetzwerk eines Compose-Projekts stoppen und entfernen.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="docker-note docker-note--danger">
+                <p><strong>Vorsicht mit <code>docker compose down -v</code>:</strong> Das <code>-v</code> entfernt zusätzlich die zugehörigen Volumes. Bei einer Datenbank bedeutet das normalerweise: Test- oder Anwendungsdaten werden gelöscht.</p>
+            </div>
+
+            <hr />
+
+            <h2 id="compose">Compose, Daten und Netzwerke</h2>
+            <p>Für eine einzelne Testanwendung genügt oft <code>docker run</code>. Sobald mehrere Teile zusammenarbeiten, wird <strong>Docker Compose</strong> übersichtlicher. Eine <code>compose.yaml</code> beschreibt dann Dienste, Ports, Volumes und Netzwerke in einer versionierbaren Datei.</p>
+
+            <div class="docker-flow" aria-label="Zusammenspiel eines Compose-Projekts">
+                <div><span>1. compose.yaml</span>Beschreibt die gewünschte Anwendung.</div>
+                <div><span>2. docker compose up</span>Erzeugt Netzwerk, Volumes und Container.</div>
+                <div><span>3. Dienstname</span>Container sprechen intern über Namen wie <code>db</code>.</div>
+                <div><span>4. ports</span>Nur bewusst veröffentlichte Ports sind vom Host erreichbar.</div>
+                <div><span>5. Volume</span>Wichtige Daten überstehen Container-Neustarts.</div>
+            </div>
+
+            <pre><code>services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: beispiel
+      POSTGRES_USER: beispiel
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt</code></pre>
+
+            <p>In diesem Beispiel ist <code>postgres_data</code> ein <strong>benanntes Volume</strong>: Daten bleiben erhalten, wenn der Datenbank-Container neu erstellt wird. Der Webserver darf das lokale Verzeichnis <code>site</code> nur lesen (<code>:ro</code>). Der Datenbank-Port wird hier bewusst <em>nicht</em> veröffentlicht; andere Dienste desselben Compose-Projekts können ihn über <code>db:5432</code> trotzdem erreichen.</p>
+
+            <div class="docker-note docker-note--warning">
+                <p><strong>Port-Regel:</strong> Eine Datenbank, Vault oder Admin-Oberfläche sollte nur dann per <code>ports:</code> veröffentlicht werden, wenn sie wirklich vom Host erreichbar sein muss. Für einen lokalen Dienst ist eine Bindung wie <code>127.0.0.1:27018:27017</code> sicherer als eine Freigabe für das gesamte Netzwerk.</p>
+            </div>
+
+            <hr />
+
+            <h2 id="secrets">Secrets: Docker nutzen, ohne Schlüssel zu verraten</h2>
+            <p>Passwörter, API-Keys, Zertifikate und private Schlüssel sind <strong>Secrets</strong>. Ein Container speichert sie nicht automatisch sicher. Insbesondere gehören echte Secrets niemals in ein Dockerfile, ein Image, Git, Browser-Code oder eine öffentlich ausgelieferte Konfigurationsdatei.</p>
+
+            <table class="docker-table">
+                <thead>
+                    <tr><th>Nicht so</th><th>Warum problematisch?</th><th>Besser</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>ENV API_KEY=...</code> im Dockerfile</td><td>Der Wert kann im Image, in dessen Historie oder Registry landen.</td><td>Secret erst zur Laufzeit gezielt bereitstellen.</td></tr>
+                    <tr><td>Secret direkt in <code>compose.yaml</code></td><td>Die Datei wird häufig mit Git geteilt und landet leicht in Backups.</td><td>Datei lokal ignorieren oder einen echten Secret-Manager verwenden.</td></tr>
+                    <tr><td>Echtes Secret in <code>.env</code> committen</td><td>Git-Historie ist schwer vollständig zu bereinigen.</td><td><code>.env</code> ignorieren; nur eine leere <code>.env.example</code> committen.</td></tr>
+                    <tr><td>Secret in Frontend-Variablen</td><td>Alles, was zum Browser ausgeliefert wird, ist für Besuchende lesbar.</td><td>Secret nur serverseitig verwenden.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Compose Secrets für eine lokale Linux-Container-Umgebung</h3>
+            <p>Compose kann einem ausdrücklich berechtigten Dienst ein Secret als Datei unter <code>/run/secrets/&lt;name&gt;</code> einhängen. Das ist weniger fehleranfällig als eine Umgebungsvariable, die durch Debug-Ausgaben oder Unterprozesse sichtbar werden kann. Die Quelle bleibt bei lokalem Compose trotzdem eine Klartext-Datei auf dem eigenen Rechner – sie braucht also weiterhin Schutz und darf nicht in Git.</p>
+
+            <pre><code># .gitignore
+secrets/
+.env
+.env.*
+!.env.example</code></pre>
+
+            <pre><code># Nur einen Fantasiewert verwenden – niemals einen echten Schlüssel in ein Tutorial kopieren.
+New-Item -ItemType Directory -Force secrets | Out-Null
+Set-Content -NoNewline -Path secrets/api_token.txt -Value "nur-ein-testwert"
+
+docker compose up -d
+docker compose logs secret-check
+docker compose down</code></pre>
+
+            <pre><code>services:
+  secret-check:
+    image: alpine:3.21
+    command: ["sh", "-c", "test -s /run/secrets/api_token &amp;&amp; echo 'Secret-Datei ist vorhanden'; sleep infinity"]
+    secrets:
+      - api_token
+
+secrets:
+  api_token:
+    file: ./secrets/api_token.txt</code></pre>
+
+            <div class="docker-note docker-note--warning">
+                <p><strong>Was das leistet – und was nicht:</strong> Compose grantet den Zugriff nur dem gewählten Dienst; bei Linux-Containern wird die Datei im Container eingehängt. Die lokale Quelldatei ist dadurch aber nicht verschlüsselt, und ein Konto mit weitreichendem Zugriff auf Docker bzw. den Host ist keine unbeteiligte Person. Für Produktion gehören Rotation, Zugriffstrennung, Auditing und ein echter Secret-Manager dazu.</p>
+            </div>
+
+            <p>Für Swarm-Services gibt es zusätzlich <strong>Docker Swarm Secrets</strong>, die im Swarm verschlüsselt übertragen und gespeichert werden. Das ist ein anderer Mechanismus als die lokale Compose-Datei und gilt nicht für einzelne <code>docker run</code>-Container. Für Build-Zugänge sollten BuildKit-Secrets statt <code>ARG</code> oder <code>ENV</code> eingesetzt werden.</p>
+
+            <hr />
+
+            <h2 id="secretslab">Praxisbeispiel: SecretsLab mit Vault und MongoDB</h2>
+            <p>Das Repository <a href="https://github.com/Datenflix007/SecretsLab" target="_blank" rel="noopener">Datenflix007/SecretsLab</a> ist ein gutes Lernbeispiel dafür, wie Docker eine reproduzierbare lokale Laborumgebung starten kann. Es ist <strong>kein Docker-Swarm-Secrets-Beispiel</strong> und auch kein produktionsreifer Passwortspeicher.</p>
+
+            <div class="docker-architecture" aria-label="SecretsLab Architektur">
+                <div class="node"><strong>Python-Labor</strong><p>Fordert einen frischen DEK an und verschlüsselt einen Test-Key lokal mit AES-256-GCM.</p></div>
+                <div class="arrow" aria-hidden="true">→</div>
+                <div class="node"><strong>Vault Transit</strong><p>Ver- und entschlüsselt den Daten-Schlüssel (DEK); der Schlüssel zur Schlüsselverschlüsselung bleibt bei Vault.</p></div>
+                <div class="arrow" aria-hidden="true">→</div>
+                <div class="node"><strong>MongoDB</strong><p>Speichert Ciphertext, Nonce, verschlüsselten DEK und Metadaten – nicht den vollständigen Klartext-Key.</p></div>
+            </div>
+
+            <p>Docker Compose startet darin zwei voneinander getrennte Dienste: MongoDB und HashiCorp Vault. MongoDB nutzt ein benanntes Volume, während die Python-Anwendung und das Menü auf dem Host in einer virtuellen Python-Umgebung laufen. Die externen Ports sind auf <code>127.0.0.1</code> beschränkt, also nur vom eigenen Rechner erreichbar.</p>
+
+            <pre><code>git clone https://github.com/Datenflix007/SecretsLab.git
+cd SecretsLab
+.\quickstart.bat</code></pre>
+
+            <p>Voraussetzungen sind eine laufende Docker-Desktop-Engine mit Linux-Containern sowie Python&nbsp;3.11 oder neuer. Das Quickstart-Skript startet Compose, wartet auf Vault, aktiviert die Transit-Engine, legt den Schlüssel <code>user-secrets</code> an und öffnet anschließend ein Terminalmenü. Verwende dort ausschließlich Fantasie- oder Testwerte.</p>
+
+            <div class="docker-note docker-note--danger">
+                <p><strong>Niemals mit echten API-Keys verwenden:</strong> SecretsLab nutzt absichtlich Vault im Dev-Modus – mit HTTP, bekanntem Root-Token, ohne produktive Vault-Persistenz und ohne MongoDB-Authentifizierung. Die Funktion <code>get</code> kann einen Test-Key im Terminal anzeigen. Nach einem Vault-Neustart können ältere MongoDB-Einträge wegen des verlorenen Vault-Schlüsselmaterials nicht mehr entschlüsselt werden.</p>
+            </div>
+
+            <p>Die Lehre aus dem Beispiel lautet nicht „Docker ist ein Secrets-Tresor“, sondern: <strong>Docker isoliert und startet die Bausteine reproduzierbar.</strong> Die Trennung zwischen verschlüsselten Daten in MongoDB und Schlüsselverwaltung in Vault entsteht durch die Anwendungskryptografie und Vault Transit. Wer Vault samt Root-Token kontrolliert, kann weiterhin entschlüsseln.</p>
+
+            <pre><code># Im SecretsLab-Ordner:
+docker compose down     # Container stoppen; das MongoDB-Volume bleibt erhalten.
+docker compose down -v  # Vollständiger Labor-Reset: auch Testdaten löschen.</code></pre>
+
+            <hr />
+
+            <h2 id="fehler">Typische Probleme und schnelle Prüfungen</h2>
+            <table class="docker-table">
+                <thead>
+                    <tr><th>Symptom</th><th>Wahrscheinliche Ursache</th><th>Nächster Schritt</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>Cannot connect to the Docker daemon</code></td><td>Docker Desktop bzw. seine Engine läuft noch nicht.</td><td>Docker Desktop öffnen, kurz warten, dann <code>docker version</code> wiederholen.</td></tr>
+                    <tr><td>WSL-Fehler</td><td>WSL ist nicht fertig eingerichtet oder Windows braucht einen Neustart.</td><td><code>wsl --status</code> und <code>wsl --update</code> ausführen; bei Bedarf neu starten.</td></tr>
+                    <tr><td>Port ist bereits belegt</td><td>Ein anderer Dienst verwendet zum Beispiel Port 8080.</td><td>Einen anderen Host-Port wählen, etwa <code>8081:80</code>.</td></tr>
+                    <tr><td>Daten sind weg</td><td>Ein Container wurde ohne Volume entfernt oder <code>down -v</code> wurde verwendet.</td><td>Für langlebige Daten ein Volume planen; Löschbefehle vor dem Ausführen prüfen.</td></tr>
+                    <tr><td>Secret erscheint in Logs</td><td>Die Anwendung oder ein Debug-Befehl gibt es aus.</td><td>Log-Ausgaben ändern, Secret rotieren und Zugriff auf die Logs prüfen.</td></tr>
+                </tbody>
+            </table>
+
+            <pre><code>docker version
+docker info
+docker compose config
+docker ps -a
+docker volume ls
+wsl --status</code></pre>
+
+            <hr />
+
+            <h2>Checkliste für eigene Projekte</h2>
+            <div class="docker-checklist">
+                <div class="docker-card"><strong>Start</strong><p><code>docker run --rm hello-world</code> läuft erfolgreich und Docker Desktop ist bereit.</p></div>
+                <div class="docker-card"><strong>Daten</strong><p>Datenbanken, Uploads und andere langlebige Daten liegen bewusst in Volumes oder einem externen Speicher.</p></div>
+                <div class="docker-card"><strong>Netzwerk</strong><p>Nur nötige Ports sind veröffentlicht; sensible lokale Dienste binden an <code>127.0.0.1</code>.</p></div>
+                <div class="docker-card"><strong>Secrets</strong><p>Keine echten Werte in Git, Images, Dockerfiles, Browser-Code oder öffentliche Logs.</p></div>
+                <div class="docker-card"><strong>Produktion</strong><p>Ein echter Secret-Manager, Rotation, Backups, Updates und minimale Berechtigungen sind geplant.</p></div>
+                <div class="docker-card"><strong>Aufräumen</strong><p><code>down -v</code> wird nur ausgeführt, wenn das Löschen der zugehörigen Daten wirklich beabsichtigt ist.</p></div>
+            </div>
+
+            <hr />
+
+            <h2>Weiterlesen</h2>
+            <ul class="source-list">
+                <li><a href="https://docs.docker.com/get-started/docker-overview/" target="_blank" rel="noopener">Docker Docs: What is Docker?</a></li>
+                <li><a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noopener">Docker Docs: Docker Desktop unter Windows installieren</a></li>
+                <li><a href="https://docs.docker.com/compose/how-tos/use-secrets/" target="_blank" rel="noopener">Docker Docs: Secrets mit Docker Compose verwenden</a></li>
+                <li><a href="https://docs.docker.com/engine/swarm/secrets/" target="_blank" rel="noopener">Docker Docs: Docker Swarm Secrets</a></li>
+                <li><a href="https://github.com/Datenflix007/SecretsLab" target="_blank" rel="noopener">Datenflix007/SecretsLab auf GitHub</a></li>
+            </ul>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">© 2026 Felix Staacke</div>
+    </footer>
+
+    <script>
+        function detectCodeLabel(code) {
+            const trimmed = code.trim();
+            if (trimmed.startsWith("services:")) return "Docker Compose";
+            if (trimmed.startsWith("# install-docker") || trimmed.includes("Start-Process") || trimmed.startsWith("New-Item")) return "PowerShell";
+            if (trimmed.startsWith("secrets/") || trimmed.startsWith(".env")) return ".gitignore";
+            if (trimmed.startsWith("docker ") || trimmed.startsWith("git ") || trimmed.startsWith("wsl ")) return "Terminal";
+            return "Code";
+        }
+
+        document.querySelectorAll(".guide-article pre").forEach((block) => {
+            const code = block.querySelector("code")?.innerText ?? "";
+            const label = document.createElement("span");
+            label.className = "code-language-label";
+            label.textContent = detectCodeLabel(code);
+            block.appendChild(label);
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "copy-code-button";
+            button.textContent = "Kopieren";
+            button.addEventListener("click", async () => {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    button.textContent = "Kopiert";
+                    setTimeout(() => { button.textContent = "Kopieren"; }, 1400);
+                } catch {
+                    button.textContent = "Fehler";
+                    setTimeout(() => { button.textContent = "Kopieren"; }, 1400);
+                }
+            });
+            block.appendChild(button);
+        });
+    </script>
+    <script src="../../feedback-widget.js" defer></script>
+</body>
+
+</html>
